@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
+using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
 public class ConveyorPlacement3D : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class ConveyorPlacement3D : MonoBehaviour
 
     void Update()
     {
-        /*// Check if there are any touch inputs
+        // Check if there are any touch inputs
         if (Touch.activeTouches.Count > 0)
         {
             Touch touch = Touch.activeTouches[0]; 
@@ -75,7 +76,7 @@ public class ConveyorPlacement3D : MonoBehaviour
                     }
                     break;
             }
-        }*/
+        }
     }
 
     void UpdateConveyorPreview(Vector3 snappedPosition)
