@@ -1,62 +1,61 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
-public class ConveyorPlacement3D : MonoBehaviour
+namespace GameContent
 {
-    public GameObject conveyorPrefab;   // The conveyor prefab
-    public float gridUnitSize = 0.5f;   // Size of the invisible grid
-    public Camera isoCamera;            // Reference to the isometric camera
-    private Vector3 startDragPosition;
-    private bool isDragging = false;
-    private List<GameObject> previewConveyors = new List<GameObject>(); // List for temporary previews
-    public float conveyorYPosition = 0f; // Fixed Y position for conveyors
-
-    private Vector3 lastSnappedPosition; // To keep track of the last snapped position
-    private List<Vector3> conveyorPositions = new List<Vector3>(); // To store the positions of placed conveyors
-
-    void Awake()
+    public class ConveyorPlacement3D : MonoBehaviour
     {
-        EnhancedTouchSupport.Enable();
-    }
+        public GameObject conveyorPrefab;   // The conveyor prefab
+        public float gridUnitSize = 0.5f;   // Size of the invisible grid
+        public Camera isoCamera;            // Reference to the isometric camera
+        private Vector3 startDragPosition;
+        private bool isDragging = false;
+        private List<GameObject> previewConveyors = new List<GameObject>(); // List for temporary previews
+        public float conveyorYPosition = 0f; // Fixed Y position for conveyors
 
-    void Update()
-    {
-        // Check if there are any touch inputs
-        if (Touch.activeTouches.Count > 0)
+        private Vector3 lastSnappedPosition; // To keep track of the last snapped position
+        private List<Vector3> conveyorPositions = new List<Vector3>(); // To store the positions of placed conveyors
+
+        private void Awake()
         {
-            Touch touch = Touch.activeTouches[0]; 
+            EnhancedTouchSupport.Enable();
+        }
 
-            // Create a ray from the touch position
-            Ray ray = isoCamera.ScreenPointToRay(touch.screenPosition);
+        private void Update()
+        {
+            if (Touch.activeTouches.Count <= 0)
+                return;
+        
+            var touch = Touch.activeTouches[0]; 
+
+            var ray = isoCamera.ScreenPointToRay(touch.screenPosition);
             RaycastHit hit;
 
             switch (touch.phase)
             {
                 case TouchPhase.Began:
-                    // Initialize the drag start point
                     if (Physics.Raycast(ray, out hit))
                     {
                         startDragPosition = hit.point;
-                        startDragPosition.y = conveyorYPosition; // Set Y to the fixed conveyor Y position
+                        startDragPosition.y = conveyorYPosition;
                         isDragging = true;
-                        conveyorPositions.Clear(); // Clear previous positions
+                        conveyorPositions.Clear();
                     }
                     break;
 
                 case TouchPhase.Moved:
                     if (isDragging)
                     {
-                        // Update conveyor previews
                         if (Physics.Raycast(ray, out hit))
                         {
-                            Vector3 currentTouchPosition = hit.point;
-                            currentTouchPosition.y = conveyorYPosition; // Set Y to the fixed conveyor Y position
+                            var currentTouchPosition = hit.point;
+                            currentTouchPosition.y = conveyorYPosition;
 
-                            // Get the snapped position and create preview conveyors
-                            Vector3 snappedPosition = SnapToGrid(currentTouchPosition);
+                            var snappedPosition = SnapToGrid(currentTouchPosition);
                             UpdateConveyorPreview(snappedPosition);
                         }
                     }
@@ -65,76 +64,72 @@ public class ConveyorPlacement3D : MonoBehaviour
                 case TouchPhase.Ended:
                     if (isDragging)
                     {
-                        // Final placement of conveyors
                         if (Physics.Raycast(ray, out hit))
                         {
-                            Vector3 endPosition = hit.point;
-                            endPosition.y = conveyorYPosition; // Set Y to the fixed conveyor Y position
                             PlaceConveyors();
                         }
                         isDragging = false;
                     }
                     break;
+            
+                case TouchPhase.None:
+                case TouchPhase.Canceled:
+                case TouchPhase.Stationary:
+                    break;
+                
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
-    }
 
-    void UpdateConveyorPreview(Vector3 snappedPosition)
-    {
-        // Clear previous preview conveyors
-        foreach (GameObject conveyor in previewConveyors)
+        private void UpdateConveyorPreview(Vector3 snappedPosition)
         {
-            Destroy(conveyor);
+            foreach (var conveyor in previewConveyors)
+            {
+                Destroy(conveyor);
+            }
+            previewConveyors.Clear();
+
+            if (lastSnappedPosition != snappedPosition)
+            {
+                conveyorPositions.Add(snappedPosition);
+                lastSnappedPosition = snappedPosition;
+            }
+
+            foreach (var position in conveyorPositions)
+            {
+                var previewConveyor = Instantiate(conveyorPrefab, position, Quaternion.identity);
+                previewConveyor.transform.localScale = new Vector3(1, 1, 1);
+                previewConveyors.Add(previewConveyor);
+            }
         }
-        previewConveyors.Clear();
 
-        // Add the new snapped position if it's different from the last one
-        if (lastSnappedPosition != snappedPosition)
+        private void PlaceConveyors()
         {
-            conveyorPositions.Add(snappedPosition); // Store the position
-            lastSnappedPosition = snappedPosition; // Update the last snapped position
+            foreach (var position in conveyorPositions)
+            {
+                Instantiate(conveyorPrefab, position, Quaternion.identity);
+            }
+            conveyorPositions.Clear();
         }
 
-        // Create preview conveyors for each position stored
-        foreach (Vector3 position in conveyorPositions)
+        private Vector3 SnapToGrid(Vector3 targetPosition)
         {
-            GameObject previewConveyor = Instantiate(conveyorPrefab, position, Quaternion.identity);
-            previewConveyor.transform.localScale = new Vector3(1, 1, 1); // Adjust scale if necessary
-            previewConveyors.Add(previewConveyor);
-        }
-    }
+            var snappedX = Mathf.Round(targetPosition.x / gridUnitSize) * gridUnitSize;
+            var snappedZ = Mathf.Round(targetPosition.z / gridUnitSize) * gridUnitSize;
 
-    void PlaceConveyors()
-    {
-        // Finalize the placement of conveyors based on stored positions
-        foreach (Vector3 position in conveyorPositions)
-        {
-            Instantiate(conveyorPrefab, position, Quaternion.identity);
-        }
-        // Clear the positions after placement
-        conveyorPositions.Clear();
-    }
+            var snappedPosition = new Vector3(snappedX, conveyorYPosition, snappedZ);
 
-    Vector3 SnapToGrid(Vector3 targetPosition)
-    {
-        // Snap to the nearest grid point
-        float snappedX = Mathf.Round(targetPosition.x / gridUnitSize) * gridUnitSize;
-        float snappedZ = Mathf.Round(targetPosition.z / gridUnitSize) * gridUnitSize;
-
-        // Create the new snapped position
-        Vector3 snappedPosition = new Vector3(snappedX, conveyorYPosition, snappedZ);
-
-        // Ensure the new position is either in line with the last one or is a 90-degree turn
-        if (conveyorPositions.Count > 0)
-        {
-            Vector3 lastPosition = conveyorPositions[conveyorPositions.Count - 1];
+            if (conveyorPositions.Count <= 0)
+                return snappedPosition;
+        
+            var lastPosition = conveyorPositions[^1];
             if (Mathf.Abs(snappedX - lastPosition.x) < gridUnitSize && Mathf.Abs(snappedZ - lastPosition.z) < gridUnitSize)
             {
-                // Close enough to the last position, do not add a new conveyor
                 return lastPosition; 
             }
-        }
 
-        return snappedPosition;
+            return snappedPosition;
+        }
     }
 }
