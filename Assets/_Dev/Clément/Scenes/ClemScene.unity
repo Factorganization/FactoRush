@@ -614,6 +614,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1169929616}
   - component: {fileID: 1169929617}
+  - component: {fileID: 1169929618}
   m_Layer: 0
   m_Name: Map2
   m_TagString: Untagged
@@ -648,11 +649,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f556b8386ffa4b49be9dbd1d11813685, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapPath: TestMap
+  mapPath: OtherTestMap
   dynamicBuildTile: {fileID: 8808495469298439780, guid: 4abd3402996d3ba41879254eb476218f,
     type: 3}
   staticBuildTile: {fileID: 5466440853384126014, guid: 5e0168ff92d634f47aed8586488dd9e3,
     type: 3}
+  genericBuild: {fileID: 4155439601221061712, guid: 77c36428ed7128042a96e4a43759d983,
+    type: 3}
+--- !u!114 &1169929618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169929615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b72820053f6dc074dbe3e38be2fa14c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isoCamera: {fileID: 963194227}
 --- !u!4 &1283811206 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7523002599078097271, guid: e37c34fd9c5b5fb4aa18e54fc6074e0f,

@@ -1,0 +1,1 @@
+C:\Users\c.strappazzonmarques\Documents\Projects\FactoRush\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\build\intermediates\cxx\RelWithDebInfo\6576w6n5\obj\arm64-v8a

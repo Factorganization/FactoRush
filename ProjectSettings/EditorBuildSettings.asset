@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/_Dev/Thomas/Scene/TotoScene.unity
     guid: 53181391e1a72f746aec49b355db631a
+  - enabled: 1
+    path: "Assets/_Dev/Cl\xE9ment/Scenes/ClemScene.unity"
+    guid: c850ee8c3b14cc8459e7e186857cf567
   m_configObjects:
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: c9f96ee22d4b7204fbe3a8f27a8ad6f8,
       type: 2}

@@ -2,9 +2,9 @@
 {
     public enum GridLockMode : byte
     {
-        Unlocked = 0,
+        Locked = 0,
         BuildingLocked = 1,
-        Locked = 2,
+        Unlocked = 2,
         DefaultError = 3
     }
 }
