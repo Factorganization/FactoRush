@@ -569,11 +569,11 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 60
+  near clip plane: 40
+  far clip plane: 250
+  field of view: 25
   orthographic: 0
-  orthographic size: 5
+  orthographic size: 11
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -597,13 +597,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 2, y: 12.9, z: -4}
+  m_LocalRotation: {x: 0.5413163, y: -0, z: -0, w: 0.8408191}
+  m_LocalPosition: {x: 4.5, y: 47.7, z: -15.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 62662816}
-  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 65.547, y: 0, z: 0}
 --- !u!1 &1169929615
 GameObject:
   m_ObjectHideFlags: 0
@@ -654,7 +654,9 @@ MonoBehaviour:
     type: 3}
   staticBuildTile: {fileID: 5466440853384126014, guid: 5e0168ff92d634f47aed8586488dd9e3,
     type: 3}
-  genericBuild: {fileID: 4155439601221061712, guid: 77c36428ed7128042a96e4a43759d983,
+  dynamicGenericBuild: {fileID: 4155439601221061712, guid: 77c36428ed7128042a96e4a43759d983,
+    type: 3}
+  staticGenericBuild: {fileID: 6265463092578805160, guid: b38bd412b4fa17f4c8d7a67557a38f40,
     type: 3}
 --- !u!114 &1169929618
 MonoBehaviour:

@@ -13,6 +13,8 @@ namespace InputManagement
     {
         #region methodes
         
+        #region unity events
+        
         private void Awake()
         {
             EnhancedTouchSupport.Enable();
@@ -26,8 +28,13 @@ namespace InputManagement
             HandleTouch();
         }
 
+        #endregion
+        
         private void HandleTouch()
         {
+            if (GridManager.Manager.CurrentLockMode is GridLockMode.Locked)
+                return;
+            
             var touch = Touch.activeTouches[0]; 
             
             var ray = isoCamera.ScreenPointToRay(touch.screenPosition);
@@ -35,22 +42,31 @@ namespace InputManagement
             switch (touch.phase)
             {
                 case TouchPhase.Began:
-                    GridManager.Manager.CurrentLockMode = GridLockMode.Locked; //Lock grid to prevent abusive list update
+                    GridManager.Manager.CurrentLockMode = GridLockMode.BuildingLocked; //Lock grid to prevent abusive list update
                     HandleTouchBegan(ray);
                     break;
                 
                 case TouchPhase.Moved:
+                    _hasDragged = true;
+                    _hitTimerCounter = 0;
+                    
                     HandleTouchMoved(ray);
                     break;
                 
                 case TouchPhase.Ended:
+                    _hasDragged = false;
+                    
                     HandleTouchEnded(ray);
                     GridManager.Manager.CurrentLockMode = GridLockMode.Unlocked; //Unlock grid
                     break;
                 
+                case TouchPhase.Stationary when !_hasDragged:
+                    HandleTouchStationary(ray);
+                    break;    
+                
+                case TouchPhase.Stationary:
                 case TouchPhase.None:
                 case TouchPhase.Canceled: //TODO soft cancel current actions
-                case TouchPhase.Stationary:
                     break;
                 
                 default:
@@ -72,15 +88,23 @@ namespace InputManagement
 
             switch (_startingHitType)
             {
+                case HitGridType.SideStaticHit:
+                    if (t is StaticBuildingTile st1)
+                        _currentStaticGroup = st1.StaticGroup;
+                    break;
+                
                 case HitGridType.CenterStaticHit:
                     //prepare to open build selection panel : feedback
+                    if (t is StaticBuildingTile st2)
+                        _currentStaticGroup = st2.StaticGroup;
                     break;
                             
                 case HitGridType.None:
                 case HitGridType.DynamicHit:
-                case HitGridType.SideStaticHit:
-                default:
                     break;
+                
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
             }
         }
 
@@ -101,9 +125,52 @@ namespace InputManagement
                     break;
                         
                 case HitGridType.None:
+                    break;
+                
                 default:
+                    throw new ArgumentOutOfRangeException(nameof(_startingHitType), _startingHitType, null);
+            }
+        }
+
+        private void HandleTouchStationary(Ray ray)
+        {
+            if (_startingHitType is HitGridType.None)
+                return;
+            
+            _hitTimerCounter += Time.deltaTime;
+            
+            if (_hitTimerCounter < StationaryTargetTime)
+                return;
+            
+            if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
+                return;
+            
+            if (!hit.collider.TryGetComponent(out Tile t))
+                return;
+            
+            if (t.CurrentBuildingRef is null)
+                return;
+            
+            switch (t.CurrentBuildingRef)
+            {
+                case null:
+                    break;
+                
+                case DynamicBuilding:
+                    GridManager.Manager.TryRemoveBuildingAt(BuildingType.Conveyor, t.Index);
+                    //TODO delete full conveyor
+                    break;
+                
+                case StaticBuilding:
+                    GridManager.Manager.TryRemoveBuildingAt(BuildingType.StaticBuild, t.Index);
+                    //TODO delete building
                     break;
             }
+
+            _hitTimerCounter = 0;
+            _startingHitType = HitGridType.None; //force the switch to No input to prevent new inputs 
+            
+            GridManager.Manager.CurrentLockMode = GridLockMode.Unlocked;
         }
         
         private void HandleTouchEnded(Ray ray)
@@ -120,12 +187,20 @@ namespace InputManagement
                 
                 case HitGridType.DynamicHit:
                 case HitGridType.None:
-                default:
                     break;
+                
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(_startingHitType), _startingHitType, null);
             }
                         
             _startingHitType = HitGridType.None;
+            _currentStaticGroup = 0;
+            _hitTimerCounter = 0;
         }
+        
+        #endregion
+        
+        #region touch handling events
         
         private void HandleFromSideStaticMove(Ray ray)
         {
@@ -143,8 +218,16 @@ namespace InputManagement
                     //TODO path find to complete conveyor path if skip dynamic tile
                     break;
                 
-                case TileType.CenterStaticTile:
                 case TileType.SideStaticTile:
+                    if (t.CurrentBuildingRef is not null)
+                        _startingHitType = HitGridType.None;
+                    
+                    GridManager.Manager.TryAddBuildingAt(BuildingType.Conveyor, t.Index, t.Position + Vector3.up / 2); //can try pose build if hit dynamic tile
+                    // other action if lag and skip dynamic to check if dist between two dynamic is ok and complete if not
+                    //TODO path find to complete conveyor path if skip dynamic tile
+                    break;
+                    
+                case TileType.CenterStaticTile:
                 case TileType.Default:
                 case TileType.CornerStaticTile:
                     break;
@@ -166,22 +249,53 @@ namespace InputManagement
                 case TileType.CornerStaticTile:
                 case TileType.CenterStaticTile:
                 case TileType.DynamicTile:
+                case TileType.Default:
                     GridManager.Manager.CancelAdding();
                     break;
                                 
                 case TileType.SideStaticTile:
-                    //TODO connection logic
-                    break;
-                                
-                case TileType.Default:
+                    if (t is not StaticBuildingTile st2)
+                        return;
+                    
+                    if (_currentStaticGroup == st2.StaticGroup)
+                        GridManager.Manager.CancelAdding();
+                        //TODO connection logic
+                        break;
+
                 default:
-                    break;
+                    throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
             }
         }
 
         private void HandleCenterStaticEnding(Ray ray)
         {
             //TODO open build selection panel
+            if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
+                return;
+            
+            if (!hit.collider.TryGetComponent(out Tile t))
+                return; //TODO find a way to cancel drag
+
+            switch (t.Type)
+            {
+                case TileType.CenterStaticTile:
+                    if (t is not StaticBuildingTile st)
+                        break;
+                    
+                    if (st.StaticGroup == _currentStaticGroup)
+                        GridManager.Manager.TryAddBuildingAt(BuildingType.StaticBuild, st.Index, st.Position + Vector3.up / 2);
+                    
+                    break;
+
+                case TileType.DynamicTile:
+                case TileType.SideStaticTile:
+                case TileType.CornerStaticTile:
+                case TileType.Default:
+                    break;
+                
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
+            }
         }
         
         #endregion
@@ -202,7 +316,15 @@ namespace InputManagement
         [SerializeField] private Camera isoCamera;
 
         private HitGridType _startingHitType;
+
+        private bool _hasDragged;
+
+        private byte _currentStaticGroup;
         
+        private float _hitTimerCounter;
+
+        private const float StationaryTargetTime = 0.5f;
+
         #endregion
     }
 }

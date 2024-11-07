@@ -12,7 +12,7 @@ namespace GameContent.GridManagement
         #region properties
 
         public static GridManager Manager { get; private set; }
-        
+
         public GridLockMode CurrentLockMode
         {
             get => _currentGridLockMode;
@@ -22,6 +22,8 @@ namespace GameContent.GridManagement
                 UpdateGrid();
             }
         }
+
+        public Dictionary<byte, List<DynamicBuilding>> ConveyorGroups { get; private set; }
         
         #endregion
         
@@ -41,6 +43,7 @@ namespace GameContent.GridManagement
         {
             _grid = new Dictionary<Vector2Int, Tile>();
             _staticGroups = new Dictionary<byte, List<Tile>>();
+            ConveyorGroups = new Dictionary<byte, List<DynamicBuilding>>();
             _adding = new HashSet<Vector2Int>();
             _removing = new HashSet<Vector2Int>();
             _toAdd = new Dictionary<Vector2Int, Building>();
@@ -55,6 +58,8 @@ namespace GameContent.GridManagement
         
         private IEnumerator InitGrid()
         {
+            CurrentLockMode = GridLockMode.Locked;
+            
             var grid = MapParser.ParseMap(mapPath);
             
             for (var i = grid.Length - 1; i >= 0 ; i--)
@@ -62,7 +67,9 @@ namespace GameContent.GridManagement
                 for (var j = 0; j <  grid[i].Length ; j++)
                 {
                     yield return new WaitForEndOfFrame();
-                    yield return new WaitForEndOfFrame();//oui c'est legit
+#if UNITY_EDITOR
+                    yield return new WaitForEndOfFrame(); //that's legit, dont question it
+#endif
                     
                     var tId = new Vector2Int(grid.Length - 1 - i, j);
                     var tPos = new Vector3(j, 0, grid.Length - 1 - i); //inverted i j for pos /!\
@@ -104,13 +111,34 @@ namespace GameContent.GridManagement
         
         private void UpdateGrid()
         {
-            if (_currentGridLockMode is GridLockMode.Locked)
+            if (_currentGridLockMode is GridLockMode.Locked or GridLockMode.BuildingLocked)
                 return;
-
+            
             if (_adding.Count > 0)
             {
+                byte i = 0;
+    
+                while (ConveyorGroups.ContainsKey(i) && ConveyorGroups[i] != null)
+                    i++;
+                
+                if (!ConveyorGroups.ContainsKey(i))
+                    ConveyorGroups.Add(i, new List<DynamicBuilding>());
+                else
+                    ConveyorGroups[i] = new List<DynamicBuilding>();
+                
                 foreach (var b in _toAdd)
                 {
+                    switch (b.Value)
+                    {
+                        case StaticBuilding:
+                            break;
+                        
+                        case DynamicBuilding db:
+                            ConveyorGroups[i].Add(db);
+                            db.ConveyorGroupId = i;
+                            db.SetDebugId(i);
+                            break;
+                    }
                     PlaceBuildingAt(b.Key, b.Value);
                 }
             }
@@ -132,11 +160,25 @@ namespace GameContent.GridManagement
         {
             if (!_adding.Add(index))
                 return;
-            
-            var b = Instantiate(genericBuild, _grid[index].ETransform);
-            _toAdd.Add(index, b);
-            b.TargetPosition = pos;
-            b.Position = pos;
+
+            switch (type)
+            {
+                case BuildingType.Conveyor:
+                    var b1 = Instantiate(dynamicGenericBuild, _grid[index].ETransform);
+                    _toAdd.Add(index, b1);
+                    b1.TargetPosition = pos;
+                    b1.Position = pos;
+                    break;
+                
+                case BuildingType.StaticBuild:
+                    var b2 = Instantiate(staticGenericBuild, _grid[index].ETransform);
+                    _toAdd.Add(index, b2);
+                    b2.TargetPosition = pos;
+                    b2.Position = pos;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
         }
 
         public void CancelAdding()
@@ -154,8 +196,27 @@ namespace GameContent.GridManagement
         {
             if (!_removing.Add(index))
                 return;
-            
-            _toRemove.Add(index, _grid[index].CurrentBuildingRef);
+
+            switch (type)
+            {
+                case BuildingType.Conveyor:
+                    var b = _grid[index].CurrentBuildingRef as DynamicBuilding;
+                    var i = b!.ConveyorGroupId;
+                    foreach (var b2 in ConveyorGroups[i])
+                    {
+                        _toRemove.Add(b2.TileRef.Index, b2);
+                    }
+
+                    ConveyorGroups.Remove(i);
+                    break;
+                
+                case BuildingType.StaticBuild:
+                    _toRemove.Add(index, _grid[index].CurrentBuildingRef);
+                    break;
+                
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
         }
 
         private void PlaceBuildingAt(Vector2Int index, Building building)
@@ -182,7 +243,9 @@ namespace GameContent.GridManagement
         
         [SerializeField] private StaticBuildingTile staticBuildTile;
 
-        [SerializeField] private Building genericBuild;
+        [SerializeField] private DynamicBuilding dynamicGenericBuild;
+        
+        [SerializeField] private StaticBuilding staticGenericBuild;
         
         private Dictionary<Vector2Int,Tile> _grid;
         
