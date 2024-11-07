@@ -131,6 +131,7 @@ namespace GameContent.GridManagement
                     switch (b.Value)
                     {
                         case StaticBuilding:
+                            ConveyorGroups.Remove(i);
                             break;
                         
                         case DynamicBuilding db:

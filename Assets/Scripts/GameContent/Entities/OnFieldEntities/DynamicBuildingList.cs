@@ -1,27 +1,19 @@
-﻿using System.Collections.Generic;
-
-namespace GameContent.Entities.OnFieldEntities
+﻿namespace GameContent.Entities.OnFieldEntities
 {
-    public sealed class ConveyorGroup
+    public abstract class DynamicBuildingList
     {
         #region properties
         
-        public List<DynamicBuilding> Dynamic
+        public DynamicBuilding[] DynamicBuildings { get; }
         
         #endregion
         
         #region constructors
 
-        public ConveyorGroup(List<> )
+        protected DynamicBuildingList(params DynamicBuilding[] dl)
         {
-            
+            DynamicBuildings = dl;
         }
-        
-        #endregion
-        
-        #region methodes
-        
-        
         
         #endregion
     }
