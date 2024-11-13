@@ -23,7 +23,7 @@ namespace GameContent.GridManagement
             }
         }
 
-        public Dictionary<byte, List<DynamicBuilding>> ConveyorGroups { get; private set; }
+        public Dictionary<byte, DynamicBuildingList> ConveyorGroups { get; private set; }
         
         #endregion
         
@@ -43,7 +43,7 @@ namespace GameContent.GridManagement
         {
             _grid = new Dictionary<Vector2Int, Tile>();
             _staticGroups = new Dictionary<byte, List<Tile>>();
-            ConveyorGroups = new Dictionary<byte, List<DynamicBuilding>>();
+            ConveyorGroups = new Dictionary<byte, DynamicBuildingList>();
             _adding = new HashSet<Vector2Int>();
             _removing = new HashSet<Vector2Int>();
             _toAdd = new Dictionary<Vector2Int, Building>();
@@ -122,9 +122,9 @@ namespace GameContent.GridManagement
                     i++;
                 
                 if (!ConveyorGroups.ContainsKey(i))
-                    ConveyorGroups.Add(i, new List<DynamicBuilding>());
+                    ConveyorGroups.Add(i, new ConveyorGroup());
                 else
-                    ConveyorGroups[i] = new List<DynamicBuilding>();
+                    ConveyorGroups[i] = new ConveyorGroup();
                 
                 foreach (var b in _toAdd)
                 {
@@ -135,7 +135,7 @@ namespace GameContent.GridManagement
                             break;
                         
                         case DynamicBuilding db:
-                            ConveyorGroups[i].Add(db);
+                            ConveyorGroups[i].AddBuild(db);
                             db.ConveyorGroupId = i;
                             db.SetDebugId(i);
                             break;
@@ -165,6 +165,7 @@ namespace GameContent.GridManagement
             switch (type)
             {
                 case BuildingType.Conveyor:
+                    //TODO virer les adds sur des tiles deja occupées
                     var b1 = Instantiate(dynamicGenericBuild, _grid[index].ETransform);
                     _toAdd.Add(index, b1);
                     b1.TargetPosition = pos;
@@ -203,7 +204,7 @@ namespace GameContent.GridManagement
                 case BuildingType.Conveyor:
                     var b = _grid[index].CurrentBuildingRef as DynamicBuilding;
                     var i = b!.ConveyorGroupId;
-                    foreach (var b2 in ConveyorGroups[i])
+                    foreach (var b2 in ConveyorGroups[i].DynamicBuildings)
                     {
                         _toRemove.Add(b2.TileRef.Index, b2);
                     }
@@ -254,7 +255,7 @@ namespace GameContent.GridManagement
         
         private HashSet<Vector2Int> _adding;
         
-        private HashSet<Vector2Int> _removing;
+        private HashSet<Vector2Int> _removing; //TODO separer le adding pour le specialiser uniquement sur les dynamicBuilds, il est pas utile sur les statics 
         
         private Dictionary<Vector2Int, Building> _toAdd;
         

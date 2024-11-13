@@ -148,9 +148,6 @@ namespace InputManagement
             if (!hit.collider.TryGetComponent(out Tile t))
                 return;
             
-            if (t.CurrentBuildingRef is null)
-                return;
-            
             switch (t.CurrentBuildingRef)
             {
                 case null:
@@ -219,8 +216,8 @@ namespace InputManagement
                     break;
                 
                 case TileType.SideStaticTile:
-                    if (t.CurrentBuildingRef is not null)
-                        _startingHitType = HitGridType.None;
+                    /*if (t.CurrentBuildingRef is not null)
+                        _startingHitType = HitGridType.None;*/
                     
                     GridManager.Manager.TryAddBuildingAt(BuildingType.Conveyor, t.Index, t.Position + Vector3.up / 2); //can try pose build if hit dynamic tile
                     // other action if lag and skip dynamic to check if dist between two dynamic is ok and complete if not
@@ -280,6 +277,9 @@ namespace InputManagement
             {
                 case TileType.CenterStaticTile:
                     if (t is not StaticBuildingTile st)
+                        break;
+                    
+                    if(st.CurrentBuildingRef is not null)
                         break;
                     
                     if (st.StaticGroup == _currentStaticGroup)
