@@ -23,11 +23,12 @@ namespace GameContent.Entities
         private void Awake()
         {
             OnAwake();
+            transform.position = TargetPosition;
         }
 
         protected virtual void OnAwake()
         {
-            ETransform = GetComponent<Transform>(); //la tech de Vincent oue oue oue
+            ETransform = GetComponent<Transform>(); //la tech de Vincent oue oue oue grrr paw
         }
         
         #endregion
