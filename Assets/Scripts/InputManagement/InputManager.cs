@@ -66,7 +66,10 @@ namespace InputManagement
                 
                 case TouchPhase.Stationary:
                 case TouchPhase.None:
+                    break;    
+                
                 case TouchPhase.Canceled: //TODO soft cancel current actions
+                    HandleTouchCancelled();
                     break;
                 
                 default:
@@ -172,14 +175,21 @@ namespace InputManagement
         
         private void HandleTouchEnded(Ray ray)
         {
+            if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
+            {
+                HandleTouchCancelled();
+                
+                return;
+            }
+            
             switch (_startingHitType)
             {
                 case HitGridType.SideStaticHit:
-                    HandleSideStaticEnding(ray);
+                    HandleSideStaticEnding(hit);
                     break;
                 
                 case HitGridType.CenterStaticHit:
-                    HandleCenterStaticEnding(ray);
+                    HandleCenterStaticEnding(hit);
                     break;
                 
                 case HitGridType.DynamicHit:
@@ -193,6 +203,32 @@ namespace InputManagement
             _startingHitType = HitGridType.None;
             _currentStaticGroup = 0;
             _hitTimerCounter = 0;
+        }
+
+        /// <summary>
+        /// can be used in specific cases, if touch raycast is not hitting any part of the grid
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        private void HandleTouchCancelled()
+        {
+            switch (_startingHitType)
+            {
+                case HitGridType.SideStaticHit:
+                    GridManager.Manager.CancelAdding();
+                    break;
+                
+                case HitGridType.CenterStaticHit:
+                    break;
+                
+                case HitGridType.DynamicHit:
+                    break;
+                
+                case HitGridType.None:
+                    break;
+                
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(_startingHitType), _startingHitType, null);
+            }
         }
         
         #endregion
@@ -233,11 +269,8 @@ namespace InputManagement
             }
         }
         
-        private void HandleSideStaticEnding(Ray ray)
+        private void HandleSideStaticEnding(RaycastHit hit)
         {
-            if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
-                return;
-            
             if (!hit.collider.TryGetComponent(out Tile t))
                 return; //TODO find a way to cancel drag
 
@@ -264,12 +297,8 @@ namespace InputManagement
             }
         }
 
-        private void HandleCenterStaticEnding(Ray ray)
+        private void HandleCenterStaticEnding(RaycastHit hit)
         {
-            //TODO open build selection panel
-            if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
-                return;
-            
             if (!hit.collider.TryGetComponent(out Tile t))
                 return; //TODO find a way to cancel drag
 
@@ -284,6 +313,7 @@ namespace InputManagement
                     
                     if (st.StaticGroup == _currentStaticGroup)
                         GridManager.Manager.TryAddBuildingAt(BuildingType.StaticBuild, st.Index, st.Position + Vector3.up / 2);
+                    //TODO open build selection panel
                     
                     break;
 

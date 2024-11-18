@@ -165,7 +165,6 @@ namespace GameContent.GridManagement
             switch (type)
             {
                 case BuildingType.Conveyor:
-                    //TODO virer les adds sur des tiles deja occupées
                     var b1 = Instantiate(dynamicGenericBuild, _grid[index].ETransform);
                     _toAdd.Add(index, b1);
                     b1.TargetPosition = pos;
@@ -204,14 +203,14 @@ namespace GameContent.GridManagement
                 case BuildingType.Conveyor:
                     var b = _grid[index].CurrentBuildingRef as DynamicBuilding;
                     var i = b!.ConveyorGroupId;
-                    foreach (var b2 in ConveyorGroups[i].DynamicBuildings)
+                    
+                    foreach (var b2 in ConveyorGroups[i])
                     {
                         _toRemove.Add(b2.TileRef.Index, b2);
                     }
-
                     ConveyorGroups.Remove(i);
                     break;
-                
+
                 case BuildingType.StaticBuild:
                     _toRemove.Add(index, _grid[index].CurrentBuildingRef);
                     break;
@@ -254,6 +253,8 @@ namespace GameContent.GridManagement
         private Dictionary<byte, List<Tile>> _staticGroups;
         
         private HashSet<Vector2Int> _adding;
+        
+        private HashSet<Vector2Int> _addingStatic;
         
         private HashSet<Vector2Int> _removing; //TODO separer le adding pour le specialiser uniquement sur les dynamicBuilds, il est pas utile sur les statics 
         
