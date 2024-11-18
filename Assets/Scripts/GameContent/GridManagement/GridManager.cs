@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
 using NUnit.Framework;
@@ -105,30 +106,14 @@ namespace GameContent.GridManagement
             _currentGridLockMode = GridLockMode.Unlocked;
         }
 
-        private static int GetStaticRotation(int n) => n switch
-        {
-            1 or 3 => 0, // Call me Houdini
-            2 => 90,
-            4 => -90,
-            5 => 180,
-            _ => throw new ArgumentOutOfRangeException(nameof(n), n, null)
-        };
+        [DllImport("libGridGen.dll")]
+        private static extern int GetStaticRotation(int n);
         
-        private static TileType GetStaticType(int n) => n switch
-        {
-            1 or 2 or 4 or 5 => TileType.SideStaticTile, // magical numbers everywhere
-            3 => TileType.CenterStaticTile,
-            _ => throw new ArgumentOutOfRangeException(nameof(n), n, null)
-        };
-        
-        [Obsolete]
-        private static TileType GetType(int n) => n switch
-        {
-            1 or 3 or 7 or 9 => TileType.CornerStaticTile, //magiiiiic
-            2 or 4 or 6 or 8 => TileType.SideStaticTile,
-            5 => TileType.CenterStaticTile,
-            _ => throw new ArgumentOutOfRangeException(nameof(n), n, null) // this is pure magic don't question it
-        };
+        [DllImport("libGridGen.dll")]
+        private static extern TileType GetStaticType(int n);
+
+        [DllImport("libGridGen.dll")]
+        private static extern TileType GetStaticTypeObsolete(int n);
         
         private void UpdateGrid()
         {
