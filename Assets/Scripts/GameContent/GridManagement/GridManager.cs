@@ -86,18 +86,17 @@ namespace GameContent.GridManagement
                             break;
                         
                         case > 0:
-                            var c = _staticGroups[grid[i][j]].Count + 1;
-                            
-                            var sBt = Instantiate(c == 3 ? centerStaticBuildTile : sideStaticBuildTile, transform);
-                            _grid.Add(tId, sBt);
-                            
                             if (!_staticGroups.ContainsKey(grid[i][j]))
-                                _staticGroups.Add(grid[i][j], new StaticTileGroup(sBt));
-                            else
-                                _staticGroups[grid[i][j]].AddTile(sBt);
+                                _staticGroups.Add(grid[i][j], new StaticTileGroup());
+                            
+                            var c = _staticGroups[grid[i][j]].Count + 1;
+                            var sBt = Instantiate(c == 3 ? centerStaticBuildTile : sideStaticBuildTile, transform);
+                            
+                            _grid.Add(tId, sBt);
+                            _staticGroups[grid[i][j]].AddTile(sBt);
                             
                             sBt.Added(this, tId, tPos, GetStaticType(c));
-                            sBt.StaticGroup = grid[i][j];
+                            sBt.InitStaticTile(grid[i][j], GetStaticRotation(c));
                             break;
                     }
                 }
@@ -106,9 +105,18 @@ namespace GameContent.GridManagement
             _currentGridLockMode = GridLockMode.Unlocked;
         }
 
+        private static int GetStaticRotation(int n) => n switch
+        {
+            1 or 3 => 0, // Call me Houdini
+            2 => 90,
+            4 => -90,
+            5 => 180,
+            _ => throw new ArgumentOutOfRangeException(nameof(n), n, null)
+        };
+        
         private static TileType GetStaticType(int n) => n switch
         {
-            1 or 2 or 4 or 5 => TileType.SideStaticTile,
+            1 or 2 or 4 or 5 => TileType.SideStaticTile, // magical numbers everywhere
             3 => TileType.CenterStaticTile,
             _ => throw new ArgumentOutOfRangeException(nameof(n), n, null)
         };
@@ -267,7 +275,7 @@ namespace GameContent.GridManagement
         
         private Dictionary<byte, StaticTileGroup> _staticGroups;
         
-        private HashSet<Vector2Int> _addingDynamic;
+        private HashSet<Vector2Int> _addingDynamic; // hashSet go brrrrrrrrr
 
         private HashSet<Vector2Int> _addingStatic;
         

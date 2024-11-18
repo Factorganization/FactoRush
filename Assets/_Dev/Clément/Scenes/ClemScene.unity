@@ -356,7 +356,9 @@ MonoBehaviour:
   mapPath: OtherTestMap
   dynamicBuildTile: {fileID: 8808495469298439780, guid: 4abd3402996d3ba41879254eb476218f,
     type: 3}
-  staticBuildTile: {fileID: 5466440853384126014, guid: 5e0168ff92d634f47aed8586488dd9e3,
+  centerStaticBuildTile: {fileID: 5466440853384126014, guid: 5e0168ff92d634f47aed8586488dd9e3,
+    type: 3}
+  sideStaticBuildTile: {fileID: 7841854943909143908, guid: 1ccb3bbce821fa548b684cd9e9a74e1a,
     type: 3}
   dynamicGenericBuild: {fileID: 4155439601221061712, guid: 77c36428ed7128042a96e4a43759d983,
     type: 3}

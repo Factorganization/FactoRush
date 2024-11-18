@@ -1,4 +1,6 @@
-﻿namespace GameContent.Entities.GridEntities
+﻿using UnityEngine;
+
+namespace GameContent.Entities.GridEntities
 {
     public sealed class StaticBuildingTile : Tile
     {
@@ -9,9 +11,19 @@
         #endregion
         
         #region methodes
+
+        public void InitStaticTile(byte staticGroup, int rotation)
+        {
+            StaticGroup = staticGroup;
+            graphTransform.localRotation = Quaternion.Euler(0, rotation, 0);
+        }
         
-        
-        
+        #endregion
+
+        #region fields
+
+        [SerializeField] private Transform graphTransform;
+
         #endregion
     }
 }
