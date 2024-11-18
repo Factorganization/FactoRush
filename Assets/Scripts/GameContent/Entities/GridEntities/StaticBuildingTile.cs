@@ -19,11 +19,5 @@ namespace GameContent.Entities.GridEntities
         }
         
         #endregion
-
-        #region fields
-
-        [SerializeField] private Transform graphTransform;
-
-        #endregion
     }
 }

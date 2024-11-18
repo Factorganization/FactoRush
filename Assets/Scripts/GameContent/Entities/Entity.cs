@@ -32,5 +32,11 @@ namespace GameContent.Entities
         }
         
         #endregion
+        
+        #region fields
+        
+        [SerializeField] protected Transform graphTransform;
+        
+        #endregion
     }
 }

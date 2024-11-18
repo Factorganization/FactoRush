@@ -3,9 +3,9 @@
     public enum TileType : byte
     {
         Default,
-        DynamicTile,
-        CenterStaticTile,
         SideStaticTile,
+        CenterStaticTile,
+        DynamicTile,
         CornerStaticTile,
     }
 }
