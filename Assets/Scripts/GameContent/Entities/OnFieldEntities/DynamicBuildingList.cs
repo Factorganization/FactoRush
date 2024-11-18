@@ -8,6 +8,8 @@ namespace GameContent.Entities.OnFieldEntities
     {
         #region properties
         
+        public int Count => _dynamicBuildings.Count;
+        
         public DynamicBuilding this[int index]
         {
             get

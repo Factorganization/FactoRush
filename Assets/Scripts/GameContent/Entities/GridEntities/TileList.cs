@@ -8,6 +8,8 @@ namespace GameContent.Entities.GridEntities
     {
         #region properties
 
+        public int Count => _tiles.Count;
+        
         public Tile this[int index]
         {
             get
@@ -24,7 +26,7 @@ namespace GameContent.Entities.GridEntities
         
         #region constructors
 
-        public TileList(params Tile[] tiles)
+        protected TileList(params Tile[] tiles)
         {
             _tiles = new List<Tile>(tiles);
         }

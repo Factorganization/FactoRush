@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
+using NUnit.Framework;
 using UnityEngine;
 
 namespace GameContent.GridManagement
@@ -42,11 +43,13 @@ namespace GameContent.GridManagement
         private void Start()
         {
             _grid = new Dictionary<Vector2Int, Tile>();
-            _staticGroups = new Dictionary<byte, List<Tile>>();
+            _staticGroups = new Dictionary<byte, StaticTileGroup>();
             ConveyorGroups = new Dictionary<byte, DynamicBuildingList>();
-            _adding = new HashSet<Vector2Int>();
+            _addingDynamic = new HashSet<Vector2Int>();
+            _addingStatic = new HashSet<Vector2Int>();
             _removing = new HashSet<Vector2Int>();
-            _toAdd = new Dictionary<Vector2Int, Building>();
+            _toAddDynamic = new Dictionary<Vector2Int, DynamicBuilding>();
+            _toAddStatic = new Dictionary<Vector2Int, StaticBuilding>();
             _toRemove = new Dictionary<Vector2Int, Building>();
             
             StartCoroutine(InitGrid());
@@ -83,15 +86,17 @@ namespace GameContent.GridManagement
                             break;
                         
                         case > 0:
-                            var sBt = Instantiate(staticBuildTile, transform);
+                            var c = _staticGroups[grid[i][j]].Count + 1;
+                            
+                            var sBt = Instantiate(c == 3 ? centerStaticBuildTile : sideStaticBuildTile, transform);
                             _grid.Add(tId, sBt);
                             
                             if (!_staticGroups.ContainsKey(grid[i][j]))
-                                _staticGroups.Add(grid[i][j], new List<Tile>());
+                                _staticGroups.Add(grid[i][j], new StaticTileGroup(sBt));
+                            else
+                                _staticGroups[grid[i][j]].AddTile(sBt);
                             
-                            _staticGroups[grid[i][j]].Add(sBt);
-                            
-                            sBt.Added(this, tId, tPos, GetType(_staticGroups[grid[i][j]].Count));
+                            sBt.Added(this, tId, tPos, GetStaticType(c));
                             sBt.StaticGroup = grid[i][j];
                             break;
                     }
@@ -101,6 +106,14 @@ namespace GameContent.GridManagement
             _currentGridLockMode = GridLockMode.Unlocked;
         }
 
+        private static TileType GetStaticType(int n) => n switch
+        {
+            1 or 2 or 4 or 5 => TileType.SideStaticTile,
+            3 => TileType.CenterStaticTile,
+            _ => throw new ArgumentOutOfRangeException(nameof(n), n, null)
+        };
+        
+        [Obsolete]
         private static TileType GetType(int n) => n switch
         {
             1 or 3 or 7 or 9 => TileType.CornerStaticTile, //magiiiiic
@@ -114,7 +127,7 @@ namespace GameContent.GridManagement
             if (_currentGridLockMode is GridLockMode.Locked or GridLockMode.BuildingLocked)
                 return;
             
-            if (_adding.Count > 0)
+            if (_addingDynamic.Count > 0)
             {
                 byte i = 0;
     
@@ -126,25 +139,27 @@ namespace GameContent.GridManagement
                 else
                     ConveyorGroups[i] = new ConveyorGroup();
                 
-                foreach (var b in _toAdd)
-                {
-                    switch (b.Value)
-                    {
-                        case StaticBuilding:
-                            ConveyorGroups.Remove(i);
-                            break;
-                        
-                        case DynamicBuilding db:
-                            ConveyorGroups[i].AddBuild(db);
-                            db.ConveyorGroupId = i;
-                            db.SetDebugId(i);
-                            break;
-                    }
+                foreach (var b in _toAddDynamic)
+                {  
+                    ConveyorGroups[i].AddBuild(b.Value);
+                    b.Value.ConveyorGroupId = i;
+                    b.Value.SetDebugId(i);
+                    
                     PlaceBuildingAt(b.Key, b.Value);
                 }
             }
-            _adding.Clear();
-            _toAdd.Clear();
+            _addingDynamic.Clear();
+            _toAddDynamic.Clear();
+
+            if (_addingStatic.Count > 0)
+            {
+                foreach (var b in _toAddStatic)
+                {
+                    PlaceBuildingAt(b.Key, b.Value);
+                }
+            }
+            _addingStatic.Clear();
+            _toAddStatic.Clear();
 
             if (_removing.Count > 0)
             {
@@ -156,68 +171,66 @@ namespace GameContent.GridManagement
             _removing.Clear();
             _toRemove.Clear();
         }
-
-        public void TryAddBuildingAt(BuildingType type, Vector2Int index, Vector3 pos)
+        
+        #endregion
+        
+        #region grid modifiers
+        
+        public void TryAddDynamicBuildingAt(Vector2Int index, Vector3 pos)
         {
-            if (!_adding.Add(index))
+            if (!_addingDynamic.Add(index))
                 return;
 
-            switch (type)
-            {
-                case BuildingType.Conveyor:
-                    var b1 = Instantiate(dynamicGenericBuild, _grid[index].ETransform);
-                    _toAdd.Add(index, b1);
-                    b1.TargetPosition = pos;
-                    b1.Position = pos;
-                    break;
-                
-                case BuildingType.StaticBuild:
-                    var b2 = Instantiate(staticGenericBuild, _grid[index].ETransform);
-                    _toAdd.Add(index, b2);
-                    b2.TargetPosition = pos;
-                    b2.Position = pos;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
+            var b = Instantiate(dynamicGenericBuild, _grid[index].ETransform);
+            _toAddDynamic.Add(index, b);
+            b.TargetPosition = pos;
+            b.Position = pos;
         }
 
+        public void TryAddStaticBuildingAt(Vector2Int index, Vector3 pos)
+        {
+            if (!_addingStatic.Add(index))
+                return;
+            
+            var b = Instantiate(staticGenericBuild, _grid[index].ETransform);
+            _toAddStatic.Add(index, b);
+            b.TargetPosition = pos;
+            b.Position = pos;
+        }
+        
         public void CancelAdding()
         {
-            foreach (var b in _toAdd)
+            foreach (var b in _toAddDynamic)
             {
                 Destroy(b.Value.gameObject);
             }
             
-            _adding.Clear();
-            _toAdd.Clear();
+            _addingDynamic.Clear();
+            _toAddDynamic.Clear();
         }
-        
-        public void TryRemoveBuildingAt(BuildingType type, Vector2Int index)
+
+        public void TryRemoveDynamicBuildingAt(Vector2Int index)
         {
             if (!_removing.Add(index))
                 return;
-
-            switch (type)
-            {
-                case BuildingType.Conveyor:
-                    var b = _grid[index].CurrentBuildingRef as DynamicBuilding;
-                    var i = b!.ConveyorGroupId;
+            
+            var b = _grid[index].CurrentBuildingRef as DynamicBuilding;
+            var i = b!.ConveyorGroupId;
                     
-                    foreach (var b2 in ConveyorGroups[i])
-                    {
-                        _toRemove.Add(b2.TileRef.Index, b2);
-                    }
-                    ConveyorGroups.Remove(i);
-                    break;
-
-                case BuildingType.StaticBuild:
-                    _toRemove.Add(index, _grid[index].CurrentBuildingRef);
-                    break;
-                
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            foreach (var b2 in ConveyorGroups[i])
+            {
+                _removing.Add(b2.TileRef.Index);
+                _toRemove.Add(b2.TileRef.Index, b2);
             }
+            ConveyorGroups.Remove(i);
+        }
+
+        public void TryRemoveStaticBuildingAt(Vector2Int index)
+        {
+            if (!_removing.Add(index))
+                return;
+            
+            _toRemove.Add(index, _grid[index].CurrentBuildingRef);
         }
 
         private void PlaceBuildingAt(Vector2Int index, Building building)
@@ -237,12 +250,14 @@ namespace GameContent.GridManagement
         #endregion
 
         #region fields
-
+        
         [SerializeField] private string mapPath;
         
         [SerializeField] private DynamicBuildingTile dynamicBuildTile;
         
-        [SerializeField] private StaticBuildingTile staticBuildTile;
+        [SerializeField] private StaticBuildingTile centerStaticBuildTile;
+        
+        [SerializeField] private StaticBuildingTile sideStaticBuildTile;
 
         [SerializeField] private DynamicBuilding dynamicGenericBuild;
         
@@ -250,15 +265,17 @@ namespace GameContent.GridManagement
         
         private Dictionary<Vector2Int,Tile> _grid;
         
-        private Dictionary<byte, List<Tile>> _staticGroups;
+        private Dictionary<byte, StaticTileGroup> _staticGroups;
         
-        private HashSet<Vector2Int> _adding;
-        
+        private HashSet<Vector2Int> _addingDynamic;
+
         private HashSet<Vector2Int> _addingStatic;
         
-        private HashSet<Vector2Int> _removing; //TODO separer le adding pour le specialiser uniquement sur les dynamicBuilds, il est pas utile sur les statics 
+        private HashSet<Vector2Int> _removing;
         
-        private Dictionary<Vector2Int, Building> _toAdd;
+        private Dictionary<Vector2Int, DynamicBuilding> _toAddDynamic;
+        
+        private Dictionary<Vector2Int, StaticBuilding> _toAddStatic;
         
         private Dictionary<Vector2Int, Building> _toRemove;
 

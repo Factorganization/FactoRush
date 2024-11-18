@@ -157,13 +157,11 @@ namespace InputManagement
                     break;
                 
                 case DynamicBuilding:
-                    GridManager.Manager.TryRemoveBuildingAt(BuildingType.Conveyor, t.Index);
-                    //TODO delete full conveyor
+                    GridManager.Manager.TryRemoveDynamicBuildingAt(t.Index);
                     break;
                 
                 case StaticBuilding:
-                    GridManager.Manager.TryRemoveBuildingAt(BuildingType.StaticBuild, t.Index);
-                    //TODO delete building
+                    GridManager.Manager.TryRemoveStaticBuildingAt(t.Index);
                     break;
             }
 
@@ -246,7 +244,7 @@ namespace InputManagement
             switch (t.Type)
             {
                 case TileType.DynamicTile:
-                    GridManager.Manager.TryAddBuildingAt(BuildingType.Conveyor, t.Index, t.Position + Vector3.up / 2); //can try pose build if hit dynamic tile
+                    GridManager.Manager.TryAddDynamicBuildingAt(t.Index, t.Position + Vector3.up / 2); //can try pose build if hit dynamic tile
                     // other action if lag and skip dynamic to check if dist between two dynamic is ok and complete if not
                     //TODO path find to complete conveyor path if skip dynamic tile
                     break;
@@ -255,7 +253,7 @@ namespace InputManagement
                     /*if (t.CurrentBuildingRef is not null)
                         _startingHitType = HitGridType.None;*/
                     
-                    GridManager.Manager.TryAddBuildingAt(BuildingType.Conveyor, t.Index, t.Position + Vector3.up / 2); //can try pose build if hit dynamic tile
+                    GridManager.Manager.TryAddDynamicBuildingAt(t.Index, t.Position + Vector3.up / 2); //can try pose build if hit dynamic tile
                     // other action if lag and skip dynamic to check if dist between two dynamic is ok and complete if not
                     //TODO path find to complete conveyor path if skip dynamic tile
                     break;
@@ -312,7 +310,7 @@ namespace InputManagement
                         break;
                     
                     if (st.StaticGroup == _currentStaticGroup)
-                        GridManager.Manager.TryAddBuildingAt(BuildingType.StaticBuild, st.Index, st.Position + Vector3.up / 2);
+                        GridManager.Manager.TryAddStaticBuildingAt(st.Index, st.Position + Vector3.up / 2);
                     //TODO open build selection panel
                     
                     break;
