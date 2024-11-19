@@ -96,7 +96,7 @@ namespace GameContent.GridManagement
                             _grid.Add(tId, sBt);
                             _staticGroups[grid[i][j]].AddTile(sBt);
                             
-                            sBt.Added(this, tId, tPos, GetStaticType(c));
+                            sBt.Added(this, tId, tPos, (TileType)GetStaticType(c));
                             sBt.InitStaticTile(grid[i][j], GetStaticRotation(c));
                             break;
                     }
@@ -106,14 +106,39 @@ namespace GameContent.GridManagement
             _currentGridLockMode = GridLockMode.Unlocked;
         }
 
-        [DllImport("libGridGen.dll")]
+        /*[DllImport("libGridGen", EntryPoint = "GetStaticRotation")]
         private static extern int GetStaticRotation(int n);
         
-        [DllImport("libGridGen.dll")]
-        private static extern TileType GetStaticType(int n);
+        [DllImport("libGridGen", EntryPoint = "GetStaticType")]
+        private static extern int GetStaticType(int n);
 
-        [DllImport("libGridGen.dll")]
-        private static extern TileType GetStaticTypeObsolete(int n);
+        [DllImport("libGridGen", EntryPoint = "GetStaticTypeObsolete")]
+        private static extern int GetStaticTypeObsolete(int n);*/
+        
+        private static int GetStaticRotation(int n) => n switch
+        {
+            1 or 3 => 0, // Call me Houdini
+            2 => 90,
+            4 => -90,
+            5 => 180,
+            _ => throw new ArgumentOutOfRangeException(nameof(n), n, null)
+        };
+        
+        private static TileType GetStaticType(int n) => n switch
+        {
+            1 or 2 or 4 or 5 => TileType.SideStaticTile, // magical numbers everywhere
+            3 => TileType.CenterStaticTile,
+            _ => throw new ArgumentOutOfRangeException(nameof(n), n, null)
+        };
+        
+        [Obsolete]
+        private static TileType GetStaticTypeObsolete(int n) => n switch
+        {
+            1 or 3 or 7 or 9 => TileType.CornerStaticTile, //magiiiiic
+            2 or 4 or 6 or 8 => TileType.SideStaticTile,
+            5 => TileType.CenterStaticTile,
+            _ => throw new ArgumentOutOfRangeException(nameof(n), n, null) // this is pure magic don't question it
+        };
         
         private void UpdateGrid()
         {
@@ -169,26 +194,31 @@ namespace GameContent.GridManagement
         
         #region grid modifiers
         
-        public void TryAddDynamicBuildingAt(Vector2Int index, Vector3 pos)
+        public bool TryAddDynamicBuildingAt(Vector2Int index, Vector3 pos) // yes. bool.
         {
+            if (_grid[index].CurrentBuildingRef is not null)
+                return false;
+            
             if (!_addingDynamic.Add(index))
-                return;
+                return false;
 
             var b = Instantiate(dynamicGenericBuild, _grid[index].ETransform);
             _toAddDynamic.Add(index, b);
             b.TargetPosition = pos;
             b.Position = pos;
+            return true;
         }
 
-        public void TryAddStaticBuildingAt(Vector2Int index, Vector3 pos)
+        public bool TryAddStaticBuildingAt(Vector2Int index, Vector3 pos) // bool again
         {
             if (!_addingStatic.Add(index))
-                return;
+                return false;
             
             var b = Instantiate(staticGenericBuild, _grid[index].ETransform);
             _toAddStatic.Add(index, b);
             b.TargetPosition = pos;
             b.Position = pos;
+            return true;
         }
         
         public void CancelAdding()

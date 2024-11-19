@@ -9,6 +9,9 @@ using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
 namespace InputManagement
 {
+    /// <summary>
+    /// welcome in the absolute horror of sequence input management
+    /// </summary>
     public class InputManager : MonoBehaviour
     {
         #region methodes
@@ -88,18 +91,14 @@ namespace InputManagement
                 return;
                         
             _startingHitType = GetHitType(t.Type);
-
+            _startingIndex = t.Index;
+            
             switch (_startingHitType)
             {
                 case HitGridType.SideStaticHit:
-                    if (t is StaticBuildingTile st1)
-                        _currentStaticGroup = st1.StaticGroup;
-                    break;
-                
                 case HitGridType.CenterStaticHit:
-                    //prepare to open build selection panel : feedback
-                    if (t is StaticBuildingTile st2)
-                        _currentStaticGroup = st2.StaticGroup;
+                    var st = t as StaticBuildingTile;
+                    _currentStaticGroup = st!.StaticGroup;
                     break;
                             
                 case HitGridType.None:
@@ -125,8 +124,6 @@ namespace InputManagement
                     break;
                         
                 case HitGridType.DynamicHit:
-                    break;
-                        
                 case HitGridType.None:
                     break;
                 
@@ -154,7 +151,7 @@ namespace InputManagement
             switch (t.CurrentBuildingRef)
             {
                 case null:
-                    break;
+                    return; // yes. return.
                 
                 case DynamicBuilding:
                     GridManager.Manager.TryRemoveDynamicBuildingAt(t.Index);
@@ -244,14 +241,24 @@ namespace InputManagement
             switch (t.Type)
             {
                 case TileType.DynamicTile:
-                    GridManager.Manager.TryAddDynamicBuildingAt(t.Index, t.Position + Vector3.up / 2); //can try pose build if hit dynamic tile
-                    // other action if lag and skip dynamic to check if dist between two dynamic is ok and complete if not
-                    //TODO path find to complete conveyor path if skip dynamic tile
+                    if (!GridManager.Manager.TryAddDynamicBuildingAt(t.Index,
+                            t.Position + Vector3.up / 2)) //can try pose build if hit dynamic tile
+                    {
+                        // other action if lag and skip dynamic to check if dist between two dynamic is ok and complete if not
+                        //TODO path find to complete conveyor path if skip dynamic tile
+                    }
                     break;
                 
                 case TileType.SideStaticTile:
-                    /*if (t.CurrentBuildingRef is not null)
-                        _startingHitType = HitGridType.None;*/
+                    var st = t as StaticBuildingTile;
+                    if (st!.CurrentBuildingRef is not null && st.StaticGroup == _currentStaticGroup)
+                    {
+                        if (_startingIndex == st.Index)
+                            _startingHitType = HitGridType.None;
+                        
+                        //// TODO path find THERE !
+                        return;
+                    }
                     
                     GridManager.Manager.TryAddDynamicBuildingAt(t.Index, t.Position + Vector3.up / 2); //can try pose build if hit dynamic tile
                     // other action if lag and skip dynamic to check if dist between two dynamic is ok and complete if not
@@ -328,7 +335,7 @@ namespace InputManagement
         
         #endregion
         
-        private static HitGridType GetHitType(TileType t) => t switch
+        private static HitGridType GetHitType(TileType t) => t switch //TODO passer en dll ?
         {
             TileType.DynamicTile => HitGridType.DynamicHit,
             TileType.CenterStaticTile or TileType.CornerStaticTile => HitGridType.CenterStaticHit,
@@ -344,6 +351,8 @@ namespace InputManagement
         [SerializeField] private Camera isoCamera;
 
         private HitGridType _startingHitType;
+
+        private Vector2Int _startingIndex;
 
         private bool _hasDragged;
 
