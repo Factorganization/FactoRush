@@ -96,7 +96,7 @@ namespace GameContent.GridManagement
                             _grid.Add(tId, sBt);
                             _staticGroups[grid[i][j]].AddTile(sBt);
                             
-                            sBt.Added(this, tId, tPos, (TileType)GetStaticType(c));
+                            sBt.Added(this, tId, tPos, GetStaticType(c));
                             sBt.InitStaticTile(grid[i][j], GetStaticRotation(c));
                             break;
                     }
@@ -106,13 +106,13 @@ namespace GameContent.GridManagement
             _currentGridLockMode = GridLockMode.Unlocked;
         }
 
-        /*[DllImport("libGridGen", EntryPoint = "GetStaticRotation")]
+        /*[DllImport("libGridGenSL", EntryPoint = "GetStaticRotation")]
         private static extern int GetStaticRotation(int n);
         
-        [DllImport("libGridGen", EntryPoint = "GetStaticType")]
+        [DllImport("libGridGenSL", EntryPoint = "GetStaticType")]
         private static extern int GetStaticType(int n);
 
-        [DllImport("libGridGen", EntryPoint = "GetStaticTypeObsolete")]
+        [DllImport("libGridGenSL", EntryPoint = "GetStaticTypeObsolete")]
         private static extern int GetStaticTypeObsolete(int n);*/
         
         private static int GetStaticRotation(int n) => n switch
