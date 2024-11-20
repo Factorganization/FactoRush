@@ -21,8 +21,21 @@
         #endregion
         
         #region methodes
-        
-        //TODO move methods for entities on the rails
+
+        public override void UpdateGroup()
+        {
+            
+        }
+
+        private void OnMove()
+        {
+            
+        }
+
+        private void SwitchWayPoint()
+        {
+            
+        }
         
         #endregion
     }

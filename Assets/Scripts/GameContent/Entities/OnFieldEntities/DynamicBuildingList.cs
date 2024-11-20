@@ -40,6 +40,8 @@ namespace GameContent.Entities.OnFieldEntities
             _dynamicBuildings.Add(building);
         }
 
+        public abstract void UpdateGroup();
+        
         public IEnumerator<DynamicBuilding> GetEnumerator() => _dynamicBuildings.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

@@ -55,6 +55,17 @@ namespace GameContent.GridManagement
             
             StartCoroutine(InitGrid());
         }
+
+        private void Update()
+        {
+            if (ConveyorGroups.Count <= 0)
+                return;
+            
+            foreach (var group in ConveyorGroups.Values)
+            {
+                group.UpdateGroup();
+            }
+        }
         
         #endregion
         
