@@ -41,6 +41,7 @@ namespace GameContent.GridManagement
             Manager = this;
         }
         
+        [ContextMenu("Start")]
         private void Start()
         {
             _grid = new Dictionary<Vector2Int, Tile>();
