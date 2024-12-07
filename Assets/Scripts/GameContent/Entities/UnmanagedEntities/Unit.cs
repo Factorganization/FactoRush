@@ -6,13 +6,12 @@ namespace GameContent.Entities.UnmanagedEntities
     {
         #region Fields
 
-        [SerializeField] private BodyComponent bodyComponent;           // Base component for health and stats
-        [SerializeField] private WeaponComponent weaponComponent;       // Optional component for attack stats (damage, attack speed, range)
-        [SerializeField] private TransportComponent transportComponent; // Optional component for movement stats (speed)
+        [Header("Unit Components")]
+        [SerializeField] private WeaponComponent weaponComponent;       // Reference to weapon stats
+        [SerializeField] private TransportComponent transportComponent; // Reference to transport stats
 
         private float currentHealth;
         private float passiveDamageTimer;
-        private bool isIncomplete;
 
         #endregion
 
@@ -21,9 +20,7 @@ namespace GameContent.Entities.UnmanagedEntities
         public bool IsAlive => currentHealth > 0;
         public bool CanAttack => weaponComponent != null;
         public bool CanMove => transportComponent != null;
-        
-        // Using Entity's Position for movement and targeting, making positioning updates simpler.
-        
+
         #endregion
 
         #region Unity Lifecycle
@@ -49,14 +46,16 @@ namespace GameContent.Entities.UnmanagedEntities
 
         private void InitializeUnit()
         {
-            // Initialize health based on body component, applying any transport-based multiplier
-            currentHealth = bodyComponent.BaseHealth * (transportComponent?.HealthMultiplier ?? 1.0f);
+            // Calculate initial stats based on components
+            float baseHealth = 100; // Default health if no transport
+            float baseSpeed = 1;    // Default speed if no transport
 
-            // Determine if the unit is incomplete (missing weapon or transport), for passive health decay
-            isIncomplete = weaponComponent == null || transportComponent == null;
+            currentHealth = transportComponent != null
+                ? baseHealth * transportComponent.HealthMultiplier
+                : baseHealth;
 
-            if (isIncomplete)
-                passiveDamageTimer = 1.0f; // Passive health decay applied every second
+            // If transportComponent is missing or weaponComponent is missing, enable passive health decay
+            passiveDamageTimer = (transportComponent == null || weaponComponent == null) ? 1.0f : 0;
         }
 
         #endregion
@@ -65,20 +64,20 @@ namespace GameContent.Entities.UnmanagedEntities
 
         private void HandlePassiveHealthDecay()
         {
-            if (!isIncomplete) return;
+            if (passiveDamageTimer <= 0) return;
 
             passiveDamageTimer -= Time.deltaTime;
             if (passiveDamageTimer <= 0)
             {
-                currentHealth -= bodyComponent.IncompleteHealthLossRate;
-                passiveDamageTimer = 1.0f; // Reset for next decay tick
+                passiveDamageTimer = 1.0f; // Reset timer
 
+                currentHealth -= 10; // Decay amount (adjust as needed)
                 if (currentHealth <= 0)
                     DestroyUnit();
             }
         }
 
-        private void ApplyDamage(float damage)
+        public void ApplyDamage(float damage)
         {
             currentHealth -= damage;
             if (currentHealth <= 0)
@@ -88,7 +87,7 @@ namespace GameContent.Entities.UnmanagedEntities
         private void DestroyUnit()
         {
             Destroy(gameObject);
-            //TODO Pooler ?? ou mieux anim
+            // Optionally trigger pooling or animations here
         }
 
         #endregion
@@ -99,9 +98,9 @@ namespace GameContent.Entities.UnmanagedEntities
         {
             if (!CanMove) return;
 
-            // Calculate movement speed with transport multiplier
-            float speed = bodyComponent.MovementSpeed * (transportComponent?.SpeedMultiplier ?? 1.0f);
-            Position = Vector3.MoveTowards(Position, TargetPosition, speed * Time.deltaTime);
+            // Apply movement logic using transport component
+            float speed = transportComponent.SpeedMultiplier;
+            transform.Translate(Vector3.right * speed * Time.deltaTime);
         }
 
         #endregion
@@ -110,18 +109,10 @@ namespace GameContent.Entities.UnmanagedEntities
 
         private void HandleCombat()
         {
-            if (!CanAttack) return;
+            if (!CanAttack || !weaponComponent.CanAttack) return;
 
-            if (weaponComponent.CanAttack)
-            {
-                // Perform attack logic 
-                Attack();
-            }
-        }
-
-        private void Attack()
-        {
-           // TODO add logic like range, damage etc ta capté et delegate
+            // Example: Use weapon range and attack speed logic here
+            weaponComponent.Attack();
         }
 
         #endregion
