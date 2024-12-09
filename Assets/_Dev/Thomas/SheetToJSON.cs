@@ -1,81 +1,50 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
-using System.Collections.Generic;
+using UnityEditor;
+using Unity.EditorCoroutines.Editor;
 
-public class GoogleSheetFetcher : MonoBehaviour
+
+public class SheetToScriptables : MonoBehaviour
 {
-    private string baseCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgdnWlKvFW-Eh12BpT4EkbnrwjKeJ291yEusUQwBqE_BiHBNlZq0HXuBW-8ZovCw/pub?output=csv&gid=";
-    private List<string> gids = new List<string> { "206496070", "409085572", "919971693" }; // Les GIDs spécifiés
+    // Lien vers le Google Sheet publié
+    private static string googleSheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgdnWlKvFW-Eh12BpT4EkbnrwjKeJ291yEusUQwBqE_BiHBNlZq0HXuBW-8ZovCw/pub?gid=1878878299&single=true&output=csv";
 
-    private void Awake()
+    [MenuItem("Tools/Fetch Google Sheet Data")]
+    public static void FetchGoogleSheetDataMenu()
     {
-        StartCoroutine(GetDataFromSheets());
+        // Create an editor coroutine to handle the fetch
+        EditorCoroutineUtility.StartCoroutineOwnerless(FetchGoogleSheetData());
     }
 
-    private IEnumerator GetDataFromSheets()
+    private static IEnumerator FetchGoogleSheetData()
     {
-        List<string> sheetData = new List<string>();
-
-        // Récupère les données pour chaque GID
-        foreach (string gid in gids)
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(googleSheetUrl))
         {
-            string csvURL = baseCsvUrl + gid;
-            yield return StartCoroutine(GetCSVData(csvURL, sheetData));
-        }
+            // Envoyer la requête
+            yield return webRequest.SendWebRequest();
 
-        // Imprime toutes les lignes récupérées en un seul log, séparées par des virgules
-        Debug.Log(string.Join(", ", sheetData));
-    }
-
-    private IEnumerator GetCSVData(string csvURL, List<string> results)
-    {
-        using (UnityWebRequest csvRequest = UnityWebRequest.Get(csvURL))
-        {
-            yield return csvRequest.SendWebRequest();
-
-            if (csvRequest.result == UnityWebRequest.Result.ConnectionError || 
-                csvRequest.result == UnityWebRequest.Result.ProtocolError)
+            // Vérifier si une erreur s'est produite
+            if (webRequest.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError(csvRequest.error);
+                Debug.LogError("Erreur lors de la récupération du Google Sheet : " + webRequest.error);
             }
             else
             {
-                string csvData = csvRequest.downloadHandler.text;
-                string line2 = ProcessData(csvData);
-                if (!string.IsNullOrEmpty(line2))
+                // Récupérer le contenu
+                string data = webRequest.downloadHandler.text;
+
+                // Debug la première ligne
+                string[] rows = data.Split('\n');
+                if (rows.Length > 0)
                 {
-                    results.Add(line2);
+                    Debug.Log("Première ligne : " + rows[2]);
+                }
+                else
+                {
+                    Debug.LogWarning("Le fichier récupéré est vide !");
                 }
             }
-        }
-    }
-
-    private string ProcessData(string data)
-    {
-        //TODO mettre le vrai process
-        
-        // Sépare les lignes par retour à la ligne
-        string[] rows = data.Split('\n');
-
-        // Vérifie si la ligne 2 existe
-        if (rows.Length > 1)
-        {
-            // Sépare la ligne 2 par les virgules
-            string[] columns = rows[1].Split(',');
-
-            // Concatène les valeurs de la ligne 2 jusqu'à la colonne H (colonne 8)
-            List<string> selectedColumns = new List<string>();
-            for (int i = 0; i < Mathf.Min(columns.Length, 8); i++)
-            {
-                selectedColumns.Add(columns[i]);
-            }
-            return string.Join(", ", selectedColumns); // Retourne la ligne sous forme de chaîne
-        }
-        else
-        {
-            Debug.LogWarning("La ligne 2 n'existe pas dans les données CSV.");
-            return string.Empty;
         }
     }
 }

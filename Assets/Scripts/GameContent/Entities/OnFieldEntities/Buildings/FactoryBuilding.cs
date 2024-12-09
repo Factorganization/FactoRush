@@ -1,4 +1,4 @@
-﻿namespace GameContent.Entities.OnFieldEntities.Buildings
+namespace GameContent.Entities.OnFieldEntities.Buildings
 {
     public class FactoryBuilding : StaticBuilding
     {
