@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 ﻿using System.Collections.Generic;
 
+=======
+>>>>>>> 69fc8b8183ef83e7a49619ec02e528d58b14e9d8
 namespace GameContent.Entities.OnFieldEntities.Buildings
 {
     public class FactoryBuilding : StaticBuilding

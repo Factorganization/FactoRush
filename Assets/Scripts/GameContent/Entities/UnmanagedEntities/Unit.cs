@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using GameContent.Entities.OnFieldEntities.Buildings;
+using UnityEngine;
 
 namespace GameContent.Entities.UnmanagedEntities
 {
@@ -12,6 +13,9 @@ namespace GameContent.Entities.UnmanagedEntities
 
         private float currentHealth;
         private float passiveDamageTimer;
+        
+        // reference to the event on factorybuilding script
+        private FactoryBuilding factoryBuilding;
 
         #endregion
 
@@ -24,6 +28,12 @@ namespace GameContent.Entities.UnmanagedEntities
         #endregion
 
         #region Unity Lifecycle
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            //factoryBuilding.OnAllyFactoryDeath.AddListener(DestroyUnit);
+        }
 
         private void Start()
         {
