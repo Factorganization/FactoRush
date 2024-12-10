@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
-using NUnit.Framework;
 using UnityEngine;
 
 namespace GameContent.GridManagement
@@ -71,6 +69,12 @@ namespace GameContent.GridManagement
         
         #region grid
         
+        /// <summary>
+        /// 01 - 09 : mining build
+        /// 10 - 19 : refinery build
+        /// 20 - 29 : assembly build
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator InitGrid()
         {
             CurrentLockMode = GridLockMode.Locked;
@@ -95,6 +99,12 @@ namespace GameContent.GridManagement
                             var dBt = Instantiate(dynamicBuildTile, transform);
                             _grid.Add(tId, dBt);
                             dBt.Added(this, tId, tPos, TileType.DynamicTile);
+                            break;
+                        
+                        case >= 20:
+                            break;
+                        
+                        case >= 10:
                             break;
                         
                         case > 0:

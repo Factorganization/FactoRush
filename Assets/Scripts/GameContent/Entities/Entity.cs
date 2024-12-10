@@ -26,9 +26,18 @@ namespace GameContent.Entities
             transform.position = TargetPosition;
         }
 
+        private void Start()
+        {
+            OnStart();
+        }
+        
         protected virtual void OnAwake()
         {
             ETransform = GetComponent<Transform>(); //la tech de Vincent oue oue oue grrr paw
+        }
+
+        protected virtual void OnStart()
+        {
         }
         
         #endregion
