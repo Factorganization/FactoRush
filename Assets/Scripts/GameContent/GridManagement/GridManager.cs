@@ -103,9 +103,11 @@ namespace GameContent.GridManagement
                             break;
                         
                         case >= 20:
+                            
                             break;
                         
                         case >= 10:
+                            
                             break;
                         
                         case > 0:

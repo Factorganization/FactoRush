@@ -65,7 +65,7 @@ namespace InputManagement
                 
                 case TouchPhase.Stationary when !_hasDragged:
                     HandleTouchStationary(ray);
-                    break;    
+                    break;
                 
                 case TouchPhase.Stationary:
                 case TouchPhase.None:

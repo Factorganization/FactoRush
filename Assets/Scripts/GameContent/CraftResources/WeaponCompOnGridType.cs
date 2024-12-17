@@ -1,8 +1,7 @@
 ﻿namespace GameContent.CraftResources
 {
-    public enum TransportComponentType : byte
+    public enum WeaponCompOnGridType : byte
     {
-        Gun,
         
     }
 }
