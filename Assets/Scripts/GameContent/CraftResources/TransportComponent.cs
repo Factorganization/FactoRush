@@ -3,8 +3,8 @@
 namespace GameContent.CraftResources
 {
     [CreateAssetMenu(fileName = "IntermediateResource", menuName = "Craft Resources/IntermediateResource")]
-    public class TransportComponentResource : BaseResource     
+    public class TransportComponent : BaseResource     
     {
-        public TransportComponentResourceType resourceType;
+        public TransportComponentType type;
     }
 }

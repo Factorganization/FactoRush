@@ -1,6 +1,6 @@
 ﻿namespace GameContent.CraftResources
 {
-    public enum WeaponComponentResourceType : byte
+    public enum WeaponComponentType : byte
     {
         
     }
