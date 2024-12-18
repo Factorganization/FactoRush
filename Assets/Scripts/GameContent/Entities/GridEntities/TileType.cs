@@ -6,6 +6,6 @@
         SideStaticTile,
         CenterStaticTile,
         DynamicTile,
-        CornerStaticTile,
+        
     }
 }

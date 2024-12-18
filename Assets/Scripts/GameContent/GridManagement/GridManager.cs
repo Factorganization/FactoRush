@@ -103,7 +103,8 @@ namespace GameContent.GridManagement
                             break;
                         
                         case >= 20:
-                            
+                            var mT = Instantiate(dynamicBuildTile, transform);
+                            _grid.Add(tId, mT);
                             break;
                         
                         case >= 10:
@@ -158,7 +159,7 @@ namespace GameContent.GridManagement
         [Obsolete]
         private static TileType GetStaticTypeObsolete(int n) => n switch
         {
-            1 or 3 or 7 or 9 => TileType.CornerStaticTile, //magiiiiic
+            //1 or 3 or 7 or 9 => TileType.CornerStaticTile, //magiiiiic
             2 or 4 or 6 or 8 => TileType.SideStaticTile,
             5 => TileType.CenterStaticTile,
             _ => throw new ArgumentOutOfRangeException(nameof(n), n, null) // this is pure magic don't question it

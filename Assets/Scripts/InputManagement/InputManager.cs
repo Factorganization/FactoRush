@@ -267,7 +267,6 @@ namespace InputManagement
                     
                 case TileType.CenterStaticTile:
                 case TileType.Default:
-                case TileType.CornerStaticTile:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
@@ -281,7 +280,6 @@ namespace InputManagement
 
             switch (t.Type)
             {
-                case TileType.CornerStaticTile:
                 case TileType.CenterStaticTile:
                 case TileType.DynamicTile:
                 case TileType.Default:
@@ -324,7 +322,6 @@ namespace InputManagement
 
                 case TileType.DynamicTile:
                 case TileType.SideStaticTile:
-                case TileType.CornerStaticTile:
                 case TileType.Default:
                     break;
                 
@@ -338,7 +335,7 @@ namespace InputManagement
         private static HitGridType GetHitType(TileType t) => t switch //TODO passer en dll ?
         {
             TileType.DynamicTile => HitGridType.DynamicHit,
-            TileType.CenterStaticTile or TileType.CornerStaticTile => HitGridType.CenterStaticHit,
+            TileType.CenterStaticTile => HitGridType.CenterStaticHit,
             TileType.SideStaticTile => HitGridType.SideStaticHit,
             TileType.Default => HitGridType.None,
             _ => throw new ArgumentOutOfRangeException(nameof(t), t, null)
