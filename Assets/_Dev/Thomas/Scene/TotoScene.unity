@@ -405,40 +405,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: CameraBottom
       objectReference: {fileID: 0}
-    - target: {fileID: 4845488857675319336, guid: 9d62a37ff978c2846a4fa790176640a1,
-        type: 3}
-      propertyPath: far clip plane
-      value: 18
-      objectReference: {fileID: 0}
-    - target: {fileID: 4845488857675319336, guid: 9d62a37ff978c2846a4fa790176640a1,
-        type: 3}
-      propertyPath: near clip plane
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6878924888288764921, guid: 9d62a37ff978c2846a4fa790176640a1,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3
+      value: 3.02
       objectReference: {fileID: 0}
     - target: {fileID: 6878924888288764921, guid: 9d62a37ff978c2846a4fa790176640a1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7.5
+      value: 33.3
       objectReference: {fileID: 0}
     - target: {fileID: 6878924888288764921, guid: 9d62a37ff978c2846a4fa790176640a1,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.1
+      value: -8.8
       objectReference: {fileID: 0}
     - target: {fileID: 6878924888288764921, guid: 9d62a37ff978c2846a4fa790176640a1,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.8408191
+      value: 0.8190016
       objectReference: {fileID: 0}
     - target: {fileID: 6878924888288764921, guid: 9d62a37ff978c2846a4fa790176640a1,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.5413163
+      value: 0.5737912
       objectReference: {fileID: 0}
     - target: {fileID: 6878924888288764921, guid: 9d62a37ff978c2846a4fa790176640a1,
         type: 3}
@@ -1454,31 +1444,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CameraTop
       objectReference: {fileID: 0}
-    - target: {fileID: 1210638566887980569, guid: 1b7c05ed9e9d14340a340ad5f93921db,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2900667826689426210, guid: 1b7c05ed9e9d14340a340ad5f93921db,
-        type: 3}
-      propertyPath: orthographic
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2900667826689426210, guid: 1b7c05ed9e9d14340a340ad5f93921db,
-        type: 3}
-      propertyPath: field of view
-      value: 66
-      objectReference: {fileID: 0}
-    - target: {fileID: 2900667826689426210, guid: 1b7c05ed9e9d14340a340ad5f93921db,
-        type: 3}
-      propertyPath: near clip plane
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 2900667826689426210, guid: 1b7c05ed9e9d14340a340ad5f93921db,
-        type: 3}
-      propertyPath: orthographic size
-      value: 7.04
-      objectReference: {fileID: 0}
     - target: {fileID: 9140347678970773159, guid: 1b7c05ed9e9d14340a340ad5f93921db,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1593,7 +1558,6 @@ GameObject:
   - component: {fileID: 1949656592}
   - component: {fileID: 1949656591}
   - component: {fileID: 1949656590}
-  - component: {fileID: 1949656593}
   m_Layer: 0
   m_Name: AllyFactory
   m_TagString: AllyFactory
@@ -1690,19 +1654,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1949656588}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1949656593
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1949656588}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd994326f92e43d18db532685147bc06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  graphTransform: {fileID: 0}
 --- !u!1 &1976439488
 GameObject:
   m_ObjectHideFlags: 0
