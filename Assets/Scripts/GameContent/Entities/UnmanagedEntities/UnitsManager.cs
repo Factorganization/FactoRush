@@ -21,6 +21,11 @@ public class UnitsManager : MonoBehaviour
     {
         InitialCheckup();
     }
+    
+    public void SpawnUnit(bool isAlly, TransportComponent transportComponent =  null, WeaponComponent weaponComponent = null)
+    {
+        Instantiate(unitPrefab, isAlly ? allyBase.transform : enemyBase.transform);
+    }
 
     private void InitialCheckup()
     {
@@ -38,11 +43,9 @@ public class UnitsManager : MonoBehaviour
         {
             Debug.LogError("Unit prefab is not assigned in the inspector. Please assign it.");
         }
-        
-        if (allyBase == null || enemyBase == null || unitPrefab == null)
-        {
-            Debug.LogError("UnitsManager cannot function without the required components. Please assign them in the inspector.");
-            return;
-        }
+
+        if (allyBase != null && enemyBase != null) return;
+        Debug.LogError(allyBase == null ? "Ally base is not instantiated" : "Enemy base is not instantiated");
+        return;
     }
 }

@@ -28,7 +28,7 @@ namespace GameContent.Entities.UnmanagedEntities
         {
             Debug.Log("Enemy took " + damage + " damage");
             base.TakeDamage(damage);
-            Debug.Log("Enemy has " + Health + " health left");
+            Debug.Log("Enemy has " + health + " health left");
         }
     }
 }

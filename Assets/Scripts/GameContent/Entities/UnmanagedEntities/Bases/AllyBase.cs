@@ -28,7 +28,7 @@ namespace GameContent.Entities.UnmanagedEntities
         {
             Debug.Log("Ally took " + damage + " damage");
             base.TakeDamage(damage);
-            Debug.Log("Ally has " + Health + " health left");
+            Debug.Log("Ally has " + health + " health left");
         }
     }
 }
