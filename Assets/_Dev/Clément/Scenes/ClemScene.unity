@@ -360,6 +360,12 @@ MonoBehaviour:
     type: 3}
   sideStaticBuildTile: {fileID: 7841854943909143908, guid: 1ccb3bbce821fa548b684cd9e9a74e1a,
     type: 3}
+  mineTile: {fileID: 1741442189675310021, guid: 35d1afae9ddd7954882b69bf122584ea,
+    type: 3}
+  weaponTargetTile: {fileID: 5108611750359047397, guid: 019b1a76afc6bf144b6e45a711c1b3ba,
+    type: 3}
+  transTargetTile: {fileID: 3046626806428066251, guid: 44cf80b51a96f8840a9950dc3d135d0c,
+    type: 3}
   dynamicGenericBuild: {fileID: 4155439601221061712, guid: 77c36428ed7128042a96e4a43759d983,
     type: 3}
   staticGenericBuild: {fileID: 6265463092578805160, guid: b38bd412b4fa17f4c8d7a67557a38f40,

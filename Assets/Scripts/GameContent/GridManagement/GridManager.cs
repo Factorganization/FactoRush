@@ -103,12 +103,21 @@ namespace GameContent.GridManagement
                             break;
                         
                         case >= 20:
-                            var mT = Instantiate(dynamicBuildTile, transform);
+                            var mT = Instantiate(mineTile, transform);
                             _grid.Add(tId, mT);
+                            mT.Added(this, tId, tPos, TileType.MineTile);
                             break;
                         
-                        case >= 10:
-                            
+                        case >= 10 when grid[i][j] % 2 == 0:
+                            var tTt = Instantiate(transTargetTile, transform);
+                            _grid.Add(tId, tTt);
+                            tTt.Added(this, tId, tPos, TileType.TransTarget);
+                            break;
+                        
+                        case >= 10 when grid[i][j] % 2 != 0:
+                            var wTt = Instantiate(weaponTargetTile, transform);
+                            _grid.Add(tId, wTt);
+                            wTt.Added(this, tId, tPos, TileType.WeaponTarget);
                             break;
                         
                         case > 0:
@@ -306,10 +315,20 @@ namespace GameContent.GridManagement
         [SerializeField] private StaticBuildingTile centerStaticBuildTile;
         
         [SerializeField] private StaticBuildingTile sideStaticBuildTile;
+        
+        [SerializeField] private MineTile mineTile;
+
+        [SerializeField] private WeaponTargetTile weaponTargetTile;
+        
+        [SerializeField] private TransTargetTile transTargetTile;
+        
+        //TODO a mettre dans atlas séparé
 
         [SerializeField] private DynamicBuilding dynamicGenericBuild;
         
         [SerializeField] private StaticBuilding staticGenericBuild;
+        
+        //End TODO
         
         private Dictionary<Vector2Int,Tile> _grid;
         

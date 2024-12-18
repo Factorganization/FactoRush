@@ -6,6 +6,8 @@
         SideStaticTile,
         CenterStaticTile,
         DynamicTile,
-        
+        MineTile,
+        WeaponTarget,
+        TransTarget
     }
 }
