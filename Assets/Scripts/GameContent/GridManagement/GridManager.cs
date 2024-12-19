@@ -44,9 +44,13 @@ namespace GameContent.GridManagement
         [ContextMenu("Start")]
         private void Start()
         {
+            _pathFinder = new PathFinder();
+            _currentPath = new List<Tile>();
+            
             _grid = new Dictionary<Vector2Int, Tile>();
             _staticGroups = new Dictionary<byte, StaticTileGroup>();
             ConveyorGroups = new Dictionary<byte, DynamicBuildingList>();
+            
             _addingDynamic = new HashSet<Vector2Int>();
             _addingStatic = new HashSet<Vector2Int>();
             _removing = new HashSet<Vector2Int>();
@@ -93,7 +97,7 @@ namespace GameContent.GridManagement
                     yield return new WaitForEndOfFrame(); //that's legit, dont question it
 #endif
                     
-                    var tId = new Vector2Int(grid.Length - 1 - i, j);
+                    var tId = new Vector2Int(j, grid.Length - 1 - i);
                     var tPos = new Vector3(j, 0, grid.Length - 1 - i); //inverted i j for pos /!\
                     
                     switch (grid[i][j])
@@ -306,6 +310,45 @@ namespace GameContent.GridManagement
 
         #endregion
 
+        #region path find
+
+        public void SetPath()
+        {
+            CancelPrePath();
+            
+            foreach (var t in _currentPath)
+                TryAddDynamicBuildingAt(t.Index, t.Position + Vector3.up / 2);
+        }
+        
+        public void PrePathFind(Vector2Int from, Vector2Int to)
+        {
+            var c = _pathFinder.FindPath(_grid[from], _grid[to]);
+
+            foreach (var t in _currentPath)
+            {
+                if (!c.Contains(t))
+                    t.IsSelected = false;
+            }
+
+            foreach (var t in c)
+            {
+                if (!t.IsSelected)
+                    t.IsSelected = true;
+            }
+
+            _currentPath = c;
+        }
+
+        public void CancelPrePath()
+        {
+            foreach (var t in _currentPath)
+            {
+                t.IsSelected = false;
+            }
+        }
+        
+        #endregion
+        
         #endregion
 
         #region fields
@@ -340,6 +383,8 @@ namespace GameContent.GridManagement
         
         private Dictionary<byte, StaticTileGroup> _staticGroups;
         
+        #region grid modif
+        
         private HashSet<Vector2Int> _addingDynamic; // hashSet go brrrrrrrrr
 
         private HashSet<Vector2Int> _addingStatic;
@@ -354,6 +399,16 @@ namespace GameContent.GridManagement
 
         private GridLockMode _currentGridLockMode;
         
+        #endregion
+        
+        #region path find
+        
+        private PathFinder _pathFinder;
+
+        private List<Tile> _currentPath;
+
+        #endregion
+
         #endregion
     }
 }

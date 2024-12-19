@@ -2,11 +2,11 @@
 
 namespace GameContent.Entities.GridEntities
 {
-    public sealed class StaticBuildingTile : Tile
+    public abstract class StaticBuildingTile : Tile
     {
         #region properties
         
-        public byte StaticGroup { get; set; }
+        public byte StaticGroup { get; private set; }
         
         #endregion
         

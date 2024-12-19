@@ -2,12 +2,12 @@
 
 namespace GameContent.Entities.GridEntities
 {
-    public sealed class DynamicBuildingTile : Tile
+    public class SideStaticBuildingTile : StaticBuildingTile
     {
         #region properties
-
+        
         public override bool IsBlocked => CurrentBuildingRef is not null;
-
+        
         public override bool IsSelected
         {
             get => _isSelected;
@@ -17,15 +17,13 @@ namespace GameContent.Entities.GridEntities
                 preSelectionAvailable.SetActive(value);
             }
         }
-
+        
         #endregion
-
+        
         #region fields
 
         [SerializeField] private GameObject preSelectionAvailable;
-        
-        [SerializeField] private GameObject preSelectionUnavailable; 
-        
+
         private bool _isSelected;
 
         #endregion

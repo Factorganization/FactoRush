@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3295525349259471576}
   - component: {fileID: 4470073717820863940}
-  - component: {fileID: 5466440853384126014}
+  - component: {fileID: 3598023137684623935}
   m_Layer: 6
   m_Name: CenterStaticTile
   m_TagString: Untagged
@@ -56,7 +56,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5466440853384126014
+--- !u!114 &3598023137684623935
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2002902803742249111}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800fa7fd2772450e89c7b5c439015956, type: 3}
+  m_Script: {fileID: 11500000, guid: 16ff74541b88427595eb82d6a1bcd018, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   graphTransform: {fileID: 2409490437033226757}

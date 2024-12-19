@@ -21,6 +21,8 @@ namespace GameContent.Entities.GridEntities
         
         #region Path Find
         
+        public abstract bool IsBlocked { get; }
+        
         public int G { get; set; }
         
         public int H { get; set; }
@@ -28,7 +30,9 @@ namespace GameContent.Entities.GridEntities
         public int F => G + H;
         
         public Tile PreviousTile { get; set; }
-        
+
+        public abstract bool IsSelected { get; set; }
+            
         #endregion
             
         #endregion
@@ -54,7 +58,7 @@ namespace GameContent.Entities.GridEntities
 #if INDEX_DEBUG && UNITY_EDITOR
         [SerializeField] private TMP_Text debugIndex;
 #endif
-        
+
         #endregion
     }
 }

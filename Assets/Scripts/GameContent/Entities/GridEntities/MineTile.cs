@@ -4,9 +4,17 @@ using UnityEngine;
 
 namespace GameContent.Entities.GridEntities
 {
-    public class MineTile : Tile
+    public sealed class MineTile : Tile
     {
         #region properties
+
+        public override bool IsBlocked => true;
+
+        public override bool IsSelected
+        {
+            get => false;
+            set {}
+        }
 
         private ConveyorGroup CurrentGroup { get; set; }
 

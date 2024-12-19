@@ -1,9 +1,6 @@
 ﻿namespace GameContent.Entities.GridEntities
 {
-    /// <summary>
-    /// Even id key
-    /// </summary>
-    public sealed class TransTargetTile : Tile
+    public class CenterStaticBuildingTile : StaticBuildingTile
     {
         #region properties
 
@@ -14,12 +11,6 @@
             get => false;
             set {}
         }
-
-        #endregion
-
-        #region fields
-
-        //TODO queue
 
         #endregion
     }
