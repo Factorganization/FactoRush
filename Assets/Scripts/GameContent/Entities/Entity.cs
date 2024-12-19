@@ -30,6 +30,11 @@ namespace GameContent.Entities
         {
             OnStart();
         }
+
+        private void Update()
+        {
+            OnUpdate();
+        }
         
         protected virtual void OnAwake()
         {
@@ -37,6 +42,10 @@ namespace GameContent.Entities
         }
 
         protected virtual void OnStart()
+        {
+        }
+
+        protected virtual void OnUpdate()
         {
         }
         

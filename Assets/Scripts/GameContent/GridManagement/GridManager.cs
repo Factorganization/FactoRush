@@ -25,6 +25,8 @@ namespace GameContent.GridManagement
 
         public Dictionary<byte, DynamicBuildingList> ConveyorGroups { get; private set; }
         
+        public Dictionary<Vector2Int, Tile> Grid => _grid;
+        
         #endregion
         
         #region methodes
@@ -308,6 +310,8 @@ namespace GameContent.GridManagement
 
         #region fields
         
+        #region instantation
+        
         [SerializeField] private string mapPath;
         
         [SerializeField] private DynamicBuildingTile dynamicBuildTile;
@@ -329,6 +333,8 @@ namespace GameContent.GridManagement
         [SerializeField] private StaticBuilding staticGenericBuild;
         
         //End TODO
+        
+        #endregion
         
         private Dictionary<Vector2Int,Tile> _grid;
         

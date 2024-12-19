@@ -19,6 +19,18 @@ namespace GameContent.Entities.GridEntities
         
         public TileType Type { get; private set; }
         
+        #region Path Find
+        
+        public int G { get; set; }
+        
+        public int H { get; set; }
+        
+        public int F => G + H;
+        
+        public Tile PreviousTile { get; set; }
+        
+        #endregion
+            
         #endregion
         
         #region methodes
