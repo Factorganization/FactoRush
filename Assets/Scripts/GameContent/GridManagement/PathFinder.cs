@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace GameContent.GridManagement
 {
-    public class PathFinder
+    public static class PathFinder
     {
         #region methodes
 
-        public List<Tile> FindPath(Tile startTile, Tile endTile)
+        public static List<Tile> FindPath(Tile startTile, Tile endTile)
         {
             var openList = new List<Tile>();
             var closedList = new List<Tile>();
@@ -18,7 +18,7 @@ namespace GameContent.GridManagement
 
             while (openList.Count > 0)
             {
-                openList.Sort(TileComparer);
+                openList.Sort(tileComparer);
                 var currentTile = openList[0];
                 
                 openList.Remove(currentTile);
@@ -94,7 +94,7 @@ namespace GameContent.GridManagement
         
         #region fields
         
-        private static readonly Comparison<Tile> TileComparer = (a, b) => MathF.Sign(a.F - b.F);
+        private static readonly Comparison<Tile> tileComparer = (a, b) => MathF.Sign(a.F - b.F);
         
         #endregion
     }

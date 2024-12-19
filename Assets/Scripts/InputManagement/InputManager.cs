@@ -89,7 +89,7 @@ namespace InputManagement
             
             if (!hit.collider.TryGetComponent(out Tile t)) //start drag if hit side of static
                 return;
-                        
+            
             _startingHitType = GetHitType(t.Type);
             _startingIndex = t.Index;
             _currentIndex = t.Index;
@@ -97,12 +97,14 @@ namespace InputManagement
             switch (_startingHitType)
             {
                 case HitGridType.SideStaticHit:
-                    t.IsSelected = true;
+                    var sst = t as StaticBuildingTile;
+                    //checker
+                    _currentStaticGroup = sst!.StaticGroup;
                     break;
                 
                 case HitGridType.CenterStaticHit:
-                    var st = t as StaticBuildingTile;
-                    _currentStaticGroup = st!.StaticGroup;
+                    var cst = t as StaticBuildingTile;
+                    _currentStaticGroup = cst!.StaticGroup;
                     break;
                             
                 case HitGridType.None:
@@ -119,8 +121,7 @@ namespace InputManagement
             switch (_startingHitType)
             {
                 case HitGridType.CenterStaticHit:
-                    //action cut if (isOnStatic) move out of static
-                    //other action if not on dynamic to keep preview conveyor
+                    HandleFromCenterStaticMove(ray);
                     break;
                         
                 case HitGridType.SideStaticHit:
@@ -218,14 +219,10 @@ namespace InputManagement
                     break;
                 
                 case HitGridType.CenterStaticHit:
-                    break;
-                
                 case HitGridType.DynamicHit:
-                    break;
-                
                 case HitGridType.None:
                     break;
-                
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(_startingHitType), _startingHitType, null);
             }
@@ -242,34 +239,25 @@ namespace InputManagement
             
             if (!hit.collider.TryGetComponent(out Tile t))
                 return;
-
+            
             switch (t.Type)
             {
                 case TileType.DynamicTile:
                     _currentIndex = t.Index;
-                    if (_currentIndex != _startingIndex) //can try pose build if hit dynamic tile
+                    if (_currentIndex != _startingIndex)
                     {
                         GridManager.Manager.PrePathFind(_startingIndex, _currentIndex);
                     }
                     break;
                 
                 case TileType.SideStaticTile:
-                    var st = t as StaticBuildingTile;
-                    if (st!.CurrentBuildingRef is not null && st.StaticGroup == _currentStaticGroup) // TODO changer cette merde
+                    _currentIndex = t.Index;
+                    GridManager.Manager.PrePathFind(_startingIndex, t.Index); //Path find before check to properly delete paths 
+                    if (t.IsBlocked && t.Index == _startingIndex)
                     {
-                        if (st.Index == _startingIndex)
-                            _startingHitType = HitGridType.None;
-                        
-                        //// TODO path find THERE !
-                        return;
+                        GridManager.Manager.CancelPrePath();
+                        _startingHitType = HitGridType.None; 
                     }
-                    
-                    GridManager.Manager.PrePathFind(_startingIndex, t.Index);
-                    
-                    //GridManager.Manager.TryAddDynamicBuildingAt(t.Index, t.Position + Vector3.up / 2); //can try pose build if hit dynamic tile
-                    
-                    // other action if lag and skip dynamic to check if dist between two dynamic is ok and complete if not
-                    //TODO path find to complete conveyor path if skip dynamic tile
                     break;
                     
                 case TileType.CenterStaticTile:
@@ -294,17 +282,26 @@ namespace InputManagement
             switch (t.Type)
             {
                 case TileType.SideStaticTile:
+                    var sst = t as StaticBuildingTile;
+                    if (sst!.IsBlocked || sst!.StaticGroup != _currentStaticGroup)
+                    {
+                        _startingHitType = HitGridType.None;
+                    }
+                    else if (sst!.StaticGroup == _currentStaticGroup)
+                    {
+                        _startingHitType = HitGridType.SideStaticHit;
+                        _startingIndex = sst.Index;
+                    }
                     break;
                 
                 case TileType.CenterStaticTile:
-                    break;
-                
                 case TileType.DynamicTile:
                 case TileType.MineTile:
                 case TileType.WeaponTarget:
                 case TileType.TransTarget:
                 case TileType.Default:
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -318,10 +315,17 @@ namespace InputManagement
             switch (t.Type)
             {
                 case TileType.CenterStaticTile:
+                    var cst = t as StaticBuildingTile;
+                    if (GridManager.Manager.Grid[_currentIndex] is SideStaticBuildingTile && 
+                        _currentStaticGroup != cst!.StaticGroup)
+                    {
+                        GridManager.Manager.SetPath();
+                    }
+                    break;
+                
                 case TileType.DynamicTile:
                 case TileType.Default:
                     GridManager.Manager.CancelPrePath();
-                    //GridManager.Manager.CancelAdding();
                     break;
                                 
                 case TileType.SideStaticTile:
@@ -330,7 +334,6 @@ namespace InputManagement
 
                     if (_currentStaticGroup == st2.StaticGroup)
                     {
-                        //GridManager.Manager.CancelAdding();
                         GridManager.Manager.CancelPrePath();
                     }
                     else
@@ -342,6 +345,8 @@ namespace InputManagement
                 case TileType.MineTile:
                 case TileType.WeaponTarget:
                 case TileType.TransTarget:
+                    //TODO
+                    //faire des trucs
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);

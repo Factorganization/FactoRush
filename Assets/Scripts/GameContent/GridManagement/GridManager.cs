@@ -24,9 +24,9 @@ namespace GameContent.GridManagement
         }
 
         public Dictionary<byte, DynamicBuildingList> ConveyorGroups { get; private set; }
-        
-        public Dictionary<Vector2Int, Tile> Grid => _grid;
-        
+
+        public Dictionary<Vector2Int, Tile> Grid { get; private set; }
+
         #endregion
         
         #region methodes
@@ -44,10 +44,9 @@ namespace GameContent.GridManagement
         [ContextMenu("Start")]
         private void Start()
         {
-            _pathFinder = new PathFinder();
             _currentPath = new List<Tile>();
             
-            _grid = new Dictionary<Vector2Int, Tile>();
+            Grid = new Dictionary<Vector2Int, Tile>();
             _staticGroups = new Dictionary<byte, StaticTileGroup>();
             ConveyorGroups = new Dictionary<byte, DynamicBuildingList>();
             
@@ -104,25 +103,25 @@ namespace GameContent.GridManagement
                     {
                         case 0:
                             var dBt = Instantiate(dynamicBuildTile, transform);
-                            _grid.Add(tId, dBt);
+                            Grid.Add(tId, dBt);
                             dBt.Added(this, tId, tPos, TileType.DynamicTile);
                             break;
                         
                         case >= 20:
                             var mT = Instantiate(mineTile, transform);
-                            _grid.Add(tId, mT);
+                            Grid.Add(tId, mT);
                             mT.Added(this, tId, tPos, TileType.MineTile);
                             break;
                         
                         case >= 10 when grid[i][j] % 2 == 0:
                             var tTt = Instantiate(transTargetTile, transform);
-                            _grid.Add(tId, tTt);
+                            Grid.Add(tId, tTt);
                             tTt.Added(this, tId, tPos, TileType.TransTarget);
                             break;
                         
                         case >= 10 when grid[i][j] % 2 != 0:
                             var wTt = Instantiate(weaponTargetTile, transform);
-                            _grid.Add(tId, wTt);
+                            Grid.Add(tId, wTt);
                             wTt.Added(this, tId, tPos, TileType.WeaponTarget);
                             break;
                         
@@ -133,7 +132,7 @@ namespace GameContent.GridManagement
                             var c = _staticGroups[grid[i][j]].Count + 1;
                             var sBt = Instantiate(c == 3 ? centerStaticBuildTile : sideStaticBuildTile, transform);
                             
-                            _grid.Add(tId, sBt);
+                            Grid.Add(tId, sBt);
                             _staticGroups[grid[i][j]].AddTile(sBt);
                             
                             sBt.Added(this, tId, tPos, GetStaticType(c));
@@ -236,13 +235,13 @@ namespace GameContent.GridManagement
         
         public bool TryAddDynamicBuildingAt(Vector2Int index, Vector3 pos) // yes. bool.
         {
-            if (_grid[index].CurrentBuildingRef is not null)
+            if (Grid[index].CurrentBuildingRef is not null)
                 return false;
             
             if (!_addingDynamic.Add(index))
                 return false;
 
-            var b = Instantiate(dynamicGenericBuild, _grid[index].ETransform);
+            var b = Instantiate(dynamicGenericBuild, Grid[index].ETransform);
             _toAddDynamic.Add(index, b);
             b.TargetPosition = pos;
             b.Position = pos;
@@ -254,7 +253,7 @@ namespace GameContent.GridManagement
             if (!_addingStatic.Add(index))
                 return false;
             
-            var b = Instantiate(staticGenericBuild, _grid[index].ETransform);
+            var b = Instantiate(staticGenericBuild, Grid[index].ETransform);
             _toAddStatic.Add(index, b);
             b.TargetPosition = pos;
             b.Position = pos;
@@ -277,7 +276,7 @@ namespace GameContent.GridManagement
             if (!_removing.Add(index))
                 return;
             
-            var b = _grid[index].CurrentBuildingRef as DynamicBuilding;
+            var b = Grid[index].CurrentBuildingRef as DynamicBuilding;
             var i = b!.ConveyorGroupId;
                     
             foreach (var b2 in ConveyorGroups[i])
@@ -293,18 +292,18 @@ namespace GameContent.GridManagement
             if (!_removing.Add(index))
                 return;
             
-            _toRemove.Add(index, _grid[index].CurrentBuildingRef);
+            _toRemove.Add(index, Grid[index].CurrentBuildingRef);
         }
 
         private void PlaceBuildingAt(Vector2Int index, Building building)
         {
-            _grid[index].CurrentBuildingRef = building;
-            building.Added(_grid[index]);
+            Grid[index].CurrentBuildingRef = building;
+            building.Added(Grid[index]);
         }
 
         private void RemoveBuildingAt(Vector2Int index, Building building)
         {
-            _grid[index].CurrentBuildingRef = null;
+            Grid[index].CurrentBuildingRef = null;
             Destroy(building.gameObject);
         }
 
@@ -314,15 +313,17 @@ namespace GameContent.GridManagement
 
         public void SetPath()
         {
-            CancelPrePath();
-            
             foreach (var t in _currentPath)
+            {
                 TryAddDynamicBuildingAt(t.Index, t.Position + Vector3.up / 2);
+            }
+            
+            CancelPrePath();
         }
         
         public void PrePathFind(Vector2Int from, Vector2Int to)
         {
-            var c = _pathFinder.FindPath(_grid[from], _grid[to]);
+            var c = PathFinder.FindPath(Grid[from], Grid[to]);
 
             foreach (var t in _currentPath)
             {
@@ -345,6 +346,8 @@ namespace GameContent.GridManagement
             {
                 t.IsSelected = false;
             }
+            
+            _currentPath.Clear();
         }
         
         #endregion
@@ -378,9 +381,7 @@ namespace GameContent.GridManagement
         //End TODO
         
         #endregion
-        
-        private Dictionary<Vector2Int,Tile> _grid;
-        
+
         private Dictionary<byte, StaticTileGroup> _staticGroups;
         
         #region grid modif
@@ -402,8 +403,6 @@ namespace GameContent.GridManagement
         #endregion
         
         #region path find
-        
-        private PathFinder _pathFinder;
 
         private List<Tile> _currentPath;
 
