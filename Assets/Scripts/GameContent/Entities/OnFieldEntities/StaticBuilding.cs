@@ -9,7 +9,7 @@
             OnUpdate();
         }
 
-        protected virtual void OnUpdate()
+        protected override void OnUpdate()
         {
         }
 

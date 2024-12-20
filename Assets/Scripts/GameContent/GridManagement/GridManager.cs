@@ -23,7 +23,7 @@ namespace GameContent.GridManagement
             }
         }
 
-        public Dictionary<byte, DynamicBuildingList> ConveyorGroups { get; private set; }
+        public Dictionary<byte, ConveyorGroup> ConveyorGroups { get; private set; }
 
         public Dictionary<Vector2Int, Tile> Grid { get; private set; }
 
@@ -48,7 +48,7 @@ namespace GameContent.GridManagement
             
             Grid = new Dictionary<Vector2Int, Tile>();
             _staticGroups = new Dictionary<byte, StaticTileGroup>();
-            ConveyorGroups = new Dictionary<byte, DynamicBuildingList>();
+            ConveyorGroups = new Dictionary<byte, ConveyorGroup>();
             
             _addingDynamic = new HashSet<Vector2Int>();
             _addingStatic = new HashSet<Vector2Int>();
@@ -204,6 +204,8 @@ namespace GameContent.GridManagement
                     
                     PlaceBuildingAt(b.Key, b.Value);
                 }
+                
+                ConveyorGroups[i].Init();
             }
             _addingDynamic.Clear();
             _toAddDynamic.Clear();
@@ -310,7 +312,7 @@ namespace GameContent.GridManagement
         #endregion
 
         #region path find
-
+        
         public void SetPath()
         {
             foreach (var t in _currentPath)
@@ -342,6 +344,9 @@ namespace GameContent.GridManagement
 
         public void CancelPrePath()
         {
+            if (_currentPath.Count <= 0)
+                return;
+            
             foreach (var t in _currentPath)
             {
                 t.IsSelected = false;

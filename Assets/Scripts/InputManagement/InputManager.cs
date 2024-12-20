@@ -107,10 +107,13 @@ namespace InputManagement
                     _currentStaticGroup = cst!.StaticGroup;
                     break;
                             
-                case HitGridType.None:
+                case HitGridType.MineTile:
+                case HitGridType.TransTarget:
+                case HitGridType.WeaponTarget:
                 case HitGridType.DynamicHit:
+                case HitGridType.None:
                     break;
-                
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
             }
@@ -127,11 +130,22 @@ namespace InputManagement
                 case HitGridType.SideStaticHit:
                     HandleFromSideStaticMove(ray);
                     break;
+
+                case HitGridType.MineTile:
+                    HandleFromMineMove(ray);
+                    break;
+                
+                case HitGridType.TransTarget:
+                    HandleFromTransMove(ray);
+                    break;
+                
+                case HitGridType.WeaponTarget:
+                    HandleFromWeaponMove(ray);
+                    break;
                         
                 case HitGridType.DynamicHit:
                 case HitGridType.None:
                     break;
-                
                 default:
                     throw new ArgumentOutOfRangeException(nameof(_startingHitType), _startingHitType, null);
             }
@@ -191,6 +205,18 @@ namespace InputManagement
                 case HitGridType.CenterStaticHit:
                     HandleCenterStaticEnding(hit);
                     break;
+
+                case HitGridType.MineTile:
+                    HandleMineEnding(hit);
+                    break;
+                
+                case HitGridType.TransTarget:
+                    HandleTransEnding(hit);
+                    break;
+                
+                case HitGridType.WeaponTarget:
+                    HandleWeaponEnding(hit);
+                    break;
                 
                 case HitGridType.DynamicHit:
                 case HitGridType.None:
@@ -199,7 +225,9 @@ namespace InputManagement
                 default:
                     throw new ArgumentOutOfRangeException(nameof(_startingHitType), _startingHitType, null);
             }
-                        
+            
+            GridManager.Manager.CancelPrePath();
+            
             _startingHitType = HitGridType.None;
             _currentStaticGroup = 0;
             _hitTimerCounter = 0;
@@ -221,6 +249,9 @@ namespace InputManagement
                 case HitGridType.CenterStaticHit:
                 case HitGridType.DynamicHit:
                 case HitGridType.None:
+                case HitGridType.MineTile:
+                case HitGridType.TransTarget:
+                case HitGridType.WeaponTarget:
                     break;
 
                 default:
@@ -231,6 +262,8 @@ namespace InputManagement
         #endregion
         
         #region touch handling events
+        
+        #region Handle Moves
         
         private void HandleFromSideStaticMove(Ray ray)
         {
@@ -306,11 +339,105 @@ namespace InputManagement
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        private void HandleFromMineMove(Ray ray)
+        {
+            if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
+                return;
+            
+            if (!hit.collider.TryGetComponent(out Tile t))
+                return;
+
+            switch (t.Type)
+            {
+                case TileType.Default:
+                    break;
+                case TileType.SideStaticTile:
+                    break;
+                case TileType.CenterStaticTile:
+                    break;
+                case TileType.DynamicTile:
+                    break;
+                case TileType.MineTile:
+                    break;
+                case TileType.WeaponTarget:
+                    break;
+                case TileType.TransTarget:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void HandleFromWeaponMove(Ray ray)
+        {
+            if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
+                return;
+            
+            if (!hit.collider.TryGetComponent(out Tile t))
+                return;
+
+            switch (t.Type)
+            {
+                case TileType.Default:
+                    break;
+                case TileType.SideStaticTile:
+                    break;
+                case TileType.CenterStaticTile:
+                    break;
+                case TileType.DynamicTile:
+                    break;
+                case TileType.MineTile:
+                    break;
+                case TileType.WeaponTarget:
+                    break;
+                case TileType.TransTarget:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void HandleFromTransMove(Ray ray)
+        {
+            if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
+                return;
+            
+            if (!hit.collider.TryGetComponent(out Tile t))
+                return;
+
+            switch (t.Type)
+            {
+                case TileType.Default:
+                    break;
+                case TileType.SideStaticTile:
+                    break;
+                case TileType.CenterStaticTile:
+                    break;
+                case TileType.DynamicTile:
+                    break;
+                case TileType.MineTile:
+                    break;
+                case TileType.WeaponTarget:
+                    break;
+                case TileType.TransTarget:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        
+        #endregion
+        
+        #region Handle Endings
+        
+        // /!\ /!\ /!\ Attention aux noms des fonctions dans cette section, les noms des tiles sont des refs au noms de la tile de départ du déplacement, pas la tile d'arrivée !!!
+        // Ex : pour un drag and drop d'une tile side static à une mine, la fonction sera HandleSideStaticEnding
         
         private void HandleSideStaticEnding(RaycastHit hit)
         {
             if (!hit.collider.TryGetComponent(out Tile t))
-                return; //TODO find a way to cancel drag
+                return;
 
             switch (t.Type)
             {
@@ -320,6 +447,10 @@ namespace InputManagement
                         _currentStaticGroup != cst!.StaticGroup)
                     {
                         GridManager.Manager.SetPath();
+                    }
+                    else
+                    {
+                        GridManager.Manager.CancelPrePath();
                     }
                     break;
                 
@@ -356,7 +487,7 @@ namespace InputManagement
         private void HandleCenterStaticEnding(RaycastHit hit)
         {
             if (!hit.collider.TryGetComponent(out Tile t))
-                return; //TODO find a way to cancel drag
+                return;
 
             switch (t.Type)
             {
@@ -385,6 +516,26 @@ namespace InputManagement
                     throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
             }
         }
+
+        private void HandleMineEnding(RaycastHit hit)
+        {
+            if (!hit.collider.TryGetComponent(out Tile t))
+                return;
+        }
+
+        private void HandleWeaponEnding(RaycastHit hit)
+        {
+            if (!hit.collider.TryGetComponent(out Tile t))
+                return;
+        }
+
+        private void HandleTransEnding(RaycastHit hit)
+        {
+            if (!hit.collider.TryGetComponent(out Tile t))
+                return;
+        }
+        
+        #endregion
         
         #endregion
         
@@ -393,6 +544,9 @@ namespace InputManagement
             TileType.DynamicTile => HitGridType.DynamicHit,
             TileType.CenterStaticTile => HitGridType.CenterStaticHit,
             TileType.SideStaticTile => HitGridType.SideStaticHit,
+            TileType.MineTile => HitGridType.MineTile,
+            TileType.TransTarget => HitGridType.TransTarget,
+            TileType.WeaponTarget => HitGridType.WeaponTarget,
             TileType.Default => HitGridType.None,
             _ => throw new ArgumentOutOfRangeException(nameof(t), t, null)
         };
