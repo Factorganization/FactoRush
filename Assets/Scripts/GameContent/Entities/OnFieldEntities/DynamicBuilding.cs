@@ -7,13 +7,13 @@ namespace GameContent.Entities.OnFieldEntities
     {
         #region properties
 
-        public byte ConveyorGroupId { get; set; }
+        public sbyte ConveyorGroupId { get; set; }
 
         #endregion
         
         #region methodes
         
-        public void SetDebugId(byte i) => conveyorGroupId.text = i.ToString();
+        public void SetDebugId(sbyte i) => conveyorGroupId.text = i.ToString();
         
         #endregion
         
@@ -22,6 +22,5 @@ namespace GameContent.Entities.OnFieldEntities
         [SerializeField] private TMP_Text conveyorGroupId;
         
         #endregion
-        //TODO dynamicTileGroup class to pack data like what is conveyed
     }
 }

@@ -7,7 +7,7 @@ namespace GameContent.Entities.OnFieldEntities
     {
         #region properties
         
-        public byte ConveyorGroupId { get; set; }
+        public sbyte ConveyorGroupId { get; set; }
         
         public Tile FromStaticBuild { get; set; }
         
@@ -48,10 +48,12 @@ namespace GameContent.Entities.OnFieldEntities
         
         private void CheckValidity()
         {
-            if (FromStaticBuild is DynamicBuildingTile || ToStaticBuild is DynamicBuildingTile)
-            {
-                GridManager.Manager.TryRemoveDynamicBuildingAt(this[0].TileRef.Index);
-            }
+            if (FromStaticBuild is not DynamicBuildingTile && ToStaticBuild is not DynamicBuildingTile)
+                return;
+            
+            this[0].SetDebugId(100);
+            this[Count - 1].SetDebugId(101);
+            GridManager.Manager.TryRemoveDynamicBuildingAt(this[0].TileRef.Index);
         }
         
         public override void UpdateGroup()

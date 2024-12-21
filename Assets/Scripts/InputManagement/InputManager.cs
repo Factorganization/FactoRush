@@ -4,6 +4,7 @@ using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.GridManagement;
 using UnityEngine.InputSystem.EnhancedTouch;
+using UnityEngine.XR;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
@@ -106,11 +107,19 @@ namespace InputManagement
                     var cst = t as StaticBuildingTile;
                     _currentStaticGroup = cst!.StaticGroup;
                     break;
-                            
+                
+                case HitGridType.DynamicHit:
+                    var dt = t as DynamicBuildingTile;
+                    if (dt!.CurrentBuildingRef is not null)
+                    {
+                        var db = dt.CurrentBuildingRef as DynamicBuilding;
+                        _currentConveyorGroup = db!.ConveyorGroupId;
+                    }
+                    break;        
+                    
                 case HitGridType.MineTile:
                 case HitGridType.TransTarget:
                 case HitGridType.WeaponTarget:
-                case HitGridType.DynamicHit:
                 case HitGridType.None:
                     break;
 
@@ -142,8 +151,11 @@ namespace InputManagement
                 case HitGridType.WeaponTarget:
                     HandleFromWeaponMove(ray);
                     break;
-                        
+                
                 case HitGridType.DynamicHit:
+                    HandleFromDynamicMove(ray);
+                    break;
+                    
                 case HitGridType.None:
                     break;
                 default:
@@ -219,6 +231,9 @@ namespace InputManagement
                     break;
                 
                 case HitGridType.DynamicHit:
+                    HandleDynamicEnding(hit);
+                    break;
+                    
                 case HitGridType.None:
                     break;
                 
@@ -230,6 +245,7 @@ namespace InputManagement
             
             _startingHitType = HitGridType.None;
             _currentStaticGroup = 0;
+            _currentConveyorGroup = (sbyte)-1;
             _hitTimerCounter = 0;
         }
 
@@ -264,6 +280,35 @@ namespace InputManagement
         #region touch handling events
         
         #region Handle Moves
+
+        private void HandleFromDynamicMove(Ray ray)
+        {
+            if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
+                return;
+            
+            if (!hit.collider.TryGetComponent(out Tile t))
+                return;
+
+            switch (t.Type)
+            {
+                case TileType.Default:
+                    break;
+                case TileType.SideStaticTile:
+                    break;
+                case TileType.CenterStaticTile:
+                    break;
+                case TileType.DynamicTile:
+                    break;
+                case TileType.MineTile:
+                    break;
+                case TileType.WeaponTarget:
+                    break;
+                case TileType.TransTarget:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
         
         private void HandleFromSideStaticMove(Ray ray)
         {
@@ -433,6 +478,32 @@ namespace InputManagement
         
         // /!\ /!\ /!\ Attention aux noms des fonctions dans cette section, les noms des tiles sont des refs au noms de la tile de départ du déplacement, pas la tile d'arrivée !!!
         // Ex : pour un drag and drop d'une tile side static à une mine, la fonction sera HandleSideStaticEnding
+
+        private void HandleDynamicEnding(RaycastHit hit)
+        {
+            if (!hit.collider.TryGetComponent(out Tile t))
+                return;
+
+            switch (t.Type)
+            {
+                case TileType.Default:
+                    break;
+                case TileType.SideStaticTile:
+                    break;
+                case TileType.CenterStaticTile:
+                    break;
+                case TileType.DynamicTile:
+                    break;
+                case TileType.MineTile:
+                    break;
+                case TileType.WeaponTarget:
+                    break;
+                case TileType.TransTarget:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
         
         private void HandleSideStaticEnding(RaycastHit hit)
         {
@@ -566,6 +637,8 @@ namespace InputManagement
         private bool _hasDragged;
 
         private byte _currentStaticGroup;
+
+        private sbyte _currentConveyorGroup;
         
         private float _hitTimerCounter;
 

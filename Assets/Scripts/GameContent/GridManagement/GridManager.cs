@@ -23,7 +23,7 @@ namespace GameContent.GridManagement
             }
         }
 
-        public Dictionary<byte, ConveyorGroup> ConveyorGroups { get; private set; }
+        public Dictionary<sbyte, ConveyorGroup> ConveyorGroups { get; private set; }
 
         public Dictionary<Vector2Int, Tile> Grid { get; private set; }
 
@@ -48,7 +48,7 @@ namespace GameContent.GridManagement
             
             Grid = new Dictionary<Vector2Int, Tile>();
             _staticGroups = new Dictionary<byte, StaticTileGroup>();
-            ConveyorGroups = new Dictionary<byte, ConveyorGroup>();
+            ConveyorGroups = new Dictionary<sbyte, ConveyorGroup>();
             
             _addingDynamic = new HashSet<Vector2Int>();
             _addingStatic = new HashSet<Vector2Int>();
@@ -186,7 +186,7 @@ namespace GameContent.GridManagement
             
             if (_addingDynamic.Count > 0)
             {
-                byte i = 0;
+                sbyte i = 0;
     
                 while (ConveyorGroups.ContainsKey(i) && ConveyorGroups[i] != null)
                     i++;
