@@ -7,7 +7,7 @@
     {
         #region properties
 
-        public override bool IsBlocked => true;
+        public override bool IsBlocked => CurrentBuildingRef is not null;
 
         public override bool IsSelected
         {

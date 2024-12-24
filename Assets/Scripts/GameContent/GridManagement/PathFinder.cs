@@ -33,7 +33,7 @@ namespace GameContent.GridManagement
 
                 foreach (var n in neighbours)
                 {
-                    if (n.IsBlocked || closedList.Contains(n) || Mathf.Abs(currentTile.Index.y - n.Index.y) > 1 || Mathf.Abs(currentTile.Index.x - n.Index.x) > 1)
+                    if (n.IsBlocked || !n.IsSelected || closedList.Contains(n) || Mathf.Abs(currentTile.Index.y - n.Index.y) > 1 || Mathf.Abs(currentTile.Index.x - n.Index.x) > 1)
                         continue;
 
                     n.G = GetManhattanDistance(startTile, n);
@@ -65,7 +65,7 @@ namespace GameContent.GridManagement
             f.Reverse();
             return f;
         }
-        
+
         private static List<Tile> GetNeighboursTiles(Tile currentTile)
         {
             var g = GridManager.Manager.Grid;

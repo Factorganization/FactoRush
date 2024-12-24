@@ -4,7 +4,6 @@ using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.GridManagement;
 using UnityEngine.InputSystem.EnhancedTouch;
-using UnityEngine.XR;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
@@ -46,7 +45,6 @@ namespace InputManagement
             switch (touch.phase)
             {
                 case TouchPhase.Began:
-                    GridManager.Manager.CurrentLockMode = GridLockMode.BuildingLocked; //Lock grid to prevent abusive list update
                     HandleTouchBegan(ray);
                     break;
                 
@@ -61,7 +59,6 @@ namespace InputManagement
                     _hasDragged = false;
                     
                     HandleTouchEnded(ray);
-                    GridManager.Manager.CurrentLockMode = GridLockMode.Unlocked; //Unlock grid
                     break;
                 
                 case TouchPhase.Stationary when !_hasDragged:
@@ -85,6 +82,8 @@ namespace InputManagement
 
         private void HandleTouchBegan(Ray ray)
         {
+            GridManager.Manager.CurrentLockMode = GridLockMode.BuildingLocked; //Lock grid to prevent abusive list update
+            
             if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
                 return;
             
@@ -241,11 +240,14 @@ namespace InputManagement
                     throw new ArgumentOutOfRangeException(nameof(_startingHitType), _startingHitType, null);
             }
             
-            GridManager.Manager.CancelPrePath();
+            GridManager.Manager.CurrentLockMode = GridLockMode.Unlocked; //Unlock grid
+            
+            //GridManager.Manager.CancelPrePath();
+            GridManager.Manager.CancelAdding();
             
             _startingHitType = HitGridType.None;
             _currentStaticGroup = 0;
-            _currentConveyorGroup = (sbyte)-1;
+            _currentConveyorGroup = -1;
             _hitTimerCounter = 0;
         }
 
@@ -257,17 +259,17 @@ namespace InputManagement
         {
             switch (_startingHitType)
             {
+                case HitGridType.MineTile:
+                case HitGridType.DynamicHit:
+                case HitGridType.TransTarget:
+                case HitGridType.WeaponTarget:
                 case HitGridType.SideStaticHit:
                     GridManager.Manager.CancelAdding();
-                    GridManager.Manager.CancelPrePath();
+                    //GridManager.Manager.CancelPrePath();
                     break;
                 
                 case HitGridType.CenterStaticHit:
-                case HitGridType.DynamicHit:
                 case HitGridType.None:
-                case HitGridType.MineTile:
-                case HitGridType.TransTarget:
-                case HitGridType.WeaponTarget:
                     break;
 
                 default:
@@ -292,17 +294,11 @@ namespace InputManagement
             switch (t.Type)
             {
                 case TileType.Default:
-                    break;
                 case TileType.SideStaticTile:
-                    break;
                 case TileType.CenterStaticTile:
-                    break;
                 case TileType.DynamicTile:
-                    break;
                 case TileType.MineTile:
-                    break;
                 case TileType.WeaponTarget:
-                    break;
                 case TileType.TransTarget:
                     break;
                 default:
@@ -320,29 +316,32 @@ namespace InputManagement
             
             switch (t.Type)
             {
+                case TileType.WeaponTarget:
+                case TileType.TransTarget:
                 case TileType.DynamicTile:
+                case TileType.MineTile:
                     _currentIndex = t.Index;
                     if (_currentIndex != _startingIndex)
                     {
-                        GridManager.Manager.PrePathFind(_startingIndex, _currentIndex);
+                        //GridManager.Manager.PrePathFind(_startingIndex, _currentIndex);
+                        GridManager.Manager.TryAddDynamicBuildingAt(t.Index);
                     }
                     break;
                 
                 case TileType.SideStaticTile:
                     _currentIndex = t.Index;
-                    GridManager.Manager.PrePathFind(_startingIndex, t.Index); //Path find before check to properly delete paths 
+                    //GridManager.Manager.PrePathFind(_startingIndex, t.Index); //Path find before check to properly delete paths 
+                    GridManager.Manager.TryAddDynamicBuildingAt(t.Index);
                     if (t.IsBlocked && t.Index == _startingIndex)
                     {
-                        GridManager.Manager.CancelPrePath();
+                        //GridManager.Manager.CancelPrePath();
+                        GridManager.Manager.CancelAdding();
                         _startingHitType = HitGridType.None; 
                     }
                     break;
                     
                 case TileType.CenterStaticTile:
                 case TileType.Default:
-                case TileType.MineTile:
-                case TileType.WeaponTarget:
-                case TileType.TransTarget:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
@@ -395,19 +394,32 @@ namespace InputManagement
 
             switch (t.Type)
             {
-                case TileType.Default:
-                    break;
-                case TileType.SideStaticTile:
-                    break;
-                case TileType.CenterStaticTile:
-                    break;
-                case TileType.DynamicTile:
-                    break;
-                case TileType.MineTile:
-                    break;
-                case TileType.WeaponTarget:
-                    break;
                 case TileType.TransTarget:
+                case TileType.WeaponTarget:
+                case TileType.DynamicTile:
+                case TileType.SideStaticTile:
+                    _currentIndex = t.Index;
+                    if (_currentIndex != _startingIndex)
+                    {
+                        //GridManager.Manager.PrePathFind(_startingIndex, _currentIndex);
+                        GridManager.Manager.TryAddDynamicBuildingAt(t.Index);
+                    }
+                    break;
+                
+                case TileType.MineTile:
+                    _currentIndex = t.Index;
+                    //GridManager.Manager.PrePathFind(_startingIndex, t.Index); //Path find before check to properly delete paths 
+                    GridManager.Manager.TryAddDynamicBuildingAt(t.Index);
+                    if (t.IsBlocked && t.Index == _startingIndex)
+                    {
+                        //GridManager.Manager.CancelPrePath();
+                        GridManager.Manager.CancelAdding();
+                        _startingHitType = HitGridType.None; 
+                    }
+                    break;
+                
+                case TileType.CenterStaticTile:
+                case TileType.Default:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -517,17 +529,20 @@ namespace InputManagement
                     if (GridManager.Manager.Grid[_currentIndex] is SideStaticBuildingTile && 
                         _currentStaticGroup != cst!.StaticGroup)
                     {
-                        GridManager.Manager.SetPath();
+                        //GridManager.Manager.SetPath();
+                        GridManager.Manager.TryAddDynamicBuildingAt(t.Index);
                     }
                     else
                     {
-                        GridManager.Manager.CancelPrePath();
+                        //GridManager.Manager.CancelPrePath();
+                        GridManager.Manager.CancelAdding();
                     }
                     break;
                 
                 case TileType.DynamicTile:
                 case TileType.Default:
-                    GridManager.Manager.CancelPrePath();
+                    //GridManager.Manager.CancelPrePath();
+                    GridManager.Manager.CancelAdding();
                     break;
                                 
                 case TileType.SideStaticTile:
@@ -536,11 +551,13 @@ namespace InputManagement
 
                     if (_currentStaticGroup == st2.StaticGroup)
                     {
-                        GridManager.Manager.CancelPrePath();
+                        //GridManager.Manager.CancelPrePath();
+                        GridManager.Manager.CancelAdding();
                     }
                     else
                     {
-                        GridManager.Manager.SetPath();
+                        //GridManager.Manager.SetPath();
+                        GridManager.Manager.TryAddDynamicBuildingAt(t.Index);
                     }
                     break;
 

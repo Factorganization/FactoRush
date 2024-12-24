@@ -53,7 +53,6 @@ namespace GameContent.GridManagement
             _addingDynamic = new HashSet<Vector2Int>();
             _addingStatic = new HashSet<Vector2Int>();
             _removing = new HashSet<Vector2Int>();
-            _toAddDynamic = new Dictionary<Vector2Int, DynamicBuilding>();
             _toAddStatic = new Dictionary<Vector2Int, StaticBuilding>();
             _toRemove = new Dictionary<Vector2Int, Building>();
             
@@ -170,15 +169,6 @@ namespace GameContent.GridManagement
             _ => throw new ArgumentOutOfRangeException(nameof(n), n, null)
         };
         
-        [Obsolete]
-        private static TileType GetStaticTypeObsolete(int n) => n switch
-        {
-            //1 or 3 or 7 or 9 => TileType.CornerStaticTile, //magiiiiic
-            2 or 4 or 6 or 8 => TileType.SideStaticTile,
-            5 => TileType.CenterStaticTile,
-            _ => throw new ArgumentOutOfRangeException(nameof(n), n, null) // this is pure magic don't question it
-        };
-        
         private void UpdateGrid()
         {
             if (_currentGridLockMode is GridLockMode.Locked or GridLockMode.BuildingLocked)
@@ -196,19 +186,24 @@ namespace GameContent.GridManagement
                 else
                     ConveyorGroups[i] = new ConveyorGroup();
                 
-                foreach (var b in _toAddDynamic)
-                {  
-                    ConveyorGroups[i].AddBuild(b.Value);
-                    b.Value.ConveyorGroupId = i;
-                    b.Value.SetDebugId(i);
+                foreach (var id in _addingDynamic)
+                {
+                    var b = InstantiateBuildingAt(dynamicGenericBuild, Grid[id].ETransform) as DynamicBuilding;
+                    ConveyorGroups[i].AddBuild(b);
                     
-                    PlaceBuildingAt(b.Key, b.Value);
+                    if (b is null)
+                        continue;
+                    
+                    b.ConveyorGroupId = i;
+                    b.SetDebugId(i);
+                    PlaceBuildingAt(id, b);
+                    
+                    Grid[id].IsSelected = false;
                 }
                 
                 ConveyorGroups[i].Init();
             }
             _addingDynamic.Clear();
-            _toAddDynamic.Clear();
 
             if (_addingStatic.Count > 0)
             {
@@ -235,7 +230,7 @@ namespace GameContent.GridManagement
         
         #region grid modifiers
         
-        public bool TryAddDynamicBuildingAt(Vector2Int index, Vector3 pos) // yes. bool.
+        public bool TryAddDynamicBuildingAt(Vector2Int index) // yes. bool.
         {
             if (Grid[index].CurrentBuildingRef is not null)
                 return false;
@@ -243,10 +238,10 @@ namespace GameContent.GridManagement
             if (!_addingDynamic.Add(index))
                 return false;
 
-            var b = Instantiate(dynamicGenericBuild, Grid[index].ETransform);
-            _toAddDynamic.Add(index, b);
-            b.TargetPosition = pos;
-            b.Position = pos;
+            Grid[index].IsSelected = true;
+            
+            
+            
             return true;
         }
 
@@ -264,13 +259,15 @@ namespace GameContent.GridManagement
         
         public void CancelAdding()
         {
-            foreach (var b in _toAddDynamic)
+            if (_addingDynamic.Count <= 0)
+                return;
+            
+            foreach (var i in _addingDynamic)
             {
-                Destroy(b.Value.gameObject);
+                Grid[i].IsSelected = false;
             }
             
             _addingDynamic.Clear();
-            _toAddDynamic.Clear();
         }
 
         public void TryRemoveDynamicBuildingAt(Vector2Int index)
@@ -297,6 +294,14 @@ namespace GameContent.GridManagement
             _toRemove.Add(index, Grid[index].CurrentBuildingRef);
         }
 
+        private static Building InstantiateBuildingAt(Building build, Transform trans)
+        {
+            var b = Instantiate(build, trans);
+            b.TargetPosition = trans.position + Vector3.up / 2;
+            b.Position = trans.position + Vector3.up / 2;
+            return b;
+        }
+        
         private void PlaceBuildingAt(Vector2Int index, Building building)
         {
             Grid[index].CurrentBuildingRef = building;
@@ -317,11 +322,13 @@ namespace GameContent.GridManagement
         {
             foreach (var t in _currentPath)
             {
-                TryAddDynamicBuildingAt(t.Index, t.Position + Vector3.up / 2);
+                TryAddDynamicBuildingAt(t.Index);
             }
             
             CancelPrePath();
         }
+
+        public List<Tile> GetPath(Vector2Int from, Vector2Int to) => PathFinder.FindPath(Grid[from], Grid[to]);
         
         public void PrePathFind(Vector2Int from, Vector2Int to)
         {
@@ -396,8 +403,6 @@ namespace GameContent.GridManagement
         private HashSet<Vector2Int> _addingStatic;
         
         private HashSet<Vector2Int> _removing;
-        
-        private Dictionary<Vector2Int, DynamicBuilding> _toAddDynamic;
         
         private Dictionary<Vector2Int, StaticBuilding> _toAddStatic;
         
