@@ -8,8 +8,8 @@
 
         public override bool IsSelected
         {
-            get => false;
-            set {}
+            get;
+            set;
         }
 
         #endregion

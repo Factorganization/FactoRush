@@ -101,6 +101,7 @@ namespace InputManagement
                     var sst = t as StaticBuildingTile;
                     //checker
                     _currentStaticGroup = sst!.StaticGroup;
+                    GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     break;
                 
                 case HitGridType.CenterStaticHit:
@@ -321,25 +322,28 @@ namespace InputManagement
                 case TileType.TransTarget:
                 case TileType.DynamicTile:
                 case TileType.MineTile:
-                    if (t.Index != _currentIndex)
-                    {
-                        _lastIndex = _currentIndex;
-                        _currentIndex = t.Index;
-                    }
+                    if (t.Index == _currentIndex)
+                        break;
+
+                    _lastIndex = _currentIndex;
+                    _currentIndex = t.Index;
                     
                     if (_currentIndex != _startingIndex)
                     {
                         //GridManager.Manager.PrePathFind(_startingIndex, _currentIndex);
-                        GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, t.Index);
+                        GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     }
                     break;
                 
                 case TileType.SideStaticTile:
+                    if (t.Index == _currentIndex)
+                        break;
+                    
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
                     
                     //GridManager.Manager.PrePathFind(_startingIndex, t.Index); //Path find before check to properly delete paths 
-                    GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, t.Index);
+                    GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     if (t.IsBlocked && t.Index == _startingIndex)
                     {
                         //GridManager.Manager.CancelPrePath();
@@ -349,6 +353,14 @@ namespace InputManagement
                     break;
                     
                 case TileType.CenterStaticTile:
+                    if (t.Index == _currentIndex)
+                        break;
+
+                    _lastIndex = _currentIndex;
+                    _currentIndex = t.Index;
+                    GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex); // Dark Magic of Chaos
+                    break;
+                
                 case TileType.Default:
                     break;
                 default:
@@ -536,11 +548,12 @@ namespace InputManagement
             {
                 case TileType.CenterStaticTile:
                     var cst = t as StaticBuildingTile;
-                    if (GridManager.Manager.Grid[_currentIndex] is SideStaticBuildingTile && 
+                    if (/*GridManager.Manager.Grid[_currentIndex] is SideStaticBuildingTile && */
                         _currentStaticGroup != cst!.StaticGroup)
                     {
                         //GridManager.Manager.SetPath();
                         //GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, t.Index);
+                        GridManager.Manager.MarkSelectionEmpty();
                     }
                     else
                     {
@@ -568,6 +581,7 @@ namespace InputManagement
                     {
                         //GridManager.Manager.SetPath();
                         GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, t.Index);
+                        GridManager.Manager.MarkSelectionEmpty();
                     }
                     break;
 

@@ -235,9 +235,17 @@ namespace GameContent.GridManagement
         {
             if (Grid[index].CurrentBuildingRef is not null || (previous == index && Grid[index].IsSelected))
                 return true;
+            
+            if (IsSpecTile(_currentSelectedTile) && !Grid[index].IsSelected)
+                return false;
 
-            //if (lastTile is specialTile && !Grid[index].IsSelected)
-            //    return false;
+            if (Grid[index] is CenterStaticBuildingTile) // Dark Magic Happening here
+            {
+                _currentSelectedTile = Grid[index];
+                return false;
+            }
+            
+            _currentSelectedTile = Grid[index];
             
             var distance = Vector2Int.Distance(index, previous);
             switch (distance)
@@ -310,9 +318,16 @@ namespace GameContent.GridManagement
             b.Position = pos;
             return true;
         }
+
+        public void MarkSelectionEmpty()
+        {
+            _currentSelectedTile = null;
+        }
         
         public void CancelAdding()
         {
+            _currentSelectedTile = null;
+            
             if (_addingDynamic.Count <= 0)
                 return;
             
@@ -427,10 +442,17 @@ namespace GameContent.GridManagement
         }
         
         #endregion
+
+        #region checkers
         
         private static bool IsAvailable(Tile i) =>
             !i.IsBlocked && !i.IsSelected;
+
+        private static bool IsSpecTile(Tile i) =>
+            i is MineTile or WeaponTargetTile or TransTargetTile or CenterStaticBuildingTile;
         
+        #endregion
+
         #endregion
 
         #region fields
@@ -484,6 +506,8 @@ namespace GameContent.GridManagement
         #region path find
 
         private List<Tile> _currentPath;
+
+        private Tile _currentSelectedTile;
 
         #endregion
 
