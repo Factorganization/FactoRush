@@ -93,6 +93,7 @@ namespace InputManagement
             _startingHitType = GetHitType(t.Type);
             _startingIndex = t.Index;
             _currentIndex = t.Index;
+            _lastIndex = t.Index;
             
             switch (_startingHitType)
             {
@@ -320,18 +321,25 @@ namespace InputManagement
                 case TileType.TransTarget:
                 case TileType.DynamicTile:
                 case TileType.MineTile:
-                    _currentIndex = t.Index;
+                    if (t.Index != _currentIndex)
+                    {
+                        _lastIndex = _currentIndex;
+                        _currentIndex = t.Index;
+                    }
+                    
                     if (_currentIndex != _startingIndex)
                     {
                         //GridManager.Manager.PrePathFind(_startingIndex, _currentIndex);
-                        GridManager.Manager.TryAddDynamicBuildingAt(t.Index);
+                        GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, t.Index);
                     }
                     break;
                 
                 case TileType.SideStaticTile:
+                    _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
+                    
                     //GridManager.Manager.PrePathFind(_startingIndex, t.Index); //Path find before check to properly delete paths 
-                    GridManager.Manager.TryAddDynamicBuildingAt(t.Index);
+                    GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, t.Index);
                     if (t.IsBlocked && t.Index == _startingIndex)
                     {
                         //GridManager.Manager.CancelPrePath();
@@ -398,18 +406,20 @@ namespace InputManagement
                 case TileType.WeaponTarget:
                 case TileType.DynamicTile:
                 case TileType.SideStaticTile:
+                    _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
                     if (_currentIndex != _startingIndex)
                     {
                         //GridManager.Manager.PrePathFind(_startingIndex, _currentIndex);
-                        GridManager.Manager.TryAddDynamicBuildingAt(t.Index);
+                        GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, t.Index);
                     }
                     break;
                 
                 case TileType.MineTile:
+                    _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
                     //GridManager.Manager.PrePathFind(_startingIndex, t.Index); //Path find before check to properly delete paths 
-                    GridManager.Manager.TryAddDynamicBuildingAt(t.Index);
+                    GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, t.Index);
                     if (t.IsBlocked && t.Index == _startingIndex)
                     {
                         //GridManager.Manager.CancelPrePath();
@@ -530,7 +540,7 @@ namespace InputManagement
                         _currentStaticGroup != cst!.StaticGroup)
                     {
                         //GridManager.Manager.SetPath();
-                        GridManager.Manager.TryAddDynamicBuildingAt(t.Index);
+                        //GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, t.Index);
                     }
                     else
                     {
@@ -557,7 +567,7 @@ namespace InputManagement
                     else
                     {
                         //GridManager.Manager.SetPath();
-                        GridManager.Manager.TryAddDynamicBuildingAt(t.Index);
+                        GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, t.Index);
                     }
                     break;
 
@@ -642,7 +652,7 @@ namespace InputManagement
         #endregion
         
         #region fields
-        
+
         [SerializeField] private Camera isoCamera;
 
         private HitGridType _startingHitType;
@@ -650,13 +660,15 @@ namespace InputManagement
         private Vector2Int _startingIndex;
 
         private Vector2Int _currentIndex;
-        
+
+        private Vector2Int _lastIndex;
+
         private bool _hasDragged;
 
         private byte _currentStaticGroup;
 
         private sbyte _currentConveyorGroup;
-        
+
         private float _hitTimerCounter;
 
         private const float StationaryTargetTime = 0.5f;

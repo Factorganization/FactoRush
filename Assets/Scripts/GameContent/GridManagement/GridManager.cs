@@ -51,6 +51,7 @@ namespace GameContent.GridManagement
             ConveyorGroups = new Dictionary<sbyte, ConveyorGroup>();
             
             _addingDynamic = new HashSet<Vector2Int>();
+            _pathExceed = new HashSet<Vector2Int>();
             _addingStatic = new HashSet<Vector2Int>();
             _removing = new HashSet<Vector2Int>();
             _toAddStatic = new Dictionary<Vector2Int, StaticBuilding>();
@@ -230,21 +231,74 @@ namespace GameContent.GridManagement
         
         #region grid modifiers
         
-        public bool TryAddDynamicBuildingAt(Vector2Int index) // yes. bool.
+        public bool TryAddDynamicBuildingAt(Vector2Int from, Vector2Int previous, Vector2Int index) // yes. bool.
         {
-            if (Grid[index].CurrentBuildingRef is not null)
-                return false;
-            
-            if (!_addingDynamic.Add(index))
-                return false;
+            if (Grid[index].CurrentBuildingRef is not null || (previous == index && Grid[index].IsSelected))
+                return true;
 
+            //if (lastTile is specialTile && !Grid[index].IsSelected)
+            //    return false;
+            
+            var distance = Vector2Int.Distance(index, previous);
+            switch (distance)
+            {
+                case > 1 and < 2 when !TryCompletePath(previous, index):
+                    CancelAdding();
+                    return false;
+                case >= 2:
+                    return false;
+            }
+
+            _addingDynamic.Add(index);
             Grid[index].IsSelected = true;
+
+            _currentPath = PathFinder.FindPath(Grid[from], Grid[index]);
+
+            foreach (var i in _addingDynamic)
+            {
+                if (_currentPath.Contains(Grid[i]))
+                    continue;
+                
+                Grid[i].IsSelected = false;
+                _pathExceed.Add(i);
+            }
             
+            if (_pathExceed.Count <= 0)
+                return true;
             
+            foreach (var i in _pathExceed)
+            {
+                _addingDynamic.Remove(i);
+            }
+            _pathExceed.Clear();
             
-            return true;
+            return _addingDynamic.Count > 0;
         }
 
+        private bool TryCompletePath(Vector2Int previous, Vector2Int index)
+        {
+            var rawPi = index - previous;
+            var pi = Vector2Int.one * new Vector2Int((int)Mathf.Sign(rawPi.x), (int)Mathf.Sign(rawPi.y));
+
+            var c1 = previous + pi * Vector2Int.right;
+            var t1 = Grid[c1];
+            if (IsAvailable(t1))
+            {
+                t1.IsSelected = true;
+                return _addingDynamic.Add(c1);
+            }
+                
+            var c2 = previous + pi * Vector2Int.up;
+            var t2 = Grid[c2];
+            if (IsAvailable(t2))
+            {
+                t2.IsSelected = true;
+                return _addingDynamic.Add(c2);
+            }
+
+            return false;
+        }
+        
         public bool TryAddStaticBuildingAt(Vector2Int index, Vector3 pos) // bool again
         {
             if (!_addingStatic.Add(index))
@@ -268,6 +322,8 @@ namespace GameContent.GridManagement
             }
             
             _addingDynamic.Clear();
+            _currentPath.Clear();
+            _pathExceed.Clear();
         }
 
         public void TryRemoveDynamicBuildingAt(Vector2Int index)
@@ -294,6 +350,8 @@ namespace GameContent.GridManagement
             _toRemove.Add(index, Grid[index].CurrentBuildingRef);
         }
 
+        #region placings
+        
         private static Building InstantiateBuildingAt(Building build, Transform trans)
         {
             var b = Instantiate(build, trans);
@@ -315,21 +373,26 @@ namespace GameContent.GridManagement
         }
 
         #endregion
+        
+        #endregion
 
         #region path find
         
+        [Obsolete]
         public void SetPath()
         {
             foreach (var t in _currentPath)
             {
-                TryAddDynamicBuildingAt(t.Index);
+                //TryAddDynamicBuildingAt(t.Index);
             }
             
             CancelPrePath();
         }
 
+        [Obsolete]
         public List<Tile> GetPath(Vector2Int from, Vector2Int to) => PathFinder.FindPath(Grid[from], Grid[to]);
         
+        [Obsolete]
         public void PrePathFind(Vector2Int from, Vector2Int to)
         {
             var c = PathFinder.FindPath(Grid[from], Grid[to]);
@@ -349,6 +412,7 @@ namespace GameContent.GridManagement
             _currentPath = c;
         }
 
+        [Obsolete]
         public void CancelPrePath()
         {
             if (_currentPath.Count <= 0)
@@ -363,6 +427,9 @@ namespace GameContent.GridManagement
         }
         
         #endregion
+        
+        private static bool IsAvailable(Tile i) =>
+            !i.IsBlocked && !i.IsSelected;
         
         #endregion
 
@@ -400,6 +467,8 @@ namespace GameContent.GridManagement
         
         private HashSet<Vector2Int> _addingDynamic; // hashSet go brrrrrrrrr
 
+        private HashSet<Vector2Int> _pathExceed;
+        
         private HashSet<Vector2Int> _addingStatic;
         
         private HashSet<Vector2Int> _removing;

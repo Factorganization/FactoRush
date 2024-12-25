@@ -12,8 +12,8 @@ namespace GameContent.Entities.GridEntities
 
         public override bool IsSelected
         {
-            get => false;
-            set {}
+            get;
+            set;
         }
 
         private ConveyorGroup CurrentGroup { get; set; }
