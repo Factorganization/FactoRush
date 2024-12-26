@@ -236,7 +236,7 @@ namespace GameContent.GridManagement
             if (Grid[index].CurrentBuildingRef is not null || (previous == index && Grid[index].IsSelected))
                 return true;
             
-            if (IsSpecTile(_currentSelectedTile) && !Grid[index].IsSelected)
+            if (IsSpecTile(_currentSelectedTile) && !Grid[index].IsSelected && _addingDynamic.Count > 1)
                 return false;
 
             if (Grid[index] is CenterStaticBuildingTile) // Dark Magic Happening here
@@ -317,11 +317,6 @@ namespace GameContent.GridManagement
             b.TargetPosition = pos;
             b.Position = pos;
             return true;
-        }
-
-        public void MarkSelectionEmpty()
-        {
-            _currentSelectedTile = null;
         }
         
         public void CancelAdding()

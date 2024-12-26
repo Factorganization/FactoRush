@@ -33,8 +33,8 @@ namespace GameContent.Entities.OnFieldEntities
                 case SideStaticBuildingTile when this[Count - 1].TileRef is MineTile:
                     FromStaticBuild = this[Count - 1].TileRef;
                     ToStaticBuild = this[0].TileRef;
-                    this[Count - 1].SetDebugId(100);
-                    this[0].SetDebugId(101);
+                    this[Count - 1].SetDebugId(101);
+                    this[0].SetDebugId(100);
                     break;
                 
                 case SideStaticBuildingTile when this[Count - 1].TileRef is WeaponTargetTile || this[Count - 1].TileRef is TransTargetTile:
@@ -42,8 +42,8 @@ namespace GameContent.Entities.OnFieldEntities
                 case WeaponTargetTile or TransTargetTile:
                     FromStaticBuild = this[0].TileRef;
                     ToStaticBuild = this[Count - 1].TileRef;
-                    this[Count - 1].SetDebugId(100);
-                    this[0].SetDebugId(101);
+                    this[Count - 1].SetDebugId(101);
+                    this[0].SetDebugId(100);
                     break;
             }
             
