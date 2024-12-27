@@ -644,6 +644,10 @@ namespace InputManagement
                 case TileType.MineTile: //Apparemment ca marche ¯\_(ツ)_/¯
                 case TileType.WeaponTarget:
                 case TileType.TransTarget:
+                    if (!GridManager.Manager.IsLastSelectedTile(_currentIndex) || t.IsBlocked)
+                    {
+                        GridManager.Manager.CancelAdding();
+                    }
                     break;
 
                 case TileType.DynamicTile:
@@ -696,9 +700,9 @@ namespace InputManagement
 
             switch (t.Type)
             {
+                case TileType.MineTile:
                 case TileType.WeaponTarget:
                 case TileType.TransTarget:
-                case TileType.MineTile:
                 case TileType.Default:
                     //GridManager.Manager.CancelPrePath();
                     GridManager.Manager.CancelAdding();
@@ -706,6 +710,10 @@ namespace InputManagement
                 
                 case TileType.CenterStaticTile:
                 case TileType.SideStaticTile:
+                    if (!GridManager.Manager.IsLastSelectedTile(_currentIndex) || t.IsBlocked)
+                    {
+                        GridManager.Manager.CancelAdding();
+                    }
                     break;
 
                 case TileType.DynamicTile:
@@ -735,6 +743,10 @@ namespace InputManagement
                 
                 case TileType.CenterStaticTile:
                 case TileType.SideStaticTile:
+                    if (!GridManager.Manager.IsLastSelectedTile(_currentIndex) || t.IsBlocked)
+                    {
+                        GridManager.Manager.CancelAdding();
+                    }
                     break;
 
                 case TileType.DynamicTile:
@@ -764,6 +776,10 @@ namespace InputManagement
                 
                 case TileType.CenterStaticTile:
                 case TileType.SideStaticTile:
+                    if (!GridManager.Manager.IsLastSelectedTile(_currentIndex) || t.IsBlocked)
+                    {
+                        GridManager.Manager.CancelAdding();
+                    }
                     break;
 
                 case TileType.DynamicTile:

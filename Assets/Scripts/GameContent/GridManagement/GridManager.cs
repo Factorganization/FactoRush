@@ -233,19 +233,19 @@ namespace GameContent.GridManagement
         
         public bool TryAddDynamicBuildingAt(Vector2Int from, Vector2Int previous, Vector2Int index) // yes. bool.
         {
-            if (Grid[index].CurrentBuildingRef is not null || (previous == index && Grid[index].IsSelected))
-                return true;
-            
-            if (IsSpecTile(_currentSelectedTile) && !Grid[index].IsSelected && _addingDynamic.Count > 1)
+            if (IsSpecTile(_lastSelectedTile) && !Grid[index].IsSelected && _addingDynamic.Count > 1)
                 return false;
 
-            if (Grid[index] is CenterStaticBuildingTile) // Dark Magic Happening here
-            {
-                _currentSelectedTile = Grid[index];
+            if (_lastSelectedTile is DynamicBuildingTile && _lastSelectedTile.IsBlocked && !Grid[index].IsSelected)
                 return false;
-            }
             
-            _currentSelectedTile = Grid[index];
+            _lastSelectedTile = Grid[index];
+            
+            if (_lastSelectedTile.CurrentBuildingRef is not null || (previous == index && _lastSelectedTile.IsSelected))
+                return true;
+            
+            if (_lastSelectedTile is CenterStaticBuildingTile) // Dark Magic Happening here
+                return false;
             
             var distance = Vector2Int.Distance(index, previous);
             switch (distance)
@@ -258,9 +258,9 @@ namespace GameContent.GridManagement
             }
 
             _addingDynamic.Add(index);
-            Grid[index].IsSelected = true;
+            _lastSelectedTile.IsSelected = true;
 
-            _currentPath = PathFinder.FindPath(Grid[from], Grid[index]);
+            _currentPath = PathFinder.FindPath(Grid[from], _lastSelectedTile);
 
             foreach (var i in _addingDynamic)
             {
@@ -321,7 +321,7 @@ namespace GameContent.GridManagement
         
         public void CancelAdding()
         {
-            _currentSelectedTile = null;
+            _lastSelectedTile = null;
             
             if (_addingDynamic.Count <= 0)
                 return;
@@ -446,6 +446,8 @@ namespace GameContent.GridManagement
         private static bool IsSpecTile(Tile i) =>
             i is MineTile or WeaponTargetTile or TransTargetTile or CenterStaticBuildingTile;
         
+        public bool IsLastSelectedTile(Vector2Int index) => _lastSelectedTile == Grid[index];
+        
         #endregion
 
         #endregion
@@ -502,7 +504,7 @@ namespace GameContent.GridManagement
 
         private List<Tile> _currentPath;
 
-        private Tile _currentSelectedTile;
+        private Tile _lastSelectedTile;
 
         #endregion
 

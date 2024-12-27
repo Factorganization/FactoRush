@@ -22,6 +22,8 @@ namespace GameContent.Entities.OnFieldEntities
             set => _dynamicBuildings[index] = value;
         }
 
+        public List<DynamicBuilding> DynamicBuildings => _dynamicBuildings;
+
         #endregion
 
         #region constructors

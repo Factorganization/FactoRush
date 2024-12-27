@@ -1,5 +1,8 @@
-﻿using GameContent.Entities.GridEntities;
+﻿using System;
+using GameContent.Entities.GridEntities;
 using GameContent.GridManagement;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameContent.Entities.OnFieldEntities
 {
@@ -27,6 +30,8 @@ namespace GameContent.Entities.OnFieldEntities
 
         public void Init()
         {
+            DynamicBuildings.Sort(TypeComparer);
+            
             switch (this[0].TileRef)
             {
                 // Ca marche mais j'ai oublié ou est le code qui fait que ca marche
@@ -55,9 +60,12 @@ namespace GameContent.Entities.OnFieldEntities
             if (FromStaticBuild is not DynamicBuildingTile && ToStaticBuild is not DynamicBuildingTile)
                 return;
             
-            this[0].SetDebugId(100);
-            this[Count - 1].SetDebugId(101);
-            GridManager.Manager.TryRemoveDynamicBuildingAt(this[0].TileRef.Index);
+            foreach (var b in this)
+            {
+                GridManager.Manager.Grid[b.TileRef.Index].CurrentBuildingRef = null;
+                Object.Destroy(b.gameObject);
+            }
+            GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
         }
         
         public override void UpdateGroup()
@@ -75,6 +83,12 @@ namespace GameContent.Entities.OnFieldEntities
             
         }
         
+        #endregion
+
+        #region fields
+
+        private static readonly Comparison<DynamicBuilding> TypeComparer = (a, b) => (int)Mathf.Sign((byte)a.TileRef.Type - (byte)b.TileRef.Type);
+
         #endregion
     }
 }
