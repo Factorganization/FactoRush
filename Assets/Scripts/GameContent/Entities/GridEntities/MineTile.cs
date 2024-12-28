@@ -16,8 +16,6 @@ namespace GameContent.Entities.GridEntities
             set;
         }
 
-        private ConveyorGroup CurrentGroup { get; set; }
-
         #endregion
         
         #region methodes
@@ -26,15 +24,11 @@ namespace GameContent.Entities.GridEntities
         {
             base.OnUpdate();
             
-            if (CurrentBuildingRef is not null && CurrentGroup is not null)
+            if (CurrentBuildingRef is not null && GroupRef is not null && Active)
             {
                 
             }
         }
-
-        private void SetConveyorGroup(ConveyorGroup conveyorGroup) => CurrentGroup = conveyorGroup;
-
-        private void ClearGroup() => CurrentGroup = null;
 
         #endregion
         

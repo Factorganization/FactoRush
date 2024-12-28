@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using GameContent.Entities.OnFieldEntities;
+using UnityEngine;
 
 namespace GameContent.Entities.GridEntities
 {
-    public class SideStaticBuildingTile : StaticBuildingTile
+    public sealed class SideStaticBuildingTile : StaticBuildingTile
     {
         #region properties
         

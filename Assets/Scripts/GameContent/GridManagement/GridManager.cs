@@ -76,9 +76,14 @@ namespace GameContent.GridManagement
         #region grid
         
         /// <summary>
-        /// 01 - 09 : mining build
-        /// 10 - 19 : refinery build
-        /// 20 - 29 : assembly build
+        /// <list type = "table">
+        /// <listheader>
+        /// ID to Tile Type
+        /// </listheader>
+        /// <item>01 - 09 : mining build</item>
+        /// <item>10 - 19 : refinery build</item>
+        /// <item>20 - 29 : assembly build</item>
+        /// </list>
         /// </summary>
         /// <returns></returns>
         private IEnumerator InitGrid()
@@ -349,6 +354,8 @@ namespace GameContent.GridManagement
                 _removing.Add(b2.TileRef.Index);
                 _toRemove.Add(b2.TileRef.Index, b2);
             }
+            
+            ConveyorGroups[i].DestroyGroup();
             ConveyorGroups.Remove(i);
         }
 
@@ -447,6 +454,8 @@ namespace GameContent.GridManagement
             i is MineTile or WeaponTargetTile or TransTargetTile or CenterStaticBuildingTile;
         
         public bool IsLastSelectedTile(Vector2Int index) => _lastSelectedTile == Grid[index];
+        
+        public bool IsEmptyPath() => _addingDynamic.Count == 0;
         
         #endregion
 
