@@ -8,21 +8,21 @@ namespace GameContent.Entities.OnFieldEntities
     {
         #region properties
         
-        public int Count => _dynamicBuildings.Count;
+        public int Count => DynamicBuildings.Count;
         
         public DynamicBuilding this[int index]
         {
             get
             {
-                if (index < 0 || index >= _dynamicBuildings.Count)
+                if (index < 0 || index >= DynamicBuildings.Count)
                     throw new IndexOutOfRangeException();
 
-                return _dynamicBuildings[index];
+                return DynamicBuildings[index];
             }
-            set => _dynamicBuildings[index] = value;
+            set => DynamicBuildings[index] = value;
         }
 
-        public List<DynamicBuilding> DynamicBuildings => _dynamicBuildings;
+        protected List<DynamicBuilding> DynamicBuildings { get; }
 
         #endregion
 
@@ -30,7 +30,7 @@ namespace GameContent.Entities.OnFieldEntities
 
         protected DynamicBuildingList(params DynamicBuilding[] dl)
         {
-            _dynamicBuildings = new List<DynamicBuilding>(dl);
+            DynamicBuildings = new List<DynamicBuilding>(dl);
         }
 
         #endregion
@@ -39,21 +39,19 @@ namespace GameContent.Entities.OnFieldEntities
 
         public virtual void AddBuild(DynamicBuilding building)
         {
-            _dynamicBuildings.Add(building);
+            DynamicBuildings.Add(building);
         }
 
         public abstract void UpdateGroup();
         
-        public IEnumerator<DynamicBuilding> GetEnumerator() => _dynamicBuildings.GetEnumerator();
+        public IEnumerator<DynamicBuilding> GetEnumerator() => DynamicBuildings.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         #endregion
 
         #region fields
-        
-        private readonly List<DynamicBuilding> _dynamicBuildings;
-        
+
         #endregion
     }
 }

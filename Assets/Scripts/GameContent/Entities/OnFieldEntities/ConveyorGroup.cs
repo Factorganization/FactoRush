@@ -33,27 +33,15 @@ namespace GameContent.Entities.OnFieldEntities
 
         public void Init()
         {
-            DynamicBuildings.Sort(TypeComparer);
-            
-            switch (this[0].TileRef)
-            {
-                // Ca marche mais j'ai oublié ou est le code qui fait que ca marche
-                case SideStaticBuildingTile when this[Count - 1].TileRef is MineTile:
-                    FromStaticTile = this[Count - 1].TileRef;
-                    ToStaticTile = this[0].TileRef;
-                    
-                    this[Count - 1].SetDebugId(100);
-                    this[0].SetDebugId(101);
-                    break;
-                
-                case SideStaticBuildingTile when this[Count - 1].TileRef is WeaponTargetTile or TransTargetTile:
-                    FromStaticTile = this[0].TileRef;
-                    ToStaticTile = this[Count - 1].TileRef;
-                    
-                    this[Count - 1].SetDebugId(101);
-                    this[0].SetDebugId(100);
-                    break;
-            }
+            // Ca marche mais j'ai oublié ou est le code qui fait que ca marche
+            if ((this[0].TileRef is SideStaticBuildingTile && this[Count - 1].TileRef is MineTile) ||
+                (this[0].TileRef is WeaponTargetTile or TransTargetTile && this[Count - 1].TileRef is SideStaticBuildingTile))
+                DynamicBuildings.Reverse();
+
+            FromStaticTile = this[0].TileRef;
+            ToStaticTile = this[Count - 1].TileRef;
+            this[Count - 1].SetDebugId();
+            this[0].SetDebugId();
             
             FromStaticTile.SetConveyorGroup(this);
             ToStaticTile.SetConveyorGroup(this);
@@ -108,6 +96,7 @@ namespace GameContent.Entities.OnFieldEntities
 
         private readonly List<BaseResource> _conveyedResources;
         
+        //C'est pas fou en fait
         private static readonly Comparison<DynamicBuilding> TypeComparer = (a, b) => (int)Mathf.Sign((byte)a.TileRef.Type - (byte)b.TileRef.Type);
         
         #endregion

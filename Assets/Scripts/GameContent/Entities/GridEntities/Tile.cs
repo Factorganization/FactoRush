@@ -61,9 +61,11 @@ namespace GameContent.Entities.GridEntities
         
         public void MarkActive(bool active) => Active = active;
 
-        protected virtual void InstantiateResource(BaseResource resource)
+        protected virtual void InstantiateResourceAt(BaseResource resource, Vector3 pos)
         {
-            GroupRef?.AddResource(resource);
+            var r = Instantiate(resource, pos, Quaternion.identity);
+            r.Created(GroupRef);
+            GroupRef?.AddResource(r);
         }
 
         protected virtual void DestroyResource(BaseResource resource)

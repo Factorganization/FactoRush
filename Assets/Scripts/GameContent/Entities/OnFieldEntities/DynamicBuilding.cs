@@ -15,6 +15,8 @@ namespace GameContent.Entities.OnFieldEntities
         
         public void SetDebugId(sbyte i) => conveyorGroupId.text = i.ToString();
         
+        public void SetDebugId() => conveyorGroupId.text = "";
+        
         #endregion
         
         #region fields

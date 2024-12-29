@@ -1,5 +1,4 @@
 ﻿using GameContent.CraftResources;
-using GameContent.Entities.OnFieldEntities;
 using UnityEngine;
 
 namespace GameContent.Entities.GridEntities
@@ -17,17 +16,33 @@ namespace GameContent.Entities.GridEntities
         }
 
         #endregion
-        
+
         #region methodes
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            _spawnCounter = 0;
+        }
 
         protected override void OnUpdate()
         {
             base.OnUpdate();
-            
-            if (CurrentBuildingRef is not null && GroupRef is not null && Active)
+
+            if (!Active)
+                return;
+
+            if (_spawnCounter <= Constants.SpawnInterval)
             {
-                
+                _spawnCounter += Time.deltaTime;
+                return;
             }
+
+            if (CurrentBuildingRef is null || GroupRef is null)
+                return;
+
+            InstantiateResourceAt(miningResource, Position + Vector3.up * 0.25f);
+            _spawnCounter = 0;
         }
 
         #endregion
@@ -35,6 +50,8 @@ namespace GameContent.Entities.GridEntities
         #region fields
 
         [SerializeField] private MiningResource miningResource;
+
+        private float _spawnCounter;
 
         #endregion
     }

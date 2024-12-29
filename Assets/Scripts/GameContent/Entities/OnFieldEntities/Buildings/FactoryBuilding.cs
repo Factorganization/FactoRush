@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using GameContent.CraftResources;
+using UnityEngine;
 
 namespace GameContent.Entities.OnFieldEntities.Buildings
 {
@@ -20,18 +23,36 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
             
             MineBuildingRef = new List<MineBuilding>();
             AssemblyBuildingRef = new List<AssemblyBuilding>();
+
+            _miningResources = new Dictionary<MiningResourceType, int>();
+            for (var i = 0; i < Enum.GetValues(typeof(MiningResourceType)).Length; i++)
+            {
+                _miningResources.Add((MiningResourceType)i, 0);
+            }
         }
 
-        protected override void OnUpdate()
+        private void CheckMiningResources()
         {
-            base.OnUpdate();
+            
+        }
+        
+        public void ResourceAdded(MiningResourceType type)
+        {
+            _miningResources[type]++;
+            Debug.Log(_miningResources[type]);
+            CheckMiningResources();
         }
 
+        public void ResourceRemoved(MiningResourceType type)
+        {
+            _miningResources[type]--;
+        }
+        
         #endregion
         
         #region fields
 
-        
+        private Dictionary<MiningResourceType, int> _miningResources;
 
         #endregion
     }

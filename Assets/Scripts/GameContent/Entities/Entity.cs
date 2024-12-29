@@ -23,7 +23,6 @@ namespace GameContent.Entities
         private void Awake()
         {
             OnAwake();
-            transform.position = TargetPosition;
         }
 
         private void Start()
@@ -34,6 +33,11 @@ namespace GameContent.Entities
         private void Update()
         {
             OnUpdate();
+        }
+
+        private void FixedUpdate()
+        {
+            OnFixedUpdate();
         }
         
         protected virtual void OnAwake()
@@ -48,6 +52,12 @@ namespace GameContent.Entities
         protected virtual void OnUpdate()
         {
         }
+
+        protected virtual void OnFixedUpdate()
+        {
+        }
+
+        protected static float SquareDistance(Vector3 a, Vector3 b) => (b- a).x * (b -a).x + (b - a).y * (b - a).y + (b - a).z * (b - a).z;
         
         #endregion
         

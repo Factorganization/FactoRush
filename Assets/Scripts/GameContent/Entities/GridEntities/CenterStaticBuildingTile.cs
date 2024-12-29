@@ -1,4 +1,5 @@
-﻿using GameContent.CraftResources;
+﻿using UnityEngine;
+using GameContent.CraftResources;
 using GameContent.Entities.OnFieldEntities;
 
 namespace GameContent.Entities.GridEntities
@@ -27,7 +28,7 @@ namespace GameContent.Entities.GridEntities
         
         public override void SetConveyorGroup(ConveyorGroup conveyorGroup) {}
 
-        protected override void InstantiateResource(BaseResource resource) {}
+        protected override void InstantiateResourceAt(BaseResource resource, Vector3 pos) {}
         
         protected override void DestroyResource(BaseResource resource) {}
         

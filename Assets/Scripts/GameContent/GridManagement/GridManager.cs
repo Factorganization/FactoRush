@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
+using GameContent.Entities.OnFieldEntities.Buildings;
 using UnityEngine;
 
 namespace GameContent.GridManagement
@@ -25,6 +26,8 @@ namespace GameContent.GridManagement
 
         public Dictionary<sbyte, ConveyorGroup> ConveyorGroups { get; private set; }
 
+        public Dictionary<byte, FactoryBuilding> FactoryRefs => _factoryRefs;
+        
         public Dictionary<Vector2Int, Tile> Grid { get; private set; }
 
         #endregion
@@ -49,6 +52,7 @@ namespace GameContent.GridManagement
             Grid = new Dictionary<Vector2Int, Tile>();
             _staticGroups = new Dictionary<byte, StaticTileGroup>();
             ConveyorGroups = new Dictionary<sbyte, ConveyorGroup>();
+            _factoryRefs = new Dictionary<byte, FactoryBuilding>();
             
             _addingDynamic = new HashSet<Vector2Int>();
             _pathExceed = new HashSet<Vector2Int>();
@@ -192,25 +196,25 @@ namespace GameContent.GridManagement
                 else
                     ConveyorGroups[i] = new ConveyorGroup();
                 
-                foreach (var id in _addingDynamic)
+                foreach (var t in _currentPath)
                 {
-                    var b = InstantiateBuildingAt(dynamicGenericBuild, Grid[id].ETransform) as DynamicBuilding;
+                    var b = InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) as DynamicBuilding;
                     ConveyorGroups[i].AddBuild(b);
                     
                     if (b is null)
                         continue;
                     
                     b.ConveyorGroupId = i;
-                    b.SetDebugId(i);
-                    PlaceBuildingAt(id, b);
+                    b.SetDebugId(); //i
+                    PlaceBuildingAt(t.Index, b);
                     
-                    Grid[id].IsSelected = false;
+                    Grid[t.Index].IsSelected = false;
                 }
                 
                 ConveyorGroups[i].Init();
             }
             _addingDynamic.Clear();
-
+            
             if (_addingStatic.Count > 0)
             {
                 foreach (var b in _toAddStatic)
@@ -489,7 +493,13 @@ namespace GameContent.GridManagement
         
         #endregion
 
+        #region groups
+        
         private Dictionary<byte, StaticTileGroup> _staticGroups;
+
+        private Dictionary<byte, FactoryBuilding> _factoryRefs;
+        
+        #endregion
         
         #region grid modif
         
