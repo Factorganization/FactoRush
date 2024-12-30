@@ -1,6 +1,6 @@
 ﻿namespace GameContent.Entities.OnFieldEntities
 {
-    public class StaticBuilding : Building
+    public abstract class StaticBuilding : Building
     {
         #region methodes
 

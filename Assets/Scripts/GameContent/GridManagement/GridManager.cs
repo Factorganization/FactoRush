@@ -48,6 +48,7 @@ namespace GameContent.GridManagement
         private void Start()
         {
             _currentPath = new List<Tile>();
+            _pathAddonIndex = -1;
             
             Grid = new Dictionary<Vector2Int, Tile>();
             _staticGroups = new Dictionary<byte, StaticTileGroup>();
@@ -84,9 +85,10 @@ namespace GameContent.GridManagement
         /// <listheader>
         /// ID to Tile Type
         /// </listheader>
-        /// <item>01 - 09 : mining build</item>
-        /// <item>10 - 19 : refinery build</item>
-        /// <item>20 - 29 : assembly build</item>
+        /// <item>0 : dynamic build</item>
+        /// <item>01 - 09 : refinery build</item>
+        /// <item>10 - 19 : assembly build</item>
+        /// <item>20 - 29 : mining build</item>
         /// </list>
         /// </summary>
         /// <returns></returns>
@@ -136,7 +138,10 @@ namespace GameContent.GridManagement
                         
                         case > 0:
                             if (!_staticGroups.ContainsKey(grid[i][j]))
+                            {
                                 _staticGroups.Add(grid[i][j], new StaticTileGroup());
+                                _factoryRefs.Add(grid[i][j], null);
+                            }
                             
                             var c = _staticGroups[grid[i][j]].Count + 1;
                             var sBt = Instantiate(c == 3 ? centerStaticBuildTile : sideStaticBuildTile, transform);
@@ -186,34 +191,61 @@ namespace GameContent.GridManagement
             
             if (_addingDynamic.Count > 0)
             {
-                sbyte i = 0;
-    
-                while (ConveyorGroups.ContainsKey(i) && ConveyorGroups[i] != null)
-                    i++;
-                
-                if (!ConveyorGroups.ContainsKey(i))
-                    ConveyorGroups.Add(i, new ConveyorGroup());
-                else
-                    ConveyorGroups[i] = new ConveyorGroup();
-                
-                foreach (var t in _currentPath)
+                if (_pathAddonIndex >= 0 && _pathAddonIndex < ConveyorGroups.Count)
                 {
-                    var b = InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) as DynamicBuilding;
-                    ConveyorGroups[i].AddBuild(b);
+                    foreach (var t in _currentPath)
+                    {
+                        var b = InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) as DynamicBuilding;
+                        ConveyorGroups[_pathAddonIndex].AddBuild(b);
+                        _currentConveyorPath.Add(b);
+                        
+                        if (b is null)
+                            continue;
+                        
+                        b.ConveyorGroupId = _pathAddonIndex;
+                        b.SetDebugId(); //i
+                        PlaceBuildingAt(t.Index, b);
+                        
+                        Grid[t.Index].IsSelected = false;
+                    }
                     
-                    if (b is null)
-                        continue;
-                    
-                    b.ConveyorGroupId = i;
-                    b.SetDebugId(); //i
-                    PlaceBuildingAt(t.Index, b);
-                    
-                    Grid[t.Index].IsSelected = false;
+                    ConveyorGroups[_pathAddonIndex].Init(_currentConveyorPath); //TODO
                 }
-                
-                ConveyorGroups[i].Init();
+
+                else
+                {
+                    sbyte i = 0;
+                        
+                    while (ConveyorGroups.ContainsKey(i) && ConveyorGroups[i] != null)
+                        i++;
+                    
+                    if (!ConveyorGroups.ContainsKey(i))
+                        ConveyorGroups.Add(i, new ConveyorGroup());
+                    else
+                        ConveyorGroups[i] = new ConveyorGroup();
+                    
+                    foreach (var t in _currentPath)
+                    {
+                        var b = InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) as DynamicBuilding;
+                        ConveyorGroups[i].AddBuild(b);
+                        _currentConveyorPath.Add(b);
+                        
+                        if (b is null)
+                            continue;
+                        
+                        b.ConveyorGroupId = i;
+                        b.SetDebugId(); //i
+                        PlaceBuildingAt(t.Index, b);
+                        
+                        Grid[t.Index].IsSelected = false;
+                    }
+                    
+                    ConveyorGroups[i].Init(_currentConveyorPath);
+                }
             }
             _addingDynamic.Clear();
+            _currentConveyorPath.Clear();
+            _pathAddonIndex = -1;
             
             if (_addingStatic.Count > 0)
             {
@@ -239,6 +271,8 @@ namespace GameContent.GridManagement
         #endregion
         
         #region grid modifiers
+        
+        public void SetPathIndex(sbyte index) => _pathAddonIndex = index;
         
         public bool TryAddDynamicBuildingAt(Vector2Int from, Vector2Int previous, Vector2Int index) // yes. bool.
         {
@@ -316,12 +350,13 @@ namespace GameContent.GridManagement
             return false;
         }
         
-        public bool TryAddStaticBuildingAt(Vector2Int index, Vector3 pos) // bool again
+        public bool TryAddStaticBuildingAt(Vector2Int index, Vector3 pos, byte staticGroupId) // bool again
         {
             if (!_addingStatic.Add(index))
                 return false;
             
             var b = Instantiate(staticGenericBuild, Grid[index].ETransform);
+            _factoryRefs[staticGroupId] = b as FactoryBuilding;
             _toAddStatic.Add(index, b);
             b.TargetPosition = pos;
             b.Position = pos;
@@ -369,6 +404,11 @@ namespace GameContent.GridManagement
                 return;
             
             _toRemove.Add(index, Grid[index].CurrentBuildingRef);
+
+            if (Grid[index] is not StaticBuildingTile t)
+                return;
+
+            _factoryRefs[t.StaticGroup] = null;
         }
 
         #region placings
@@ -402,7 +442,7 @@ namespace GameContent.GridManagement
         [Obsolete]
         public void SetPath()
         {
-            foreach (var t in _currentPath)
+            //foreach (var t in _currentPath)
             {
                 //TryAddDynamicBuildingAt(t.Index);
             }
@@ -522,8 +562,12 @@ namespace GameContent.GridManagement
         #region path find
 
         private List<Tile> _currentPath;
+        
+        private List<DynamicBuilding> _currentConveyorPath;
 
         private Tile _lastSelectedTile;
+
+        private sbyte _pathAddonIndex;
 
         #endregion
 

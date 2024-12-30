@@ -61,10 +61,10 @@ namespace GameContent.Entities.GridEntities
         
         public void MarkActive(bool active) => Active = active;
 
-        protected virtual void InstantiateResourceAt(BaseResource resource, Vector3 pos)
+        protected virtual void InstantiateResourceAt(BaseResource resource, Vector3 pos, int pathIndex)
         {
             var r = Instantiate(resource, pos, Quaternion.identity);
-            r.Created(GroupRef);
+            r.Created(GroupRef, pathIndex);
             GroupRef?.AddResource(r);
         }
 

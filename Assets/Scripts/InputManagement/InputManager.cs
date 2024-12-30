@@ -115,6 +115,7 @@ namespace InputManagement
                     {
                         var db = dt.CurrentBuildingRef as DynamicBuilding;
                         _currentConveyorGroup = db!.ConveyorGroupId;
+                        GridManager.Manager.SetPathIndex(_currentConveyorGroup);
                     }
                     break;        
                     
@@ -723,7 +724,7 @@ namespace InputManagement
                         break;
                     
                     if (st.StaticGroup == _currentStaticGroup)
-                        GridManager.Manager.TryAddStaticBuildingAt(st.Index, st.Position + Vector3.up / 2);
+                        GridManager.Manager.TryAddStaticBuildingAt(st.Index, st.Position + Vector3.up / 2, _currentStaticGroup);
                     //TODO open build selection panel
                     
                     break;

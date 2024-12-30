@@ -23,6 +23,7 @@ namespace GameContent.Entities.GridEntities
         {
             base.OnStart();
             _spawnCounter = 0;
+            _targetIndex = 0;
         }
 
         protected override void OnUpdate()
@@ -41,8 +42,9 @@ namespace GameContent.Entities.GridEntities
             if (CurrentBuildingRef is null || GroupRef is null)
                 return;
 
-            InstantiateResourceAt(miningResource, Position + Vector3.up * 0.25f);
+            InstantiateResourceAt(miningResource, Position + Vector3.up * 0.25f, _targetIndex);
             _spawnCounter = 0;
+            _targetIndex += (_targetIndex + 1) % GroupRef.ConveyorPaths.Count;
         }
 
         #endregion
@@ -52,6 +54,8 @@ namespace GameContent.Entities.GridEntities
         [SerializeField] private MiningResource miningResource;
 
         private float _spawnCounter;
+
+        private int _targetIndex;
 
         #endregion
     }

@@ -1,4 +1,5 @@
-﻿using GameContent.Entities.GridEntities;
+﻿using System.Collections.Generic;
+using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.GridManagement;
 
@@ -14,17 +15,17 @@ namespace GameContent.CraftResources
         
         #region methodes
 
-        public override void Created(ConveyorGroup conveyorRef)
+        public override void Created(ConveyorGroup conveyorRef, int pathIndex)
         {
-            base.Created(conveyorRef);
+            base.Created(conveyorRef, pathIndex);
             
-            SideTileRef = conveyorRef[^1].TileRef as SideStaticBuildingTile;
+            SideTileRef = conveyorRef.ToStaticTile[pathIndex] as SideStaticBuildingTile;
         }
 
         protected override void RemoveSelf()
         {
-            //GridManager.Manager.
-            
+            GridManager.Manager.FactoryRefs[SideTileRef.StaticGroup]?.ResourceAdded(resourceType);
+
             base.RemoveSelf();
         }
 

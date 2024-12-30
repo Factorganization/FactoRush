@@ -368,7 +368,7 @@ MonoBehaviour:
     type: 3}
   dynamicGenericBuild: {fileID: 4155439601221061712, guid: 77c36428ed7128042a96e4a43759d983,
     type: 3}
-  staticGenericBuild: {fileID: 6265463092578805160, guid: b38bd412b4fa17f4c8d7a67557a38f40,
+  staticGenericBuild: {fileID: 1592278743168102029, guid: f1b4d369670f61e409b895cb02e6709c,
     type: 3}
 --- !u!114 &1169929618
 MonoBehaviour:

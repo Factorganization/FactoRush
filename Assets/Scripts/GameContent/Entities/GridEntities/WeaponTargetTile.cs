@@ -1,6 +1,4 @@
-﻿using GameContent.Entities.OnFieldEntities;
-
-namespace GameContent.Entities.GridEntities
+﻿namespace GameContent.Entities.GridEntities
 {
     /// <summary>
     /// Odd id key

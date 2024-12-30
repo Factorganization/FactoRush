@@ -1,5 +1,4 @@
-﻿using GameContent.Entities.OnFieldEntities;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace GameContent.Entities.GridEntities
 {

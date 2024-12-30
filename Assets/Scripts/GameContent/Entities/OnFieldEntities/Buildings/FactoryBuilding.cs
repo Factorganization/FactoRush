@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using GameContent.CraftResources;
-using UnityEngine;
 
 namespace GameContent.Entities.OnFieldEntities.Buildings
 {
-    public class FactoryBuilding : StaticBuilding
+    public sealed class FactoryBuilding : StaticBuilding
     {
         #region properties
-
-        public List<MineBuilding> MineBuildingRef { get; set; }
         
         public List<AssemblyBuilding> AssemblyBuildingRef { get; set; }
 
@@ -21,7 +18,6 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         {
             base.OnStart();
             
-            MineBuildingRef = new List<MineBuilding>();
             AssemblyBuildingRef = new List<AssemblyBuilding>();
 
             _miningResources = new Dictionary<MiningResourceType, int>();
@@ -39,7 +35,6 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         public void ResourceAdded(MiningResourceType type)
         {
             _miningResources[type]++;
-            Debug.Log(_miningResources[type]);
             CheckMiningResources();
         }
 
@@ -52,8 +47,10 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         
         #region fields
 
+        public FactoryData data;
+        
         private Dictionary<MiningResourceType, int> _miningResources;
-
+        
         #endregion
     }
 }
