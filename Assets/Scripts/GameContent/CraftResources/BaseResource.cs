@@ -23,11 +23,10 @@ namespace GameContent.CraftResources
             OnMove();
         }
 
-        public virtual void Created(ConveyorGroup conveyorRef, int  pathIndex)
+        public virtual void Created(ConveyorGroup conveyorRef)
         {
             ConveyorRef = conveyorRef;
-            _path = conveyorRef.ConveyorPaths[pathIndex];
-            _targetPos = _path[1].Position + Constants.UpperCorrectionPos;
+            _targetPos = conveyorRef[1].Position + Constants.UpperCorrectionPos;
             _currentTargetId = 1;
         }
 
@@ -50,7 +49,7 @@ namespace GameContent.CraftResources
                 return;
             }
             
-            _targetPos = _path[_currentTargetId].Position + Constants.UpperCorrectionPos;
+            _targetPos = ConveyorRef[_currentTargetId].Position + Constants.UpperCorrectionPos;
         }
 
         protected virtual void RemoveSelf()
@@ -62,8 +61,6 @@ namespace GameContent.CraftResources
         #endregion
 
         #region fields
-
-        private List<DynamicBuilding> _path;
         
         private Vector3 _targetPos;
 

@@ -42,9 +42,9 @@ namespace GameContent.Entities.GridEntities
             if (CurrentBuildingRef is null || GroupRef is null)
                 return;
 
-            InstantiateResourceAt(miningResource, Position + Vector3.up * 0.25f, _targetIndex);
+            InstantiateResourceAt(_targetIndex, miningResource, Position + Vector3.up * 0.25f, _targetIndex);
             _spawnCounter = 0;
-            _targetIndex += (_targetIndex + 1) % GroupRef.ConveyorPaths.Count;
+            _targetIndex += (_targetIndex + 1) % GroupRef.Count;
         }
 
         #endregion

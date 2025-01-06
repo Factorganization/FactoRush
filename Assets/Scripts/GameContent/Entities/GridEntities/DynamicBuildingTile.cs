@@ -1,4 +1,5 @@
-﻿using GameContent.CraftResources;
+﻿using System.Collections.Generic;
+using GameContent.CraftResources;
 using GameContent.Entities.OnFieldEntities;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ namespace GameContent.Entities.GridEntities
             }
         }
 
-        protected override ConveyorGroup GroupRef
+        protected override List<ConveyorGroup> GroupRef //sa race
         {
             get => null;
             set { }
@@ -30,11 +31,13 @@ namespace GameContent.Entities.GridEntities
         
         #region methodes
         
-        public override void SetConveyorGroup(ConveyorGroup conveyorGroup) {}
+        public override void AddConveyorGroup(ConveyorGroup conveyorGroup) {}
 
-        protected override void InstantiateResourceAt(BaseResource resource, Vector3 pos, int pathIndex) {}
+        public override void RemoveConveyorGroup(ConveyorGroup conveyorGroup) {}
         
-        protected override void DestroyResource(BaseResource resource) {}
+        protected override void InstantiateResourceAt(int conveyoorIndex, BaseResource resource, Vector3 pos, int pathIndex) {}
+        
+        protected override void DestroyResource(int conveyorIndex, BaseResource resource) {}
 
         #endregion
 

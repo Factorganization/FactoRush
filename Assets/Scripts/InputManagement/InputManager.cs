@@ -114,7 +114,7 @@ namespace InputManagement
                     if (dt!.CurrentBuildingRef is not null)
                     {
                         var db = dt.CurrentBuildingRef as DynamicBuilding;
-                        _currentConveyorGroup = db!.ConveyorGroupId;
+                        _currentConveyorGroup = db!.ConveyorGroupIds[0];
                         GridManager.Manager.SetPathIndex(_currentConveyorGroup);
                     }
                     break;        

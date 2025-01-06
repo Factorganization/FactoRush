@@ -1,5 +1,6 @@
 ﻿#define INDEX_DEBUG
 
+using System.Collections.Generic;
 using GameContent.CraftResources;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.GridManagement;
@@ -20,7 +21,7 @@ namespace GameContent.Entities.GridEntities
         
         public TileType Type { get; private set; }
 
-        protected virtual ConveyorGroup GroupRef { get; set; }
+        protected virtual List<ConveyorGroup> GroupRef { get; set; }
         
         protected bool Active { get; set; }
         
@@ -46,6 +47,7 @@ namespace GameContent.Entities.GridEntities
         
         public void Added(GridManager grid, Vector2Int index, Vector3 pos = new(), TileType type = TileType.Default)
         {
+            GroupRef = new List<ConveyorGroup>();
             Index = index;
             Grid = grid;
             Position = pos;
@@ -57,20 +59,22 @@ namespace GameContent.Entities.GridEntities
 #endif
         }
 
-        public virtual void SetConveyorGroup(ConveyorGroup conveyorGroup) => GroupRef = conveyorGroup;
+        public virtual void AddConveyorGroup(ConveyorGroup conveyorGroup) => GroupRef.Add(conveyorGroup);
+        
+        public virtual void RemoveConveyorGroup(ConveyorGroup conveyorGroup) => GroupRef.Remove(conveyorGroup);
         
         public void MarkActive(bool active) => Active = active;
 
-        protected virtual void InstantiateResourceAt(BaseResource resource, Vector3 pos, int pathIndex)
+        protected virtual void InstantiateResourceAt(int conveyorIndex, BaseResource resource, Vector3 pos, int pathIndex)
         {
             var r = Instantiate(resource, pos, Quaternion.identity);
-            r.Created(GroupRef, pathIndex);
-            GroupRef?.AddResource(r);
+            r.Created(GroupRef[conveyorIndex]);
+            GroupRef[conveyorIndex]?.AddResource(r);
         }
 
-        protected virtual void DestroyResource(BaseResource resource)
+        protected virtual void DestroyResource(int conveyorIndex, BaseResource resource)
         {
-            GroupRef?.RemoveResource(resource);
+            GroupRef[conveyorIndex]?.RemoveResource(resource);
         }
         
         #endregion
