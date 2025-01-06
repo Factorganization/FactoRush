@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2404a8f48c7444cbb147ef12b671422a, type: 3}
-  m_Name: NewWeaponComponent
+  m_Name: GroundWeapon
   m_EditorClassIdentifier: 
   Damage: 10
   AttackSpeed: 1
-  Range: 5
+  Range: 6
+  targetType: 1

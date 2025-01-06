@@ -1,4 +1,6 @@
 using GameContent.Entities.UnmanagedEntities;
+using Unity.Mathematics;
+using UnityEditor;
 using UnityEngine;
 
 public class UnitsManager : MonoBehaviour
@@ -22,7 +24,17 @@ public class UnitsManager : MonoBehaviour
     
     public void SpawnUnit(bool isAlly, TransportComponent transportComponent =  null, WeaponComponent weaponComponent = null)
     {
-        Instantiate(unitPrefab, isAlly ? allyBase.transform : enemyBase.transform);
+        // Instantiate the unit prefab and set its components
+        GameObject unit = Instantiate(unitPrefab, isAlly ? allyBase.spawnPoint.position : enemyBase.spawnPoint.position, isAlly ? allyBase.spawnPoint.rotation : enemyBase.spawnPoint.rotation);
+        Unit unitComponent = unit.GetComponent<Unit>();
+        unitComponent.isAlly = isAlly;
+        unitComponent.transportComponent = transportComponent;
+        unitComponent.weaponComponent = weaponComponent;
+        unitComponent.allyBase = allyBase;
+        unitComponent.enemyBase = enemyBase;
+        
+        // Add the unit to the units array
+        ArrayUtility.Add(ref units, unitComponent); //TODO Change
     }
 
     private void InitialCheckup()
@@ -44,6 +56,5 @@ public class UnitsManager : MonoBehaviour
 
         if (allyBase != null && enemyBase != null) return;
         Debug.LogError(allyBase == null ? "Ally base is not instantiated" : "Enemy base is not instantiated");
-        return;
     }
 }
