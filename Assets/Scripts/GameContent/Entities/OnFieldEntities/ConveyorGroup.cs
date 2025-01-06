@@ -11,14 +11,12 @@ namespace GameContent.Entities.OnFieldEntities
     public class ConveyorGroup : DynamicBuildingList
     {
         #region properties
-
-        public List<List<DynamicBuilding>> ConveyorPaths { get; set; }
         
         public sbyte ConveyorGroupId { get; set; }
         
         public Tile FromStaticTile { get; set; }
         
-        public List<Tile> ToStaticTile { get; set; }
+        public Tile ToStaticTile { get; set; }
 
         #endregion
 
@@ -33,29 +31,27 @@ namespace GameContent.Entities.OnFieldEntities
 
         #region methodes
 
-        public void Init(List<DynamicBuilding> path)
+        public void Init()
         {
-            
-            
             // Ca marche mais j'ai oublié ou est le code qui fait que ca marche
-            //if ((this[0].TileRef is SideStaticBuildingTile && this[Count - 1].TileRef is MineTile) ||
-            //    (this[0].TileRef is WeaponTargetTile or TransTargetTile && this[Count - 1].TileRef is SideStaticBuildingTile))
-            //    DynamicBuildings.Reverse();
-//
-            //FromStaticTile = this[0].TileRef;
-            //ToStaticTile = this[Count - 1].TileRef;
-            //
-            //FromStaticTile.SetConveyorGroup(this);
-            //ToStaticTile.SetConveyorGroup(this);
-            //FromStaticTile.MarkActive(true);
-            //ToStaticTile.MarkActive(true);
-            //CheckValidity(); //TODO
+            if ((this[0].TileRef is SideStaticBuildingTile && this[Count - 1].TileRef is MineTile) ||
+                (this[0].TileRef is WeaponTargetTile or TransTargetTile && this[Count - 1].TileRef is SideStaticBuildingTile))
+                DynamicBuildings.Reverse();
+
+            FromStaticTile = this[0].TileRef;
+            ToStaticTile = this[Count - 1].TileRef;
+            
+            FromStaticTile.AddConveyorGroup(this);
+            ToStaticTile.AddConveyorGroup(this);
+            FromStaticTile.MarkActive(true);
+            ToStaticTile.MarkActive(true);
+            CheckValidity();
         }
         
         private void CheckValidity()
         {
-            //if (FromStaticTile is not DynamicBuildingTile && ToStaticTile is not DynamicBuildingTile)
-            //    return; //TODO
+            if (FromStaticTile is not DynamicBuildingTile && ToStaticTile is not DynamicBuildingTile)
+                return; //TODO
             
             foreach (var b in this)
             {
@@ -77,10 +73,7 @@ namespace GameContent.Entities.OnFieldEntities
         public void DestroyGroup()
         {
             FromStaticTile.MarkActive(false);
-            foreach (var t in ToStaticTile)
-            {
-                t.MarkActive(false);
-            }
+            ToStaticTile.MarkActive(false);
 
             if (_conveyedResources.Count <= 0)
                 return;
@@ -91,11 +84,8 @@ namespace GameContent.Entities.OnFieldEntities
             }
             _conveyedResources.Clear();
             
-            FromStaticTile.SetConveyorGroup(null);
-            foreach (var t in ToStaticTile)
-            {
-                t.SetConveyorGroup(null);
-            }
+            FromStaticTile.RemoveConveyorGroup(this);
+            ToStaticTile.RemoveConveyorGroup(this);
         }
 
         #endregion

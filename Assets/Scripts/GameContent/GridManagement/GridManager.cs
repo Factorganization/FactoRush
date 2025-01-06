@@ -53,6 +53,7 @@ namespace GameContent.GridManagement
             Grid = new Dictionary<Vector2Int, Tile>();
             _staticGroups = new Dictionary<byte, StaticTileGroup>();
             ConveyorGroups = new Dictionary<sbyte, ConveyorGroup>();
+            _currentConveyorPath = new List<DynamicBuilding>();
             _factoryRefs = new Dictionary<byte, FactoryBuilding>();
             
             _addingDynamic = new HashSet<Vector2Int>();
@@ -202,14 +203,14 @@ namespace GameContent.GridManagement
                         if (b is null)
                             continue;
                         
-                        b.ConveyorGroupId = _pathAddonIndex;
+                        b.AddConveyorGroupId(_pathAddonIndex);
                         b.SetDebugId(); //i
                         PlaceBuildingAt(t.Index, b);
                         
                         Grid[t.Index].IsSelected = false;
                     }
                     
-                    ConveyorGroups[_pathAddonIndex].Init(_currentConveyorPath); //TODO
+                    ConveyorGroups[_pathAddonIndex].Init(); //TODO
                 }
 
                 else
@@ -228,19 +229,18 @@ namespace GameContent.GridManagement
                     {
                         var b = InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) as DynamicBuilding;
                         ConveyorGroups[i].AddBuild(b);
-                        _currentConveyorPath.Add(b);
                         
                         if (b is null)
                             continue;
                         
-                        b.ConveyorGroupId = i;
+                        b.AddConveyorGroupId(i);
                         b.SetDebugId(); //i
                         PlaceBuildingAt(t.Index, b);
                         
                         Grid[t.Index].IsSelected = false;
                     }
                     
-                    ConveyorGroups[i].Init(_currentConveyorPath);
+                    ConveyorGroups[i].Init();
                 }
             }
             _addingDynamic.Clear();
@@ -276,6 +276,8 @@ namespace GameContent.GridManagement
         
         public bool TryAddDynamicBuildingAt(Vector2Int from, Vector2Int previous, Vector2Int index) // yes. bool.
         {
+            Debug.Log(_lastSelectedTile?.Type);
+            
             if (IsSpecTile(_lastSelectedTile) && !Grid[index].IsSelected && _addingDynamic.Count > 1)
                 return false;
 
@@ -285,7 +287,7 @@ namespace GameContent.GridManagement
             _lastSelectedTile = Grid[index];
             
             if (_lastSelectedTile.CurrentBuildingRef is not null || (previous == index && _lastSelectedTile.IsSelected))
-                return true;
+                return false;
             
             if (_lastSelectedTile is CenterStaticBuildingTile) // Dark Magic Happening here
                 return false;
@@ -386,16 +388,19 @@ namespace GameContent.GridManagement
                 return;
             
             var b = Grid[index].CurrentBuildingRef as DynamicBuilding;
-            var i = b!.ConveyorGroupId;
-                    
-            foreach (var b2 in ConveyorGroups[i])
+            var i = b!.ConveyorGroupIds;
+
+            foreach (var j in i)
             {
-                _removing.Add(b2.TileRef.Index);
-                _toRemove.Add(b2.TileRef.Index, b2);
+                foreach (var b2 in ConveyorGroups[j])
+                {
+                    _removing.Add(b2.TileRef.Index);
+                    _toRemove.Add(b2.TileRef.Index, b2);
+                }
+                
+                ConveyorGroups[j].DestroyGroup();
+                ConveyorGroups.Remove(j);
             }
-            
-            ConveyorGroups[i].DestroyGroup();
-            ConveyorGroups.Remove(i);
         }
 
         public void TryRemoveStaticBuildingAt(Vector2Int index)

@@ -6,7 +6,7 @@ namespace GameContent.Entities.OnFieldEntities
     {
         #region properties
 
-        public Tile TileRef { get; set; }
+        public Tile TileRef { get; private set; }
 
         #endregion
         
