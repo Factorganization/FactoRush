@@ -75,14 +75,14 @@ namespace GameContent.Entities.OnFieldEntities
             FromStaticTile.MarkActive(false);
             ToStaticTile.MarkActive(false);
 
-            if (_conveyedResources.Count <= 0)
-                return;
-
-            foreach (var r in _conveyedResources)
+            if (_conveyedResources.Count > 0)
             {
-                Object.Destroy(r.gameObject);
+                foreach (var r in _conveyedResources)
+                {
+                    Object.Destroy(r.gameObject);
+                }
+                _conveyedResources.Clear();
             }
-            _conveyedResources.Clear();
             
             FromStaticTile.RemoveConveyorGroup(this);
             ToStaticTile.RemoveConveyorGroup(this);

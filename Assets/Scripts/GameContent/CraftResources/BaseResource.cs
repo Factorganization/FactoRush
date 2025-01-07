@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using GameContent.Entities;
-using GameContent.Entities.GridEntities;
+﻿using GameContent.Entities;
 using GameContent.Entities.OnFieldEntities;
 using UnityEngine;
 
@@ -25,6 +23,12 @@ namespace GameContent.CraftResources
 
         public virtual void Created(ConveyorGroup conveyorRef)
         {
+            if (conveyorRef is null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
             ConveyorRef = conveyorRef;
             _targetPos = conveyorRef[1].Position + Constants.UpperCorrectionPos;
             _currentTargetId = 1;

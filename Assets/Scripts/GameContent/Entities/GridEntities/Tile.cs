@@ -1,4 +1,4 @@
-﻿#define INDEX_DEBUG
+﻿//#define INDEX_DEBUG
 
 using System.Collections.Generic;
 using GameContent.CraftResources;
@@ -23,7 +23,7 @@ namespace GameContent.Entities.GridEntities
 
         protected virtual List<ConveyorGroup> GroupRef { get; set; }
         
-        protected bool Active { get; set; }
+        protected bool Active { get; private set; }
         
         #region Path Find
         
