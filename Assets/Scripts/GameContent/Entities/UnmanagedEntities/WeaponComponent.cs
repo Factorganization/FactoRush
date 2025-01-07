@@ -3,30 +3,18 @@ using UnityEngine;
 
 namespace GameContent.Entities.UnmanagedEntities
 {
-    [CreateAssetMenu(fileName = "NewWeaponComponent", menuName = "Components/WeaponComponent")]
-    public class WeaponComponent : ScriptableObject
+    public abstract class WeaponComponent : ScriptableObject
     {
         [Header("Weapon Stats")]
         public float Damage = 10f;        // Base damage of the weapon
         public float AttackSpeed = 1f;   // Time (seconds) between attacks
         public float Range = 5f;         // Attack range of the weapon
 
-        private float attackCooldown;
+        protected float attackCooldown;
 
         public TargetType targetType;
 
-        [Header("Unique Effects")]
-        public bool IsCannon;          // Canon effect
-        public bool IsArtillery;       // Artillery effect
-        public bool IsMinigun;         // Sulfateuse effect
-        public bool IsSawBlade;        // Lame circulaire effect
-        public bool IsC4;              // C4 effect
-        public bool IsLance;           // Lance de joute effect
-        public bool IsSymbioticRifle;  // Fusil symbiotique effect
-        public bool IsShield;          // Bouclier géant effect
-        public bool IsRayCannon;       // Canon à rayon effect
-        public bool IsWarHammer;       // Marteau de guerre effect
-
+        
         [Header("Effect Parameters")]
         public float MinigunSpeedIncrease = 0.05f; // % speed increase per attack
         public float LanceDamageBonus = 0.1f;     // % of movement speed added to damage
@@ -41,53 +29,7 @@ namespace GameContent.Entities.UnmanagedEntities
         public bool CanAttack => attackCooldown <= 0;
 
         // Main attack method
-        public void Attack(Unit attacker, Unit target, List<Unit> allUnitsInRange)
-        {
-            if (!CanAttack) return;
-
-            if (IsCannon)
-            {
-                HandleCannonEffect(target, allUnitsInRange);
-            }
-            else if (IsArtillery)
-            {
-                HandleArtilleryEffect(target, allUnitsInRange);
-            }
-            else if (IsMinigun)
-            {
-                HandleMinigunEffect();
-            }
-            else if (IsSawBlade)
-            {
-                HandleSawBladeEffect(target, allUnitsInRange);
-            }
-            else if (IsC4)
-            {
-                HandleC4Effect(attacker);
-            }
-            else if (IsLance)
-            {
-                HandleLanceEffect(attacker, target);
-            }
-            else if (IsSymbioticRifle)
-            {
-                HandleSymbioticRifleEffect(allUnitsInRange);
-            }
-            else if (IsShield)
-            {
-                HandleShieldEffect(attacker, allUnitsInRange);
-            }
-            else if (IsRayCannon)
-            {
-                HandleRayCannonEffect(target, allUnitsInRange);
-            }
-            else if (IsWarHammer)
-            {
-                HandleWarHammerEffect(target, allUnitsInRange);
-            }
-
-            attackCooldown = AttackSpeed; // Reset cooldown
-        }
+        public abstract void Attack(Unit attacker, Unit target, List<Unit> allUnitsInRange);
 
         public void UpdateCooldown()
         {
@@ -97,41 +39,8 @@ namespace GameContent.Entities.UnmanagedEntities
 
         #region Unique Effects Handlers
 
-        private void HandleCannonEffect(Unit target, List<Unit> allUnitsInRange)
-        {
-            Unit preferredTarget = null;
-
-            // Priorité aux cibles au sol
-            foreach (var unit in allUnitsInRange)
-            {
-                if (unit.isGroundUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
-                {
-                    preferredTarget = unit;
-                    break; // Trouve la première cible au sol dans la portée
-                }
-            }
-
-            // Si aucune cible au sol n'est trouvée, chercher une cible aérienne
-            if (preferredTarget == null)
-            {
-                foreach (var unit in allUnitsInRange)
-                {
-                    if (unit.isAirUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
-                    {
-                        preferredTarget = unit;
-                        break; // Trouve la première cible aérienne dans la portée
-                    }
-                }
-            }
-
-            // Appliquer les dégâts à la cible préférée
-            if (preferredTarget != null)
-            {
-                float damageMultiplier = preferredTarget.isGroundUnit ? 2f : 1f;
-                preferredTarget.ApplyDamage(Damage * damageMultiplier);
-            }
-        }
-
+        protected abstract void HandleUniqueEffectExemple(Unit target);
+        
 
         private void HandleArtilleryEffect(Unit target, List<Unit> allUnitsInRange)
         {

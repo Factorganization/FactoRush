@@ -1194,7 +1194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbea991bd2a777f4191f4c13f64d74a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponComponent: {fileID: 11400000, guid: 1bf21e805be7ebb468781c69adb67c15, type: 2}
+  weaponComponent: {fileID: 11400000, guid: b65bc6d7befba3c4cb3d811a12d08bb9, type: 2}
   transportComponent: {fileID: 11400000, guid: 71e2d9054c4839e429b4fa9418a0f41c, type: 2}
 --- !u!4 &1760735919
 Transform:

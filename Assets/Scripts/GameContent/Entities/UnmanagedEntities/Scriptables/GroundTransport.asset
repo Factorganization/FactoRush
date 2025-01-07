@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SpeedMultiplier: 1.5
   HealthMultiplier: 1.2
-  IsFlying: 1
+  IsFlying: 0

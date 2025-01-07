@@ -283,7 +283,7 @@ namespace GameContent.Entities.UnmanagedEntities
         
         public void AddShield(float shield)
         {
-            currentHealth += shield;
+            currentHealth += shield; //TODO faire un vrai shield  ? 
         }
         
         #endregion
