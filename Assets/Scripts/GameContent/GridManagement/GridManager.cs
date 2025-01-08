@@ -195,6 +195,7 @@ namespace GameContent.GridManagement
             {
                 if (_pathAddonIndex >= 0 && _pathAddonIndex < ConveyorGroups.Count)
                 {
+                    Debug.LogAssertion("alter");
                     foreach (var t in _currentPath)
                     {
                         var b = InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) as DynamicBuilding;
@@ -216,6 +217,7 @@ namespace GameContent.GridManagement
 
                 else
                 {
+                    Debug.LogAssertion("Normal");
                     sbyte i = 0;
                         
                     while (ConveyorGroups.ContainsKey(i) && ConveyorGroups[i] != null)
@@ -246,6 +248,7 @@ namespace GameContent.GridManagement
             }
             _addingDynamic.Clear();
             _currentConveyorPath.Clear();
+            Debug.LogWarning(_pathAddonIndex);
             _pathAddonIndex = -1;
             
             if (_addingStatic.Count > 0)
@@ -301,7 +304,7 @@ namespace GameContent.GridManagement
             var distance = Vector2Int.Distance(index, previous);
             switch (distance)
             {
-                case > 1 and < 2 when !TryCompletePath(previous, index):
+                case > 1.1f and < 2 when !TryCompletePath(previous, index):
                     CancelAdding();
                     return false;
                 case >= 2:

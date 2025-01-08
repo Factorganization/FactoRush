@@ -68,6 +68,7 @@ namespace GameContent.Entities.OnFieldEntities
                 Object.Destroy(b.gameObject);
             }
             GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
+            UnsetSelf();
         }
         
         private void CheckValidity()
@@ -81,13 +82,14 @@ namespace GameContent.Entities.OnFieldEntities
                 Object.Destroy(b.gameObject);
             }
             GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
+            UnsetSelf();
         }
         
         public override void UpdateGroup()
         {
             
         }
-
+        
         public void AddResource(BaseResource resource) => _conveyedResources.Add(resource);
         
         public void RemoveResource(BaseResource resource) => _conveyedResources.Remove(resource);
@@ -107,9 +109,15 @@ namespace GameContent.Entities.OnFieldEntities
             }
             
             FromStaticTile.RemoveConveyorGroup(this);
-            Debug.Log($"{FromStaticTile.Count} _ {FromStaticTile.name}");
             ToStaticTile.RemoveConveyorGroup(this);
-            Debug.Log($"{ToStaticTile.Count} _ {ToStaticTile.name}");
+        }
+
+        private void UnsetSelf()
+        {
+            FromStaticTile.MarkActive(false);
+            ToStaticTile.MarkActive(false);
+            FromStaticTile.RemoveConveyorGroup(this);
+            ToStaticTile.RemoveConveyorGroup(this);
         }
 
         #endregion

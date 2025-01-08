@@ -41,6 +41,12 @@ namespace GameContent.Entities.GridEntities
             
             if (CurrentBuildingRef is null || GroupRef is null)
                 return;
+
+            foreach (var c in GroupRef)
+            {
+                if (c is null)
+                    return;
+            }
             
             InstantiateResourceAt(_targetIndex, miningResource, Position + Vector3.up * 0.25f, _targetIndex);
             _spawnCounter = 0;
