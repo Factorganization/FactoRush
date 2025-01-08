@@ -1,4 +1,4 @@
-﻿#define INDEX_DEBUG
+﻿//#define INDEX_DEBUG
 
 using System.Collections.Generic;
 using GameContent.CraftResources;
@@ -58,7 +58,7 @@ namespace GameContent.Entities.GridEntities
             debugIndex.text = $"<size=1>{Type}</size> \n <size=3>({Index.x},{Index.y})</size>";
 #endif
         }
-
+        
         public virtual void AddConveyorGroup(ConveyorGroup conveyorGroup) => GroupRef.Add(conveyorGroup);
         
         public virtual void RemoveConveyorGroup(ConveyorGroup conveyorGroup) => GroupRef.Remove(conveyorGroup);

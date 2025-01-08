@@ -56,7 +56,13 @@ namespace GameContent.Entities
         protected virtual void OnFixedUpdate()
         {
         }
-
+        
+        public void SetGraph(Vector3 pos, Quaternion rot)
+        {
+            graphTransform.position = pos;
+            graphTransform.rotation = rot;
+        }
+        
         protected static float SquareDistance(Vector3 a, Vector3 b) => (b- a).x * (b -a).x + (b - a).y * (b - a).y + (b - a).z * (b - a).z;
         
         #endregion

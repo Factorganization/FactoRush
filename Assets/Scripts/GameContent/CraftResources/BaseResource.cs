@@ -30,8 +30,8 @@ namespace GameContent.CraftResources
             }
             
             ConveyorRef = conveyorRef;
-            _targetPos = conveyorRef[1].Position + Constants.UpperCorrectionPos;
-            _currentTargetId = 1;
+            _targetPos = conveyorRef[0].Position + Constants.UpperCorrectionPos;
+            _currentTargetId = 0;
         }
 
         private void OnMove()

@@ -29,6 +29,8 @@ namespace GameContent.GridManagement
         public Dictionary<byte, FactoryBuilding> FactoryRefs => _factoryRefs;
         
         public Dictionary<Vector2Int, Tile> Grid { get; private set; }
+        
+        public Dictionary<byte, StaticTileGroup> StaticGroups { get; private set; }
 
         #endregion
         
@@ -52,7 +54,7 @@ namespace GameContent.GridManagement
             _pathAddonIndex = -1;
             
             Grid = new Dictionary<Vector2Int, Tile>();
-            _staticGroups = new Dictionary<byte, StaticTileGroup>();
+            StaticGroups = new Dictionary<byte, StaticTileGroup>();
             ConveyorGroups = new Dictionary<sbyte, ConveyorGroup>();
             _currentConveyorPath = new List<DynamicBuilding>();
             _factoryRefs = new Dictionary<byte, FactoryBuilding>();
@@ -124,6 +126,7 @@ namespace GameContent.GridManagement
                             var mT = Instantiate(mineTile, transform);
                             Grid.Add(tId, mT);
                             mT.Added(this, tId, tPos, TileType.MineTile);
+                            mT.ETransform.rotation = grid[i][j] % 2 != 0 ? Quaternion.Euler(0, 90, 0) : Quaternion.Euler(0, -90, 0);
                             break;
                         
                         case >= 10 when grid[i][j] % 2 == 0:
@@ -139,20 +142,20 @@ namespace GameContent.GridManagement
                             break;
                         
                         case > 0:
-                            if (!_staticGroups.ContainsKey(grid[i][j]))
+                            if (!StaticGroups.ContainsKey(grid[i][j]))
                             {
-                                _staticGroups.Add(grid[i][j], new StaticTileGroup());
+                                StaticGroups.Add(grid[i][j], new StaticTileGroup());
                                 _factoryRefs.Add(grid[i][j], null);
                             }
                             
-                            var c = _staticGroups[grid[i][j]].Count + 1;
+                            var c = StaticGroups[grid[i][j]].Count + 1;
                             var sBt = Instantiate(c == 3 ? centerStaticBuildTile : sideStaticBuildTile, transform);
                             
                             Grid.Add(tId, sBt);
-                            _staticGroups[grid[i][j]].AddTile(sBt);
+                            StaticGroups[grid[i][j]].AddTile(sBt);
                             
-                            sBt.Added(this, tId, tPos, GetStaticType(c));
-                            sBt.InitStaticTile(grid[i][j], GetStaticRotation(c));
+                            sBt.Added(this, tId, tPos, StaticBuildingTile.GetStaticType(c));
+                            sBt.InitStaticTile(grid[i][j], StaticBuildingTile.GetStaticRotation(c));
                             break;
                     }
                 }
@@ -170,22 +173,6 @@ namespace GameContent.GridManagement
         [DllImport("libGridGenSL", EntryPoint = "GetStaticTypeObsolete")]
         private static extern int GetStaticTypeObsolete(int n);*/
         
-        private static int GetStaticRotation(int n) => n switch
-        {
-            1 or 3 => 0, // Call me Houdini
-            2 => 90,
-            4 => -90,
-            5 => 180,
-            _ => throw new ArgumentOutOfRangeException(nameof(n), n, null)
-        };
-        
-        private static TileType GetStaticType(int n) => n switch
-        {
-            1 or 2 or 4 or 5 => TileType.SideStaticTile, // magical numbers everywhere
-            3 => TileType.CenterStaticTile,
-            _ => throw new ArgumentOutOfRangeException(nameof(n), n, null)
-        };
-        
         private void UpdateGrid()
         {
             if (_currentGridLockMode is GridLockMode.Locked or GridLockMode.BuildingLocked)
@@ -195,16 +182,15 @@ namespace GameContent.GridManagement
             {
                 if (_pathAddonIndex >= 0 && _pathAddonIndex < ConveyorGroups.Count)
                 {
-                    Debug.LogAssertion("alter");
                     foreach (var t in _currentPath)
                     {
                         var b = InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) as DynamicBuilding;
-                        ConveyorGroups[_pathAddonIndex].AddBuild(b);
-                        _currentConveyorPath.Add(b);
                         
                         if (b is null)
                             continue;
                         
+                        ConveyorGroups[_pathAddonIndex].AddBuild(b);
+                        _currentConveyorPath.Add(b);
                         b.AddConveyorGroupId(_pathAddonIndex);
                         b.SetDebugId(); //i
                         PlaceBuildingAt(t.Index, b);
@@ -217,7 +203,6 @@ namespace GameContent.GridManagement
 
                 else
                 {
-                    Debug.LogAssertion("Normal");
                     sbyte i = 0;
                         
                     while (ConveyorGroups.ContainsKey(i) && ConveyorGroups[i] != null)
@@ -231,13 +216,13 @@ namespace GameContent.GridManagement
                     foreach (var t in _currentPath)
                     {
                         var b = InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) as DynamicBuilding;
-                        ConveyorGroups[i].AddBuild(b);
                         
                         if (b is null)
                             continue;
                         
+                        ConveyorGroups[i].AddBuild(b);
                         b.AddConveyorGroupId(i);
-                        b.SetDebugId(i); //i
+                        b.SetDebugId(); //i
                         PlaceBuildingAt(t.Index, b);
                         
                         Grid[t.Index].IsSelected = false;
@@ -248,7 +233,6 @@ namespace GameContent.GridManagement
             }
             _addingDynamic.Clear();
             _currentConveyorPath.Clear();
-            Debug.LogWarning(_pathAddonIndex);
             _pathAddonIndex = -1;
             
             if (_addingStatic.Count > 0)
@@ -286,7 +270,7 @@ namespace GameContent.GridManagement
         
         public bool TryAddDynamicBuildingAt(Vector2Int from, Vector2Int previous, Vector2Int index) // yes. bool.
         {
-            if ((IsSpecTile(Grid[index]) && index != from/* && _addingDynamic.Count > 1*/) || Grid[index].IsBlocked)
+            if ((IsSpecTile(Grid[index]) && index != from) || Grid[index].IsBlocked)
                 return false;
             
             if (_lastSelectedTile is not null && Vector2Int.Distance(index, _lastSelectedTile.Index) > 1.1f)
@@ -547,8 +531,6 @@ namespace GameContent.GridManagement
         #endregion
 
         #region groups
-        
-        private Dictionary<byte, StaticTileGroup> _staticGroups;
 
         private Dictionary<byte, FactoryBuilding> _factoryRefs;
         

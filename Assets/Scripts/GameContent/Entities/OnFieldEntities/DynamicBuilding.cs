@@ -14,6 +14,15 @@ namespace GameContent.Entities.OnFieldEntities
         #endregion
         
         #region methodes
+
+        public static float GetRotation(Vector2Int relativePos) => (relativePos.x, relativePos.y) switch
+        {
+            (1, 0) => -90f,
+            (-1, 0) => 90f,
+            (0, 1) => 180f,
+            (0, -1) => 0f,
+            _ => 0
+        };
         
         public void AddConveyorGroupId(sbyte conveyorId) => ConveyorGroupIds.Add(conveyorId);
         

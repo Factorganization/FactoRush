@@ -45,11 +45,33 @@ namespace GameContent.Entities.OnFieldEntities
             ToStaticTile.AddConveyorGroup(this);
             FromStaticTile.MarkActive(true);
             ToStaticTile.MarkActive(true);
-            CheckValidity();
-            CheckPathJump();
+            
+            if (!CheckValidity() || !CheckPathJump())
+                return;
+            
+            GraphInit();
         }
 
-        private void CheckPathJump()
+        private void GraphInit()
+        {
+            for (var i = 0; i < Count; i++)
+            {
+                if (i >= Count - 1)
+                    continue;
+                
+                var r = DynamicBuilding.GetRotation(this[i + 1].TileRef.Index - this[i].TileRef.Index);
+                this[i].SetGraph(this[i].Position, Quaternion.Euler(0, r, 0));
+            }
+
+            if (this[Count - 1].TileRef is not SideStaticBuildingTile t)
+                return;
+
+            var s = GridManager.Manager.StaticGroups[t.StaticGroup];
+            var r2 = DynamicBuilding.GetRotation(s[2].Index - this[Count - 1].TileRef.Index);
+            this[Count - 1].SetGraph(this[Count - 1].Position, Quaternion.Euler(0, r2, 0));
+        }
+        
+        private bool CheckPathJump()
         {
             var j = 0;
             
@@ -60,7 +82,7 @@ namespace GameContent.Entities.OnFieldEntities
             }
             
             if (j >= Count - 1)
-                return;
+                return true;
             
             foreach (var b in this)
             {
@@ -69,12 +91,13 @@ namespace GameContent.Entities.OnFieldEntities
             }
             GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
             UnsetSelf();
+            return false;
         }
         
-        private void CheckValidity()
+        private bool CheckValidity()
         {
             if (FromStaticTile is not DynamicBuildingTile && ToStaticTile is not DynamicBuildingTile && Count > 1)
-                return;
+                return true;
 
             foreach (var b in this)
             {
@@ -83,6 +106,7 @@ namespace GameContent.Entities.OnFieldEntities
             }
             GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
             UnsetSelf();
+            return false;
         }
         
         public override void UpdateGroup()
