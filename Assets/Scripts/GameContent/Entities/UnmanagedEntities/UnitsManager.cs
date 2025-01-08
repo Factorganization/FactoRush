@@ -1,5 +1,4 @@
 using GameContent.Entities.UnmanagedEntities;
-using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
@@ -34,7 +33,9 @@ public class UnitsManager : MonoBehaviour
         unitComponent.enemyBase = enemyBase;
         
         // Add the unit to the units array
+#if UNITY_EDITOR
         ArrayUtility.Add(ref units, unitComponent); //TODO Change
+#endif
     }
 
     private void InitialCheckup()

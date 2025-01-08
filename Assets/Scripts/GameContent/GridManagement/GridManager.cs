@@ -48,6 +48,7 @@ namespace GameContent.GridManagement
         private void Start()
         {
             _currentPath = new List<Tile>();
+            _currentCompletionPath = new List<Tile>();
             _pathAddonIndex = -1;
             
             Grid = new Dictionary<Vector2Int, Tile>();
@@ -234,7 +235,7 @@ namespace GameContent.GridManagement
                             continue;
                         
                         b.AddConveyorGroupId(i);
-                        b.SetDebugId(); //i
+                        b.SetDebugId(i); //i
                         PlaceBuildingAt(t.Index, b);
                         
                         Grid[t.Index].IsSelected = false;
@@ -274,23 +275,28 @@ namespace GameContent.GridManagement
         
         public void SetPathIndex(sbyte index) => _pathAddonIndex = index;
         
+        public void SetSelected(Vector2Int index, bool selected)
+        {
+            Grid[index].IsSelected = selected;
+            _currentPath.Add(Grid[index]);
+        }
+        
         public bool TryAddDynamicBuildingAt(Vector2Int from, Vector2Int previous, Vector2Int index) // yes. bool.
         {
-            Debug.Log(_lastSelectedTile?.Type);
+            if ((IsSpecTile(Grid[index]) && index != from/* && _addingDynamic.Count > 1*/) || Grid[index].IsBlocked)
+                return false;
             
-            if (IsSpecTile(_lastSelectedTile) && !Grid[index].IsSelected && _addingDynamic.Count > 1)
-                return false;
-
-            if (_lastSelectedTile is DynamicBuildingTile && _lastSelectedTile.IsBlocked && !Grid[index].IsSelected)
-                return false;
+            if (_lastSelectedTile is not null && Vector2Int.Distance(index, _lastSelectedTile.Index) > 1.1f)
+            {
+                _currentCompletionPath = PathFinder.FindCompletionPath(Grid[index], _lastSelectedTile);
+                foreach (var i in _currentCompletionPath)
+                {
+                    i.IsSelected = true;
+                    _addingDynamic.Add(i.Index);
+                }
+            }
             
             _lastSelectedTile = Grid[index];
-            
-            if (_lastSelectedTile.CurrentBuildingRef is not null || (previous == index && _lastSelectedTile.IsSelected))
-                return false;
-            
-            if (_lastSelectedTile is CenterStaticBuildingTile) // Dark Magic Happening here
-                return false;
             
             var distance = Vector2Int.Distance(index, previous);
             switch (distance)
@@ -397,7 +403,6 @@ namespace GameContent.GridManagement
                     _removing.Add(b2.TileRef.Index);
                     _toRemove.Add(b2.TileRef.Index, b2);
                 }
-                
                 ConveyorGroups[j].DestroyGroup();
                 ConveyorGroups.Remove(j);
             }
@@ -567,6 +572,8 @@ namespace GameContent.GridManagement
         #region path find
 
         private List<Tile> _currentPath;
+
+        private List<Tile> _currentCompletionPath;
         
         private List<DynamicBuilding> _currentConveyorPath;
 

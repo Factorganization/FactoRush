@@ -23,7 +23,8 @@ namespace GameContent.CraftResources
 
         protected override void RemoveSelf()
         {
-            GridManager.Manager.FactoryRefs[SideTileRef.StaticGroup]?.ResourceAdded(resourceType);
+            if (SideTileRef is not null)
+                GridManager.Manager.FactoryRefs[SideTileRef.StaticGroup]?.ResourceAdded(resourceType);
 
             base.RemoveSelf();
         }

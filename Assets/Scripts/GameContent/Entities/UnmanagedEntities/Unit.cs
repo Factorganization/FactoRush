@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using GameContent.Entities.OnFieldEntities.Buildings;
 using UnityEngine;
 
 namespace GameContent.Entities.UnmanagedEntities

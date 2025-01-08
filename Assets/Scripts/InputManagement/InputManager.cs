@@ -23,8 +23,18 @@ namespace InputManagement
             EnhancedTouchSupport.Enable();
         }
 
+        private void Start()
+        {
+            _hasDragged = false;
+            _needDeletion = false;
+            _hitTimerCounter = 0;
+            _currentConveyorGroup = -1;
+        }
+        
         private void Update()
         {
+            SetDeleteTimer();
+            
             if (Touch.activeTouches.Count <= 0)
                 return;
             
@@ -50,7 +60,7 @@ namespace InputManagement
                 
                 case TouchPhase.Moved:
                     _hasDragged = true;
-                    _hitTimerCounter = 0;
+                    //_hitTimerCounter = 0;
                     
                     HandleTouchMoved(ray);
                     break;
@@ -62,14 +72,14 @@ namespace InputManagement
                     break;
                 
                 case TouchPhase.Stationary when !_hasDragged:
-                    HandleTouchStationary(ray);
+                    //HandleTouchStationary(ray);
                     break;
                 
                 case TouchPhase.Stationary:
                 case TouchPhase.None:
-                    break;    
+                    break;
                 
-                case TouchPhase.Canceled: //TODO soft cancel current actions
+                case TouchPhase.Canceled:
                     HandleTouchCancelled();
                     break;
                 
@@ -114,6 +124,31 @@ namespace InputManagement
                     if (dt!.CurrentBuildingRef is not null)
                     {
                         var db = dt.CurrentBuildingRef as DynamicBuilding;
+                        
+                        if (_needDeletion && _hitTimerCounter >= 0 && _currentConveyorGroup == db!.ConveyorGroupIds[0]) //TODO refaire ca pour multi path
+                        {
+                            switch (t.CurrentBuildingRef)
+                            {
+                                case null:
+                                    break;
+                                                                                          
+                                case DynamicBuilding:
+                                    GridManager.Manager.TryRemoveDynamicBuildingAt(t.Index);
+                                    break;
+                                                                                          
+                                case StaticBuilding:
+                                    GridManager.Manager.TryRemoveStaticBuildingAt(t.Index);
+                                    break;
+                            }
+                            _needDeletion = false;
+                        }
+                        
+                        if (!_needDeletion)
+                        {
+                            _hitTimerCounter = Constants.DeleteTimer;
+                            _needDeletion = true;
+                        }
+                        
                         _currentConveyorGroup = db!.ConveyorGroupIds[0];
                         GridManager.Manager.SetPathIndex(_currentConveyorGroup);
                     }
@@ -168,12 +203,13 @@ namespace InputManagement
             }
         }
 
+        [Obsolete]
         private void HandleTouchStationary(Ray ray)
         {
             if (_startingHitType is HitGridType.None)
                 return;
             
-            _hitTimerCounter += Time.deltaTime;
+            //_hitTimerCounter += Time.deltaTime;
             
             if (_hitTimerCounter < StationaryTargetTime)
                 return;
@@ -198,7 +234,7 @@ namespace InputManagement
                     break;
             }
 
-            _hitTimerCounter = 0;
+            //_hitTimerCounter = 0;
             _startingHitType = HitGridType.None; //force the switch to No input to prevent new inputs 
             
             GridManager.Manager.CurrentLockMode = GridLockMode.Unlocked;
@@ -248,13 +284,10 @@ namespace InputManagement
             
             GridManager.Manager.CurrentLockMode = GridLockMode.Unlocked; //Unlock grid
             
-            //GridManager.Manager.CancelPrePath();
             GridManager.Manager.CancelAdding();
             
             _startingHitType = HitGridType.None;
             _currentStaticGroup = 0;
-            _currentConveyorGroup = -1;
-            _hitTimerCounter = 0;
         }
 
         /// <summary>
@@ -271,7 +304,6 @@ namespace InputManagement
                 case HitGridType.WeaponTarget:
                 case HitGridType.SideStaticHit:
                     GridManager.Manager.CancelAdding();
-                    //GridManager.Manager.CancelPrePath();
                     break;
                 
                 case HitGridType.CenterStaticHit:
@@ -334,7 +366,6 @@ namespace InputManagement
                     
                     if (_currentIndex != _startingIndex)
                     {
-                        //GridManager.Manager.PrePathFind(_startingIndex, _currentIndex);
                         GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     }
 
@@ -348,7 +379,6 @@ namespace InputManagement
                 case TileType.SideStaticTile:
                     if (t.IsBlocked && t.Index == _startingIndex)
                     {
-                        //GridManager.Manager.CancelPrePath();
                         GridManager.Manager.CancelAdding();
                         _startingHitType = HitGridType.None;
                         break;
@@ -360,7 +390,6 @@ namespace InputManagement
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
                     
-                    //GridManager.Manager.PrePathFind(_startingIndex, t.Index); //Path find before check to properly delete paths 
                     GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
 
                     if (GridManager.Manager.IsEmptyPath())
@@ -444,7 +473,6 @@ namespace InputManagement
                     
                     if (_currentIndex != _startingIndex)
                     {
-                        //GridManager.Manager.PrePathFind(_startingIndex, _currentIndex);
                         GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     }
                     
@@ -458,7 +486,6 @@ namespace InputManagement
                 case TileType.MineTile:
                     if (t.IsBlocked && t.Index == _startingIndex)
                     {
-                        //GridManager.Manager.CancelPrePath();
                         GridManager.Manager.CancelAdding();
                         _startingHitType = HitGridType.None;
                         break;
@@ -470,7 +497,6 @@ namespace InputManagement
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
 
-                    //GridManager.Manager.PrePathFind(_startingIndex, t.Index); //Path find before check to properly delete paths 
                     GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     
                     if (GridManager.Manager.IsEmptyPath())
@@ -518,7 +544,6 @@ namespace InputManagement
                     
                     if (_currentIndex != _startingIndex)
                     {
-                        //GridManager.Manager.PrePathFind(_startingIndex, _currentIndex);
                         GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     }
                     
@@ -532,7 +557,6 @@ namespace InputManagement
                 case TileType.WeaponTarget:
                     if (t.IsBlocked && t.Index == _startingIndex)
                     {
-                        //GridManager.Manager.CancelPrePath();
                         GridManager.Manager.CancelAdding();
                         _startingHitType = HitGridType.None;
                         break;
@@ -544,7 +568,6 @@ namespace InputManagement
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
 
-                    //GridManager.Manager.PrePathFind(_startingIndex, t.Index); //Path find before check to properly delete paths 
                     GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     
                     if (GridManager.Manager.IsEmptyPath())
@@ -592,7 +615,6 @@ namespace InputManagement
                     
                     if (_currentIndex != _startingIndex)
                     {
-                        //GridManager.Manager.PrePathFind(_startingIndex, _currentIndex);
                         GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     }
                     
@@ -606,7 +628,6 @@ namespace InputManagement
                 case TileType.TransTarget:
                     if (t.IsBlocked && t.Index == _startingIndex)
                     {
-                        //GridManager.Manager.CancelPrePath();
                         GridManager.Manager.CancelAdding();
                         _startingHitType = HitGridType.None;
                         break;
@@ -618,7 +639,6 @@ namespace InputManagement
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
 
-                    //GridManager.Manager.PrePathFind(_startingIndex, t.Index); //Path find before check to properly delete paths 
                     GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     
                     if (GridManager.Manager.IsEmptyPath())
@@ -693,16 +713,16 @@ namespace InputManagement
                 case TileType.MineTile: //Apparemment ca marche ¯\_(ツ)_/¯
                 case TileType.WeaponTarget:
                 case TileType.TransTarget:
-                    if (!GridManager.Manager.IsLastSelectedTile(_currentIndex) || t.IsBlocked)
+                    if (/*!GridManager.Manager.IsLastSelectedTile(_currentIndex) || */ t.IsBlocked)
                     {
                         GridManager.Manager.CancelAdding();
+                        break;
                     }
+                    GridManager.Manager.SetSelected(_currentIndex, true);
                     break;
 
                 case TileType.DynamicTile:
                     GridManager.Manager.CancelAdding();
-                    //TODO
-                    //faire des trucs
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
@@ -753,14 +773,13 @@ namespace InputManagement
                 case TileType.WeaponTarget:
                 case TileType.TransTarget:
                 case TileType.Default:
-                    //GridManager.Manager.CancelPrePath();
                     GridManager.Manager.CancelAdding();
                     break;
                 
                 case TileType.CenterStaticTile:
                     if (!GridManager.Manager.IsLastSelectedTile(_currentIndex))
                     {
-                        GridManager.Manager.CancelAdding();
+                        //GridManager.Manager.CancelAdding();
                     }
                     break;
                     
@@ -773,8 +792,6 @@ namespace InputManagement
 
                 case TileType.DynamicTile:
                     GridManager.Manager.CancelAdding();
-                    //TODO
-                    //faire des trucs
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
@@ -792,7 +809,6 @@ namespace InputManagement
                 case TileType.TransTarget:
                 case TileType.MineTile:
                 case TileType.Default:
-                    //GridManager.Manager.CancelPrePath();
                     GridManager.Manager.CancelAdding();
                     break;
                 
@@ -812,8 +828,6 @@ namespace InputManagement
 
                 case TileType.DynamicTile:
                     GridManager.Manager.CancelAdding();
-                    //TODO
-                    //faire des trucs
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
@@ -831,7 +845,6 @@ namespace InputManagement
                 case TileType.TransTarget:
                 case TileType.MineTile:
                 case TileType.Default:
-                    //GridManager.Manager.CancelPrePath();
                     GridManager.Manager.CancelAdding();
                     break;
                 
@@ -851,8 +864,6 @@ namespace InputManagement
 
                 case TileType.DynamicTile:
                     GridManager.Manager.CancelAdding();
-                    //TODO
-                    //faire des trucs
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
@@ -860,10 +871,19 @@ namespace InputManagement
         }
         
         #endregion
-        
+
+        private void SetDeleteTimer()
+        {
+            if (_hitTimerCounter >= 0 && _needDeletion)
+                _hitTimerCounter -= Time.deltaTime;
+            
+            if (_hitTimerCounter < 0 && _needDeletion)
+                _needDeletion = false;
+        }
+
         #endregion
         
-        private static HitGridType GetHitType(TileType t) => t switch //TODO passer en dll ?
+        private static HitGridType GetHitType(TileType t) => t switch
         {
             TileType.DynamicTile => HitGridType.DynamicHit,
             TileType.CenterStaticTile => HitGridType.CenterStaticHit,
@@ -896,6 +916,8 @@ namespace InputManagement
         private sbyte _currentConveyorGroup;
 
         private float _hitTimerCounter;
+
+        private bool _needDeletion;
 
         private const float StationaryTargetTime = 0.5f;
 

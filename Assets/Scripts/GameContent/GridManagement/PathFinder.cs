@@ -47,6 +47,44 @@ namespace GameContent.GridManagement
             return new List<Tile>();
         }
 
+        public static List<Tile> FindCompletionPath(Tile startTile, Tile endTile)
+        {
+            var openList = new List<Tile>();
+            var closedList = new List<Tile>();
+            
+            openList.Add(startTile);
+
+            while (openList.Count > 0)
+            {
+                openList.Sort(tileComparer);
+                var currentTile = openList[0];
+                
+                openList.Remove(currentTile);
+                closedList.Add(currentTile);
+
+                if (currentTile == endTile)
+                {
+                    return GetFullList(startTile, endTile);
+                }
+                
+                var neighbours = GetNeighboursTiles(currentTile);
+
+                foreach (var n in neighbours)
+                {
+                    if (n is CenterStaticBuildingTile or WeaponTargetTile or TransTargetTile or MineTile || n.IsBlocked || closedList.Contains(n) || Mathf.Abs(currentTile.Index.y - n.Index.y) > 1 || Mathf.Abs(currentTile.Index.x - n.Index.x) > 1)
+                        continue;
+
+                    n.G = GetManhattanDistance(startTile, n);
+                    n.H = GetManhattanDistance(endTile, n);
+                    n.PreviousTile = currentTile;
+                    
+                    if (!openList.Contains(n))
+                        openList.Add(n);
+                }
+            }
+            return new List<Tile>();
+        }
+
         private static int GetManhattanDistance(Tile startTile, Tile neighbourTile) => 
             Mathf.Abs(startTile.Index.x - neighbourTile.Index.x) + Mathf.Abs(startTile.Index.y - neighbourTile.Index.y);
 
