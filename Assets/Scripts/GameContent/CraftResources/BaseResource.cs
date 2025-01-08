@@ -58,7 +58,7 @@ namespace GameContent.CraftResources
 
         protected virtual void RemoveSelf()
         {
-            ConveyorRef.RemoveResource(this); 
+            ConveyorRef?.RemoveResource(this); 
             Destroy(gameObject);
         }
 

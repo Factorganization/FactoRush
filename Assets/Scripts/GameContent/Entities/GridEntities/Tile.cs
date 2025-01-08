@@ -1,4 +1,4 @@
-﻿//#define INDEX_DEBUG
+﻿#define INDEX_DEBUG
 
 using System.Collections.Generic;
 using GameContent.CraftResources;
@@ -22,7 +22,7 @@ namespace GameContent.Entities.GridEntities
         public TileType Type { get; private set; }
 
         protected virtual List<ConveyorGroup> GroupRef { get; set; }
-        
+        public int Count => GroupRef.Count;
         protected bool Active { get; private set; }
         
         #region Path Find
@@ -63,7 +63,7 @@ namespace GameContent.Entities.GridEntities
         
         public virtual void RemoveConveyorGroup(ConveyorGroup conveyorGroup) => GroupRef.Remove(conveyorGroup);
         
-        public void MarkActive(bool active) => Active = active;
+        public virtual void MarkActive(bool active) => Active = active;
 
         protected virtual void InstantiateResourceAt(int conveyorIndex, BaseResource resource, Vector3 pos, int pathIndex)
         {

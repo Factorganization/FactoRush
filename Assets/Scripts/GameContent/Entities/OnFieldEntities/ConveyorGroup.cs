@@ -46,13 +46,35 @@ namespace GameContent.Entities.OnFieldEntities
             FromStaticTile.MarkActive(true);
             ToStaticTile.MarkActive(true);
             CheckValidity();
+            CheckPathJump();
+        }
+
+        private void CheckPathJump()
+        {
+            var j = 0;
+            
+            for (var i = 0; i < Count - 1; i++)
+            {
+                if (Vector2Int.Distance(this[i].TileRef.Index, this[i + 1].TileRef.Index) < 1.1f)
+                    j++;
+            }
+            
+            if (j >= Count - 1)
+                return;
+            
+            foreach (var b in this)
+            {
+                GridManager.Manager.Grid[b.TileRef.Index].CurrentBuildingRef = null;
+                Object.Destroy(b.gameObject);
+            }
+            GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
         }
         
         private void CheckValidity()
         {
-            if (FromStaticTile is not DynamicBuildingTile && ToStaticTile is not DynamicBuildingTile)
-                return; //TODO
-            
+            if (FromStaticTile is not DynamicBuildingTile && ToStaticTile is not DynamicBuildingTile && Count > 1)
+                return;
+
             foreach (var b in this)
             {
                 GridManager.Manager.Grid[b.TileRef.Index].CurrentBuildingRef = null;
@@ -85,7 +107,9 @@ namespace GameContent.Entities.OnFieldEntities
             }
             
             FromStaticTile.RemoveConveyorGroup(this);
+            Debug.Log($"{FromStaticTile.Count} _ {FromStaticTile.name}");
             ToStaticTile.RemoveConveyorGroup(this);
+            Debug.Log($"{ToStaticTile.Count} _ {ToStaticTile.name}");
         }
 
         #endregion

@@ -283,7 +283,7 @@ namespace GameContent.GridManagement
         
         public bool TryAddDynamicBuildingAt(Vector2Int from, Vector2Int previous, Vector2Int index) // yes. bool.
         {
-            if ((IsSpecTile(Grid[index]) && index != from && _addingDynamic.Count > 1) || Grid[index].IsBlocked)
+            if ((IsSpecTile(Grid[index]) && index != from/* && _addingDynamic.Count > 1*/) || Grid[index].IsBlocked)
                 return false;
             
             if (_lastSelectedTile is not null && Vector2Int.Distance(index, _lastSelectedTile.Index) > 1.1f)
@@ -403,7 +403,6 @@ namespace GameContent.GridManagement
                     _removing.Add(b2.TileRef.Index);
                     _toRemove.Add(b2.TileRef.Index, b2);
                 }
-                
                 ConveyorGroups[j].DestroyGroup();
                 ConveyorGroups.Remove(j);
             }

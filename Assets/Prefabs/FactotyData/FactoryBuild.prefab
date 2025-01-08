@@ -61,7 +61,7 @@ Transform:
   m_GameObject: {fileID: 2981917120471025788}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0.90000004, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -273,13 +273,13 @@ MonoBehaviour:
   m_Colors: []
   m_UnwrapParameters:
     m_HardAngle: 88
-    m_PackMargin: 20
+    m_PackMargin: 30
     m_AngleError: 8
     m_AreaError: 15
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 4362
+  m_VersionIndex: 4380
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -297,15 +297,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Shape:
-    rid: 82801592806146121
+    rid: 3304525202982174864
   m_ShapeRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_UnmodifiedMeshVersion: 4362
+  m_UnmodifiedMeshVersion: 4380
   m_Size: {x: 1, y: 0.5, z: -1}
   m_LocalCenter: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
-    - rid: 82801592806146121
+    - rid: 3304525202982174864
       type: {class: Cube, ns: UnityEngine.ProBuilder.Shapes, asm: Unity.ProBuilder}
       data: 
 --- !u!23 &6437789064441429440

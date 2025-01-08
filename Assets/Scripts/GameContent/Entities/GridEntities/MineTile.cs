@@ -38,13 +38,20 @@ namespace GameContent.Entities.GridEntities
                 _spawnCounter += Time.deltaTime;
                 return;
             }
-
+            
             if (CurrentBuildingRef is null || GroupRef is null)
                 return;
-
+            
             InstantiateResourceAt(_targetIndex, miningResource, Position + Vector3.up * 0.25f, _targetIndex);
             _spawnCounter = 0;
             _targetIndex += (_targetIndex + 1) % GroupRef.Count;
+        }
+
+        public override void MarkActive(bool active)
+        {
+            base.MarkActive(active);
+
+            _spawnCounter = 0;
         }
 
         #endregion
