@@ -5,6 +5,8 @@ namespace GameContent.Entities.UnmanagedEntities
     [CreateAssetMenu(fileName = "NewTransportComponent", menuName = "Components/TransportComponent")]
     public class TransportComponent : ScriptableObject
     {
+        [Header("Graph")]
+        public GameObject Graph; // Graphical representation of the unit
         [Header("Transport Stats")]
         public float SpeedMultiplier = 1.5f; // Speed boost
         public float HealthMultiplier = 1.2f; // Health boost

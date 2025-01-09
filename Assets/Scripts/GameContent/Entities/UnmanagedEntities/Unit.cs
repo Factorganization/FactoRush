@@ -1,4 +1,7 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using GameContent.Entities.UnmanagedEntities.Scriptables.Weapons;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace GameContent.Entities.UnmanagedEntities
@@ -25,6 +28,9 @@ namespace GameContent.Entities.UnmanagedEntities
 
         public AllyBase allyBase;
         public EnemyBase enemyBase;
+        
+        
+        
 
         #endregion
 
@@ -32,13 +38,21 @@ namespace GameContent.Entities.UnmanagedEntities
 
         public bool isAlly;
         public bool IsAlive => currentHealth > 0;
-        public bool CanAttack => weaponComponent != null;
+        public bool CanAttack => weaponComponent != null && attackCooldown <= 0;
         public bool CanMove => transportComponent != null;
 
+        public Vector3 velocity;
+
         public bool isAirUnit => transportComponent != null && transportComponent.IsFlying;
-        public bool isGroundUnit => transportComponent == null || !transportComponent.IsFlying;
+        
+        [Header("Special Weapon Effects")]
         
         private bool isStunned = false;
+        private float attackCooldown = 0;
+        private float Range;
+        public bool isExplosive = false;
+        public float attackSpeed;
+        public float ExplosiveRange;
 
         #endregion
 
@@ -57,12 +71,17 @@ namespace GameContent.Entities.UnmanagedEntities
 
         private void Update()
         {
-            if (!IsAlive)
-                return;
-
-            HandleCombat();
-            HandleMovement();
+            if (!IsAlive) return;
+            if (isStunned) return;
+            
             DrawVisionCone(); // Update the vision cone every frame
+            UpdateCooldown(); 
+            
+            if (!HandleCombat())
+            {
+                HandleMovement();
+            }
+
         }
 
         #endregion
@@ -72,12 +91,25 @@ namespace GameContent.Entities.UnmanagedEntities
         private void InitializeUnit()
         {
             float baseHealth = 100;
+            attackSpeed = weaponComponent != null ? weaponComponent.AttackSpeed : 9999;
+            Range = weaponComponent != null ? weaponComponent.Range : 0;
             currentHealth = transportComponent != null ? baseHealth * transportComponent.HealthMultiplier : baseHealth;
             if (isAirUnit)
             {
-                transform.position += Vector3.up * 2f; // Lift the unit off the ground
+                transform.position += Vector3.up * 3f; // Lift the unit off the ground
             }
             
+            if (weaponComponent != null)
+            {
+                var weaponGraph = Instantiate(weaponComponent.Graph, transform);
+                weaponGraph.transform.parent = graphTransform;
+                weaponComponent.Initialize(this);
+            }
+            if (transportComponent != null)
+            {
+                var transportGraph = Instantiate(transportComponent.Graph, transform);
+                transportGraph.transform.parent = graphTransform;
+            }
         }
 
         private void InitializeVisionCone()
@@ -95,7 +127,7 @@ namespace GameContent.Entities.UnmanagedEntities
         {
             if (!weaponComponent) return;
 
-            float visionRange = weaponComponent.Range;
+            float visionRange = Range;
             float visionAngle = ConeAngle * Mathf.Deg2Rad;
             int resolution = 120;
 
@@ -149,37 +181,48 @@ namespace GameContent.Entities.UnmanagedEntities
 
         #region Combat
 
-        private void HandleCombat()
+        private bool HandleCombat()
         {
-            if (isStunned) return;
-            if (!CanAttack || !weaponComponent.CanAttack)
-            {
-                weaponComponent.UpdateCooldown();
-                return;
-            };
+
+            if (isStunned) return false;
+            if (!CanAttack) return false;
             
 
             // Adjust the origin of the cone based on the offsets
-            Vector3 coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ; 
-            
+            Vector3 coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ;
+
             // Find all potential targets within the attack range
-            Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, weaponComponent.Range);
+            Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, Range);
             //draw that sphere 
-    
+
+            // Collect all valid unit targets in range
+            List<Unit> unitsInRange = new List<Unit>();
             foreach (var hitCollider in hitColliders)
             {
                 Unit target = hitCollider.GetComponent<Unit>();
                 if (target != null && target.IsAlive && IsValidTarget(target) && IsInCone(target.transform.position, coneOrigin))
                 {
-                    AttackTarget(target);
+                    unitsInRange.Add(target);
                 }
+            }
 
+            // Attack the first valid unit target, if any
+            if (unitsInRange.Count > 0)
+            {
+                AttackTarget(unitsInRange);
+                return true;
+            }
+
+            // Handle base attacks (unchanged behavior)
+            foreach (var hitCollider in hitColliders)
+            {
                 if (isAlly)
                 {
                     EnemyBase enemyBase = hitCollider.GetComponent<EnemyBase>();
                     if (enemyBase != null && IsInCone(enemyBase.transform.position, coneOrigin))
                     {
                         AttackEnemyBase(enemyBase);
+                        return true;
                     }
                 }
                 else
@@ -188,12 +231,14 @@ namespace GameContent.Entities.UnmanagedEntities
                     if (allyBase != null && IsInCone(allyBase.transform.position, coneOrigin))
                     {
                         AttackAllyBase(allyBase);
+                        return true;
                     }
                 }
             }
-
-            weaponComponent.UpdateCooldown();
+            
+            return false;
         }
+
 
         private bool IsInCone(Vector3 targetPosition, Vector3 coneOrigin)
         {
@@ -202,49 +247,88 @@ namespace GameContent.Entities.UnmanagedEntities
             return angle <= ConeAngle / 2;
         }
 
-        private void AttackTarget(Unit target)
+        private void AttackTarget(List<Unit> unitsInRange)
         {
-            if (!weaponComponent.CanAttack) return;
+            if (!CanAttack) return;
+            if (isExplosive)
+            {
+                if (Mathf.Approximately(Range, weaponComponent.Range))
+                {
+                    Range = ExplosiveRange;
+                    return;
+                }
+            }
 
-            target.ApplyDamage(weaponComponent.Damage);
-            //weaponComponent.Attack(); TODO
+            weaponComponent.Attack(this, unitsInRange[0], unitsInRange );
+            ResetCooldown();
+            ResetRange();
 
-            Debug.Log($"{name} attacked {target.name} for {weaponComponent.Damage} damage.");
+            Debug.Log($"{name} attacked {unitsInRange[0].name} for {weaponComponent.Damage} damage.");
         }
         
         private void AttackEnemyBase(EnemyBase enemyBase)
         {
-            if (!weaponComponent.CanAttack) return;
+            if (!CanAttack) return;
 
             enemyBase.TakeDamage(weaponComponent.Damage);
-            //weaponComponent.Attack(); TODO
+            ResetCooldown();
 
             Debug.Log($"{name} attacked {enemyBase.name} for {weaponComponent.Damage} damage.");
         }
         
         private void AttackAllyBase(AllyBase allyBase)
         {
-            if (!weaponComponent.CanAttack) return;
+            if (!CanAttack) return;
 
             allyBase.TakeDamage(weaponComponent.Damage);
-            //weaponComponent.Attack(); TODO
+            ResetCooldown();
 
             Debug.Log($"{name} attacked {allyBase.name} for {weaponComponent.Damage} damage.");
         }
 
         private bool IsValidTarget(Unit target)
         {
-            switch (weaponComponent.targetType)
+            if (target == this) return false;
+            if (target.isAlly == isAlly) return false;
+            
+            // if the target is behind this unit, it is not a valid target\
+            Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
+            float angle = Vector3.Angle(transform.forward, directionToTarget);
+            if (angle > 90)
             {
-                case TargetType.Ground:
-                    return target.isGroundUnit;
-                case TargetType.Air:
-                    return target.isAirUnit;
-                case TargetType.Both:
-                    return true;
-                default:
-                    return false;
+                return isExplosive; // If the target is behind, only allow explosive weapons to hit
             }
+            
+
+            return weaponComponent.targetType switch
+            {
+                TargetType.Ground => !target.isAirUnit,
+                TargetType.Air => target.isAirUnit,
+                TargetType.Both => true,
+                _ => false
+            };
+        }
+        
+        private void UpdateCooldown()
+        {
+            if (attackCooldown > 0)
+                attackCooldown -= Time.deltaTime;
+        }
+        
+        private void ResetCooldown()
+        {
+            attackCooldown = attackSpeed;
+            velocity = Vector3.zero;
+        }
+        
+        private void ResetAttackSpeed()
+        {
+            attackSpeed = weaponComponent.AttackSpeed;
+        }
+        
+        private void ResetRange()
+        {
+            Range = weaponComponent.Range;
         }
 
         #endregion
@@ -254,11 +338,14 @@ namespace GameContent.Entities.UnmanagedEntities
         private void HandleMovement()
         {
             if (!CanMove) return;
-            if (weaponComponent != null && !weaponComponent.CanAttack) return;
+            if (weaponComponent != null && !CanAttack) return;
             if (isStunned) return;
+            
+            ResetAttackSpeed();
             
             float speed = transportComponent.SpeedMultiplier;
             transform.Translate(Vector3.forward * speed * Time.deltaTime);
+            velocity = transform.forward * speed;
         }
 
         #endregion
@@ -319,11 +406,11 @@ namespace GameContent.Entities.UnmanagedEntities
 
             // Draw the overlap sphere
             Gizmos.color = new Color(0f, 0.5f, 1f, 0.5f); // Light blue with transparency
-            Gizmos.DrawWireSphere(coneOrigin, weaponComponent.Range);
+            Gizmos.DrawWireSphere(coneOrigin, Range);
             
             if (Application.isPlaying) // Only run during Play mode
             {
-                Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, weaponComponent.Range);
+                Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, Range);
                 foreach (var hitCollider in hitColliders)
                 {
                     Gizmos.color = Color.red;
