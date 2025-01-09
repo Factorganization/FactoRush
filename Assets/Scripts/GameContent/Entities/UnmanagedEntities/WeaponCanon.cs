@@ -6,17 +6,8 @@ namespace GameContent.Entities.UnmanagedEntities
     [CreateAssetMenu(fileName = "WeaponCanon", menuName = "Components/WeaponComponents/WeaponCanon")]
     public sealed class WeaponCanon : WeaponComponent
     {
-        public override void Attack(Unit attacker, Unit target, List<Unit> allUnitsInRange)
-        {
-            if (!CanAttack) return;
-            
-            HandleCannonEffect(target, allUnitsInRange);
-
-            attackCooldown = AttackSpeed; // Reset cooldown
-        }
-        
         #region Unique Effects Handlers
-        private void HandleCannonEffect(Unit target, List<Unit> allUnitsInRange)
+        protected override void HandleUniqueEffect(Unit attacker, Unit target, List<Unit> allUnitsInRange)
         {
             Unit preferredTarget = null;
 
@@ -53,11 +44,6 @@ namespace GameContent.Entities.UnmanagedEntities
         
         #endregion
         
-        
-        protected override void HandleUniqueEffectExemple(Unit _)
-        {
-            
-        }
     }
     
 }

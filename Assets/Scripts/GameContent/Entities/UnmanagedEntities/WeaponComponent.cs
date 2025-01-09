@@ -5,14 +5,15 @@ namespace GameContent.Entities.UnmanagedEntities
 {
     public abstract class WeaponComponent : ScriptableObject
     {
+        [Header("Graph")]
+        public GameObject Graph;
         [Header("Weapon Stats")]
         public float Damage = 10f;        // Base damage of the weapon
         public float AttackSpeed = 1f;   // Time (seconds) between attacks
         public float Range = 5f;         // Attack range of the weapon
-
-        protected float attackCooldown;
-
         public TargetType targetType;
+        
+        
 
         
         [Header("Effect Parameters")]
@@ -24,22 +25,18 @@ namespace GameContent.Entities.UnmanagedEntities
         public float WarHammerStunDuration = 3f;  // Stun duration for target
         public float WarHammerStunRadius = 2f;    // Stun radius for units behind target
         public float AoEArtilleryRadius = 3f;     // Radius of AoE damage for artillery
-
-        // Can the weapon attack right now?
-        public bool CanAttack => attackCooldown <= 0;
+        
 
         // Main attack method
-        public abstract void Attack(Unit attacker, Unit target, List<Unit> allUnitsInRange);
-
-        public void UpdateCooldown()
+        public void Attack(Unit attacker, Unit target, List<Unit> allUnitsInRange)
         {
-            if (attackCooldown > 0)
-                attackCooldown -= Time.deltaTime;
+            HandleUniqueEffect(attacker, target, allUnitsInRange);
         }
+        
 
         #region Unique Effects Handlers
 
-        protected abstract void HandleUniqueEffectExemple(Unit target);
+        protected abstract void HandleUniqueEffect(Unit attacker, Unit target, List<Unit> allUnitsInRange);
         
 
         private void HandleArtilleryEffect(Unit target, List<Unit> allUnitsInRange)
