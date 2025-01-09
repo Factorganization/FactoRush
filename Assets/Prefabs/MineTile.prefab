@@ -69,6 +69,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   graphTransform: {fileID: 2409490437033226757}
+  debugIndex: {fileID: 4345483588012449887}
   miningResource: {fileID: 681019658827251185, guid: 3574de7e9776c3841b5cf4ca3bad607b,
     type: 3}
 --- !u!1 &2123196178894275658

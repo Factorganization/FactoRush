@@ -120,7 +120,7 @@ namespace InputManagement
                     {
                         var db = dt.CurrentBuildingRef as DynamicBuilding;
                         
-                        if (_needDeletion && _hitTimerCounter >= 0 && _currentConveyorGroup == db!.ConveyorGroupIds[0]) //TODO refaire ca pour multi path
+                        if (_needDeletion && _hitTimerCounter >= 0 && _currentConveyorGroup == db!.ConveyorGroupIds[0])
                         {
                             switch (t.CurrentBuildingRef)
                             {
@@ -148,7 +148,7 @@ namespace InputManagement
                         }
                         
                         _currentConveyorGroup = db!.ConveyorGroupIds[0];
-                        GridManager.Manager.SetPathIndex(_currentConveyorGroup);
+                        GridManager.Manager.MarkAddonFlag(_currentConveyorGroup);
                     }
                     break;        
                     
@@ -195,7 +195,7 @@ namespace InputManagement
                 case HitGridType.DynamicHit:
                     HandleFromDynamicMove(ray);
                     break;
-                    
+                
                 case HitGridType.None:
                     break;
                 default:
@@ -323,7 +323,7 @@ namespace InputManagement
         
         #region Handle Moves
 
-        private void HandleFromDynamicMove(Ray ray) //TODO
+        private void HandleFromDynamicMove(Ray ray)
         {
             if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
                 return;
@@ -333,13 +333,61 @@ namespace InputManagement
 
             switch (t.Type)
             {
-                case TileType.Default:
-                case TileType.SideStaticTile:
-                case TileType.CenterStaticTile:
                 case TileType.DynamicTile:
+                    if (t.Index == _currentIndex)
+                    {
+                        if (t.Index == _startingIndex)
+                            GridManager.Manager.SetSelected(_startingIndex, true);
+                        break;
+                    }
+
+                    _lastIndex = _currentIndex;
+                    _currentIndex = t.Index;
+                    
+                    if (_currentIndex != _startingIndex)
+                    {
+                        GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
+                    }
+
+                    if (GridManager.Manager.IsEmptyPath())
+                    {
+                        GridManager.Manager.CancelAdding();
+                        _startingHitType = HitGridType.None;
+                    }
+                    break;
+                    
+                case TileType.SideStaticTile:
                 case TileType.MineTile:
                 case TileType.WeaponTarget:
                 case TileType.TransTarget:
+                    if (t.Index == _currentIndex)
+                        break;
+                    
+                    _lastIndex = _currentIndex;
+                    _currentIndex = t.Index;
+                    
+                    if (_currentIndex != _startingIndex)
+                    {
+                        GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
+                    }
+                    
+                    if (GridManager.Manager.IsEmptyPath())
+                    {
+                        GridManager.Manager.CancelAdding();
+                        _startingHitType = HitGridType.None;
+                    }
+                    break;
+                
+                case TileType.CenterStaticTile:
+                    if (t.Index == _currentIndex)
+                        break;
+
+                    _lastIndex = _currentIndex;
+                    _currentIndex = t.Index;
+                    GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex); // AAAAAAAAAAAAAAAAAAAAAAAAA
+                    break;
+                    
+                case TileType.Default:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -673,26 +721,26 @@ namespace InputManagement
         // /!\ /!\ /!\ Attention aux noms des fonctions dans cette section, les noms des tiles sont des refs au noms de la tile de départ du déplacement, pas la tile d'arrivée !!!
         // Ex : pour un drag and drop d'une tile side static à une mine, la fonction sera HandleSideStaticEnding
 
-        private void HandleDynamicEnding(RaycastHit hit) //TODO
+        private void HandleDynamicEnding(RaycastHit hit)
         {
             if (!hit.collider.TryGetComponent(out Tile t))
                 return;
 
             switch (t.Type)
             {
-                case TileType.Default:
-                    break;
                 case TileType.SideStaticTile:
-                    break;
                 case TileType.CenterStaticTile:
-                    break;
                 case TileType.DynamicTile:
-                    break;
                 case TileType.MineTile:
-                    break;
                 case TileType.WeaponTarget:
-                    break;
                 case TileType.TransTarget:
+                    if (!GridManager.Manager.IsLastSelectedTile(_currentIndex) || t.IsBlocked)
+                    {
+                        GridManager.Manager.CancelAdding();
+                    }
+                    break;
+                
+                case TileType.Default:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

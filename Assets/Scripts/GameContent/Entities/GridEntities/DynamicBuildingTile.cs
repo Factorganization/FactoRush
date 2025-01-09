@@ -21,7 +21,7 @@ namespace GameContent.Entities.GridEntities
             }
         }
 
-        protected override List<ConveyorGroup> GroupRef //sa race
+        public override List<ConveyorGroup> GroupRef //sa race
         {
             get => null;
             set { }

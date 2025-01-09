@@ -24,6 +24,7 @@ namespace GameContent.Entities.OnFieldEntities
 
         public ConveyorGroup(sbyte id, params DynamicBuilding[] dl) : base(dl)
         {
+            _tempPath = new List<DynamicBuilding>();
             _conveyedResources = new List<BaseResource>();
             ConveyorGroupId = id;
         }
@@ -53,6 +54,58 @@ namespace GameContent.Entities.OnFieldEntities
             GraphInit();
         }
 
+        public void InitFromDynamic(sbyte index)
+        {
+            var f = GridManager.Manager.ConveyorGroups[index][0];
+            
+            if (!(f.TileRef is MineTile && 
+                  this[Count - 1].TileRef is SideStaticBuildingTile) &&
+                !(f.TileRef is SideStaticBuildingTile &&
+                  this[Count - 1].TileRef is TransTargetTile or WeaponTargetTile))
+            {
+                this[0].RemoveConveyorGroupId(ConveyorGroupId);
+                
+                for (var j = 1; j < Count; j++)
+                {
+                    var b = this[j];
+                    b.TileRef.CurrentBuildingRef = null;
+                    Object.Destroy(b.gameObject);
+                }
+
+                GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
+                return;
+            }
+            
+            var c = GridManager.Manager.ConveyorGroups[index];
+            
+            foreach (var t in c)
+            {
+                if (t.TileRef.Index != this[0].TileRef.Index)
+                {
+                    _tempPath.Add(t);
+                    t.AddConveyorGroupId(ConveyorGroupId);
+                    t.SetDebugId(ConveyorGroupId);
+                }
+
+                else
+                    break;
+            }
+            
+            GraphInit();
+            
+            DynamicBuildings.InsertRange(0, _tempPath);
+            
+            FromStaticTile = this[0].TileRef;
+            ToStaticTile = this[Count - 1].TileRef;
+            
+            FromStaticTile.AddConveyorGroup(this);
+            ToStaticTile.AddConveyorGroup(this);
+            FromStaticTile.MarkActive(true);
+            ToStaticTile.MarkActive(true);
+            
+            _tempPath.Clear();
+        }
+        
         private void GraphInit()
         {
             for (var i = 0; i < Count; i++)
@@ -87,7 +140,7 @@ namespace GameContent.Entities.OnFieldEntities
             
             foreach (var b in this)
             {
-                GridManager.Manager.Grid[b.TileRef.Index].CurrentBuildingRef = null;
+                b.TileRef.CurrentBuildingRef = null;
                 Object.Destroy(b.gameObject);
             }
             GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
@@ -102,17 +155,12 @@ namespace GameContent.Entities.OnFieldEntities
 
             foreach (var b in this)
             {
-                GridManager.Manager.Grid[b.TileRef.Index].CurrentBuildingRef = null;
+                b.TileRef.CurrentBuildingRef = null;
                 Object.Destroy(b.gameObject);
             }
             GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
             UnsetSelf();
             return false;
-        }
-        
-        public override void UpdateGroup()
-        {
-            
         }
         
         public void AddResource(BaseResource resource) => _conveyedResources.Add(resource);
@@ -135,8 +183,25 @@ namespace GameContent.Entities.OnFieldEntities
             
             FromStaticTile.RemoveConveyorGroup(this);
             ToStaticTile.RemoveConveyorGroup(this);
+
+            if (FromStaticTile.GroupRef.Count > 0)
+                FromStaticTile.MarkActive(true);
         }
 
+        public override void UpdateGroup()
+        {
+            foreach (var d in DynamicBuildings)
+            {
+                d.UpdateBuild();
+            }
+        }
+        
+        public void MarkActive(bool active)
+        {
+            ToStaticTile.MarkActive(active);
+            FromStaticTile.MarkActive(active);
+        }
+        
         private void UnsetSelf()
         {
             FromStaticTile.MarkActive(false);
@@ -148,6 +213,8 @@ namespace GameContent.Entities.OnFieldEntities
         #endregion
 
         #region fields
+
+        private readonly List<DynamicBuilding> _tempPath;
         
         private readonly List<BaseResource> _conveyedResources;
 
