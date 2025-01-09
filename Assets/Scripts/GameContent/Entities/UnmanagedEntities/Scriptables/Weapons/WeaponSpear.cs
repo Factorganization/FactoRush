@@ -16,7 +16,23 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             // Gain a damage multiplier if speed velocity isnt zero
             float damageMultiplier = attacker.velocity.magnitude > 0 ? SpeedDamageMultiplier : 1f;
             
-            target.ApplyDamage(Damage * damageMultiplier);
+            Unit priorityTarget = null;
+            foreach (var unit in allUnitsInRange)
+            {
+                if (unit.weaponComponent != null && unit.weaponComponent.isAPriorityTarget)
+                {
+                    priorityTarget = unit;
+                    break;
+                }
+            }
+            if (priorityTarget != null)
+            {
+                priorityTarget.ApplyDamage(Damage * damageMultiplier);
+            }
+            else
+            {
+                target.ApplyDamage(Damage * damageMultiplier);
+            }
             
         }
         

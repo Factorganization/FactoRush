@@ -295,7 +295,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   units: []
-  unitPrefab: {fileID: 8620345079803048240, guid: 12ac4e0d171aec6458bc9ffdf2b1668d,
+  unitPrefab: {fileID: 2848753883951655561, guid: a7c443844fc3bb245a00c4676c7ba49f,
     type: 3}
   allyBase: {fileID: 3610572615629032536}
   enemyBase: {fileID: 6989886098802506149}

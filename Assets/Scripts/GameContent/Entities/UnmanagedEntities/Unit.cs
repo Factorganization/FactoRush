@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameContent.Entities.UnmanagedEntities.Scriptables.Weapons;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace GameContent.Entities.UnmanagedEntities
@@ -47,7 +49,10 @@ namespace GameContent.Entities.UnmanagedEntities
         
         private bool isStunned = false;
         private float attackCooldown = 0;
+        private float Range;
+        public bool isExplosive = false;
         public float attackSpeed;
+        public float ExplosiveRange;
 
         #endregion
 
@@ -87,6 +92,7 @@ namespace GameContent.Entities.UnmanagedEntities
         {
             float baseHealth = 100;
             attackSpeed = weaponComponent != null ? weaponComponent.AttackSpeed : 9999;
+            Range = weaponComponent != null ? weaponComponent.Range : 0;
             currentHealth = transportComponent != null ? baseHealth * transportComponent.HealthMultiplier : baseHealth;
             if (isAirUnit)
             {
@@ -97,6 +103,7 @@ namespace GameContent.Entities.UnmanagedEntities
             {
                 var weaponGraph = Instantiate(weaponComponent.Graph, transform);
                 weaponGraph.transform.parent = graphTransform;
+                weaponComponent.Initialize(this);
             }
             if (transportComponent != null)
             {
@@ -120,7 +127,7 @@ namespace GameContent.Entities.UnmanagedEntities
         {
             if (!weaponComponent) return;
 
-            float visionRange = weaponComponent.Range;
+            float visionRange = Range;
             float visionAngle = ConeAngle * Mathf.Deg2Rad;
             int resolution = 120;
 
@@ -185,7 +192,7 @@ namespace GameContent.Entities.UnmanagedEntities
             Vector3 coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ;
 
             // Find all potential targets within the attack range
-            Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, weaponComponent.Range);
+            Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, Range);
             //draw that sphere 
 
             // Collect all valid unit targets in range
@@ -243,9 +250,18 @@ namespace GameContent.Entities.UnmanagedEntities
         private void AttackTarget(List<Unit> unitsInRange)
         {
             if (!CanAttack) return;
+            if (isExplosive)
+            {
+                if (Mathf.Approximately(Range, weaponComponent.Range))
+                {
+                    Range = ExplosiveRange;
+                    return;
+                }
+            }
 
             weaponComponent.Attack(this, unitsInRange[0], unitsInRange );
             ResetCooldown();
+            ResetRange();
 
             Debug.Log($"{name} attacked {unitsInRange[0].name} for {weaponComponent.Damage} damage.");
         }
@@ -274,6 +290,15 @@ namespace GameContent.Entities.UnmanagedEntities
         {
             if (target == this) return false;
             if (target.isAlly == isAlly) return false;
+            
+            // if the target is behind this unit, it is not a valid target\
+            Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
+            float angle = Vector3.Angle(transform.forward, directionToTarget);
+            if (angle > 90)
+            {
+                return isExplosive; // If the target is behind, only allow explosive weapons to hit
+            }
+            
 
             return weaponComponent.targetType switch
             {
@@ -299,6 +324,11 @@ namespace GameContent.Entities.UnmanagedEntities
         private void ResetAttackSpeed()
         {
             attackSpeed = weaponComponent.AttackSpeed;
+        }
+        
+        private void ResetRange()
+        {
+            Range = weaponComponent.Range;
         }
 
         #endregion
@@ -376,11 +406,11 @@ namespace GameContent.Entities.UnmanagedEntities
 
             // Draw the overlap sphere
             Gizmos.color = new Color(0f, 0.5f, 1f, 0.5f); // Light blue with transparency
-            Gizmos.DrawWireSphere(coneOrigin, weaponComponent.Range);
+            Gizmos.DrawWireSphere(coneOrigin, Range);
             
             if (Application.isPlaying) // Only run during Play mode
             {
-                Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, weaponComponent.Range);
+                Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, Range);
                 foreach (var hitCollider in hitColliders)
                 {
                     Gizmos.color = Color.red;

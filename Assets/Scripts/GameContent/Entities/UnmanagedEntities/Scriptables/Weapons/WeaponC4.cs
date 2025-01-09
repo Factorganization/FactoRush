@@ -7,6 +7,17 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
     public sealed class WeaponC4 : WeaponComponent
     {
         
+        
+        [Header("Effect Parameters")]
+        public float ExplosionRangeC4;
+        
+        public override void Initialize(Unit unit)
+        {
+            unit.isExplosive = true;
+            unit.ExplosiveRange = ExplosionRangeC4;
+        }
+        
+        
         #region Unique Effects Handlers
         protected override void HandleUniqueEffect(Unit attacker, Unit target, List<Unit> allUnitsInRange)
         {

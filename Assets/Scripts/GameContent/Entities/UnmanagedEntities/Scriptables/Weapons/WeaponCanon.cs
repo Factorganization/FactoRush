@@ -10,7 +10,17 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
         protected override void HandleUniqueEffect(Unit attacker, Unit target, List<Unit> allUnitsInRange)
         {
             Unit preferredTarget = null;
-
+            Unit priorityTarget = null;
+            
+            // Priorité aux cibles prioritaires
+            foreach (var unit in allUnitsInRange)
+            {
+                if (unit.weaponComponent != null && unit.weaponComponent.isAPriorityTarget)
+                {
+                    priorityTarget = unit;
+                    break; // Trouve la première cible prioritaire dans la portée
+                }
+            }
             // Priorité aux cibles au sol
             foreach (var unit in allUnitsInRange)
             {
@@ -19,6 +29,11 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
                     preferredTarget = unit;
                     break; // Trouve la première cible au sol dans la portée
                 }
+            }
+            
+            if (priorityTarget != null)
+            {
+                preferredTarget = priorityTarget;
             }
 
             // Si aucune cible au sol n'est trouvée, chercher une cible aérienne

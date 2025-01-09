@@ -15,7 +15,26 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
         {
             // Gain 10% attack speed per attack, up to 50%. Resets on change position
             
-            target.ApplyDamage(Damage);
+            Unit priorityTarget = null;
+            
+            foreach (var unit in allUnitsInRange)
+            {
+                if (unit.weaponComponent != null && unit.weaponComponent.isAPriorityTarget)
+                {
+                    priorityTarget = unit;
+                    break;
+                }
+            }
+            
+            if (priorityTarget != null)
+            {
+                priorityTarget.ApplyDamage(Damage);
+            }
+            else
+            {
+                target.ApplyDamage(Damage);
+            }
+            
             attacker.attackSpeed = Mathf.Max(0.5f, attacker.attackSpeed * MinigunSpeedMultiplier); // Increase attack speed
             
         }
