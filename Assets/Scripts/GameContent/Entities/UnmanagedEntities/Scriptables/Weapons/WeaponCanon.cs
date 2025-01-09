@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameContent.Entities.UnmanagedEntities
+namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
 {
     [CreateAssetMenu(fileName = "WeaponCanon", menuName = "Components/WeaponComponents/WeaponCanon")]
     public sealed class WeaponCanon : WeaponComponent
@@ -14,7 +14,7 @@ namespace GameContent.Entities.UnmanagedEntities
             // Priorité aux cibles au sol
             foreach (var unit in allUnitsInRange)
             {
-                if (unit.isGroundUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
+                if (!unit.isAirUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
                 {
                     preferredTarget = unit;
                     break; // Trouve la première cible au sol dans la portée
@@ -37,7 +37,7 @@ namespace GameContent.Entities.UnmanagedEntities
             // Appliquer les dégâts à la cible préférée
             if (preferredTarget != null)
             {
-                float damageMultiplier = preferredTarget.isGroundUnit ? 2f : 1f;
+                float damageMultiplier = !preferredTarget.isAirUnit ? 2f : 1f;
                 preferredTarget.ApplyDamage(Damage * damageMultiplier);
             }
         }

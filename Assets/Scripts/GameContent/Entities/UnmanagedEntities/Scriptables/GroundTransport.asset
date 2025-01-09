@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b6951b209fb42f98e28823a2d09f2e2, type: 3}
   m_Name: GroundTransport
   m_EditorClassIdentifier: 
+  Graph: {fileID: 919132149155446097, guid: b522d6c385f33a84091ef5fc0695f18d, type: 3}
   SpeedMultiplier: 1.5
   HealthMultiplier: 1.2
   IsFlying: 0

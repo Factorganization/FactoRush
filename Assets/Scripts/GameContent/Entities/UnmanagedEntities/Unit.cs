@@ -26,6 +26,9 @@ namespace GameContent.Entities.UnmanagedEntities
 
         public AllyBase allyBase;
         public EnemyBase enemyBase;
+        
+        
+        
 
         #endregion
 
@@ -36,11 +39,15 @@ namespace GameContent.Entities.UnmanagedEntities
         public bool CanAttack => weaponComponent != null && attackCooldown <= 0;
         public bool CanMove => transportComponent != null;
 
+        public Vector3 velocity;
+
         public bool isAirUnit => transportComponent != null && transportComponent.IsFlying;
-        public bool isGroundUnit => transportComponent == null || !transportComponent.IsFlying;
+        
+        [Header("Special Weapon Effects")]
         
         private bool isStunned = false;
         private float attackCooldown = 0;
+        public float attackSpeed;
 
         #endregion
 
@@ -79,10 +86,11 @@ namespace GameContent.Entities.UnmanagedEntities
         private void InitializeUnit()
         {
             float baseHealth = 100;
+            attackSpeed = weaponComponent != null ? weaponComponent.AttackSpeed : 9999;
             currentHealth = transportComponent != null ? baseHealth * transportComponent.HealthMultiplier : baseHealth;
             if (isAirUnit)
             {
-                transform.position += Vector3.up * 2f; // Lift the unit off the ground
+                transform.position += Vector3.up * 3f; // Lift the unit off the ground
             }
             
             if (weaponComponent != null)
@@ -269,7 +277,7 @@ namespace GameContent.Entities.UnmanagedEntities
 
             return weaponComponent.targetType switch
             {
-                TargetType.Ground => target.isGroundUnit,
+                TargetType.Ground => !target.isAirUnit,
                 TargetType.Air => target.isAirUnit,
                 TargetType.Both => true,
                 _ => false
@@ -284,7 +292,13 @@ namespace GameContent.Entities.UnmanagedEntities
         
         private void ResetCooldown()
         {
-            attackCooldown = weaponComponent.AttackSpeed;
+            attackCooldown = attackSpeed;
+            velocity = Vector3.zero;
+        }
+        
+        private void ResetAttackSpeed()
+        {
+            attackSpeed = weaponComponent.AttackSpeed;
         }
 
         #endregion
@@ -297,8 +311,11 @@ namespace GameContent.Entities.UnmanagedEntities
             if (weaponComponent != null && !CanAttack) return;
             if (isStunned) return;
             
+            ResetAttackSpeed();
+            
             float speed = transportComponent.SpeedMultiplier;
             transform.Translate(Vector3.forward * speed * Time.deltaTime);
+            velocity = transform.forward * speed;
         }
 
         #endregion

@@ -16,8 +16,7 @@ namespace GameContent.Entities.UnmanagedEntities
         
 
         
-        [Header("Effect Parameters")]
-        public float MinigunSpeedIncrease = 0.05f; // % speed increase per attack
+       
         public float LanceDamageBonus = 0.1f;     // % of movement speed added to damage
         public float ShieldValue = 50f;           // Initial shield value
         public float ShieldAllyRange = 5f;        // Range for shielding allies
@@ -41,18 +40,10 @@ namespace GameContent.Entities.UnmanagedEntities
 
         private void HandleArtilleryEffect(Unit target, List<Unit> allUnitsInRange)
         {
-            foreach (var unit in allUnitsInRange)
-            {
-                if (unit.isAirUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= AoEArtilleryRadius)
-                {
-                    unit.ApplyDamage(Damage);
-                }
-            }
         }
 
         private void HandleMinigunEffect()
         {
-            AttackSpeed = Mathf.Max(0.1f, AttackSpeed * (1 - MinigunSpeedIncrease)); // Increase attack speed
         }
 
         private void HandleSawBladeEffect(Unit target, List<Unit> allUnitsInRange)
@@ -97,18 +88,7 @@ namespace GameContent.Entities.UnmanagedEntities
                 lowestHPUnit.ApplyDamage(Damage);
             }
         }
-
-        private void HandleShieldEffect(Unit attacker, List<Unit> allUnitsInRange)
-        {
-            attacker.AddShield(ShieldValue); // Add shield to attacker
-            foreach (var ally in allUnitsInRange)
-            {
-                if (Vector3.Distance(attacker.transform.position, ally.transform.position) <= ShieldAllyRange && ally.isGroundUnit)
-                {
-                    ally.AddShield(ShieldValue / 2); // Shield allies
-                }
-            }
-        }
+        
 
         private void HandleRayCannonEffect(Unit target, List<Unit> allUnitsInRange)
         {
