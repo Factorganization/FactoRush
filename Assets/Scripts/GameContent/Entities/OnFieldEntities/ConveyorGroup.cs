@@ -22,9 +22,10 @@ namespace GameContent.Entities.OnFieldEntities
 
         #region constructor
 
-        public ConveyorGroup(params DynamicBuilding[] dl) : base(dl)
+        public ConveyorGroup(sbyte id, params DynamicBuilding[] dl) : base(dl)
         {
             _conveyedResources = new List<BaseResource>();
+            ConveyorGroupId = id;
         }
 
         #endregion

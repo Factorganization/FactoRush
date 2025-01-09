@@ -59,15 +59,10 @@ namespace InputManagement
                     break;
                 
                 case TouchPhase.Moved:
-                    _hasDragged = true;
-                    //_hitTimerCounter = 0;
-                    
                     HandleTouchMoved(ray);
                     break;
                 
                 case TouchPhase.Ended:
-                    _hasDragged = false;
-                    
                     HandleTouchEnded(ray);
                     break;
                 
@@ -141,6 +136,9 @@ namespace InputManagement
                                     break;
                             }
                             _needDeletion = false;
+
+                            _startingHitType = HitGridType.None;
+                            return;
                         }
                         
                         if (!_needDeletion)
@@ -170,6 +168,8 @@ namespace InputManagement
 
         private void HandleTouchMoved(Ray ray)
         {
+            _hasDragged = true;
+            
             switch (_startingHitType)
             {
                 case HitGridType.CenterStaticHit:
@@ -242,6 +242,8 @@ namespace InputManagement
         
         private void HandleTouchEnded(Ray ray)
         {
+            _hasDragged = true;
+            
             if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
             {
                 HandleTouchCancelled();

@@ -180,56 +180,33 @@ namespace GameContent.GridManagement
             
             if (_addingDynamic.Count > 0)
             {
-                if (_pathAddonIndex >= 0 && _pathAddonIndex < ConveyorGroups.Count)
-                {
-                    foreach (var t in _currentPath)
-                    {
-                        var b = InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) as DynamicBuilding;
+                //TODO le truc de division de path par _pathAddOnIndex
+                
+                sbyte i = 0;
                         
-                        if (b is null)
-                            continue;
-                        
-                        ConveyorGroups[_pathAddonIndex].AddBuild(b);
-                        _currentConveyorPath.Add(b);
-                        b.AddConveyorGroupId(_pathAddonIndex);
-                        b.SetDebugId(); //i
-                        PlaceBuildingAt(t.Index, b);
-                        
-                        Grid[t.Index].IsSelected = false;
-                    }
+                while (ConveyorGroups.ContainsKey(i) && ConveyorGroups[i] != null)
+                    i++;
                     
-                    ConveyorGroups[_pathAddonIndex].Init(); //TODO
-                }
-
+                if (!ConveyorGroups.ContainsKey(i))
+                    ConveyorGroups.Add(i, new ConveyorGroup(i));
                 else
+                    ConveyorGroups[i] = new ConveyorGroup(i);
+                    
+                foreach (var t in _currentPath)
                 {
-                    sbyte i = 0;
+                    if (InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) is not DynamicBuilding b)
+                        continue;
                         
-                    while (ConveyorGroups.ContainsKey(i) && ConveyorGroups[i] != null)
-                        i++;
-                    
-                    if (!ConveyorGroups.ContainsKey(i))
-                        ConveyorGroups.Add(i, new ConveyorGroup());
-                    else
-                        ConveyorGroups[i] = new ConveyorGroup();
-                    
-                    foreach (var t in _currentPath)
-                    {
-                        var b = InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) as DynamicBuilding;
+                    ConveyorGroups[i].AddBuild(b);
+                    b.AddConveyorGroupId(i);
+                    b.SetDebugId(i); //i
+                    PlaceBuildingAt(t.Index, b);
                         
-                        if (b is null)
-                            continue;
-                        
-                        ConveyorGroups[i].AddBuild(b);
-                        b.AddConveyorGroupId(i);
-                        b.SetDebugId(); //i
-                        PlaceBuildingAt(t.Index, b);
-                        
-                        Grid[t.Index].IsSelected = false;
-                    }
-                    
-                    ConveyorGroups[i].Init();
+                    Grid[t.Index].IsSelected = false;
                 }
+                    
+                ConveyorGroups[i].Init();
+                
             }
             _addingDynamic.Clear();
             _currentConveyorPath.Clear();
