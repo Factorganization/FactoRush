@@ -302,6 +302,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: CameraTop
       objectReference: {fileID: 0}
+    - target: {fileID: 2900667826689426210, guid: 1b7c05ed9e9d14340a340ad5f93921db,
+        type: 3}
+      propertyPath: m_NormalizedViewPortRect.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900667826689426210, guid: 1b7c05ed9e9d14340a340ad5f93921db,
+        type: 3}
+      propertyPath: m_NormalizedViewPortRect.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900667826689426210, guid: 1b7c05ed9e9d14340a340ad5f93921db,
+        type: 3}
+      propertyPath: m_NormalizedViewPortRect.height
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9140347678970773159, guid: 1b7c05ed9e9d14340a340ad5f93921db,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -891,6 +906,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: CameraBottom
       objectReference: {fileID: 0}
+    - target: {fileID: 1159132034573007588, guid: 9d62a37ff978c2846a4fa790176640a1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6878924888288764921, guid: 9d62a37ff978c2846a4fa790176640a1,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -981,8 +1001,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbea991bd2a777f4191f4c13f64d74a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponComponent: {fileID: 11400000, guid: b65bc6d7befba3c4cb3d811a12d08bb9, type: 2}
-  transportComponent: {fileID: 11400000, guid: d9e247b28633d984aac779d85d61e3bb, type: 2}
+  weaponComponentAlly: {fileID: 0}
+  transportComponentAlly: {fileID: 0}
+  weaponComponentEnemy: {fileID: 0}
+  transportComponentEnemy: {fileID: 0}
 --- !u!4 &1760735919
 Transform:
   m_ObjectHideFlags: 0
@@ -1035,7 +1057,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 278, y: 532}
+  m_AnchoredPosition: {x: 278, y: -50}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1804037588
@@ -1258,7 +1280,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -313, y: 532}
+  m_AnchoredPosition: {x: -313, y: -50}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2142532544

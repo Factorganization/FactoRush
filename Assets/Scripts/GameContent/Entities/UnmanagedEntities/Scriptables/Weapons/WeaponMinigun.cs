@@ -28,11 +28,11 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             
             if (priorityTarget != null)
             {
-                priorityTarget.ApplyDamage(Damage);
+                priorityTarget.ApplyDamage(attacker.damage);
             }
             else
             {
-                target.ApplyDamage(Damage);
+                target.ApplyDamage(attacker.damage);
             }
             
             attacker.attackSpeed = Mathf.Max(0.5f, attacker.attackSpeed * MinigunSpeedMultiplier); // Increase attack speed
