@@ -15,6 +15,13 @@ namespace GameContent.Entities.OnFieldEntities
         
         #region methodes
 
+        protected override void OnStart()
+        {
+            base.OnStart();
+            
+            _removing = new HashSet<sbyte>();
+        }
+
         public static float GetRotation(Vector2Int relativePos) => (relativePos.x, relativePos.y) switch
         {
             (1, 0) => -90f,
@@ -23,12 +30,20 @@ namespace GameContent.Entities.OnFieldEntities
             (0, -1) => 0f,
             _ => 0
         };
+
+        public void UpdateBuild()
+        {
+            foreach (var i in _removing)
+            {
+                ConveyorGroupIds.Remove(i);
+            }
+        }
         
         public void AddConveyorGroupId(sbyte conveyorId) => ConveyorGroupIds.Add(conveyorId);
         
-        public void RemoveConveyorGroupId(sbyte conveyorId) => ConveyorGroupIds.Remove(conveyorId);
+        public void RemoveConveyorGroupId(sbyte conveyorId) => _removing.Add(conveyorId);
         
-        public void SetDebugId(sbyte i) => conveyorGroupId.text = i.ToString();
+        public void SetDebugId(sbyte i) => conveyorGroupId.text += i.ToString();
         
         public void SetDebugId() => conveyorGroupId.text = "";
         
@@ -41,7 +56,9 @@ namespace GameContent.Entities.OnFieldEntities
         #region fields
         
         [SerializeField] private TMP_Text conveyorGroupId;
-        
+
+        private HashSet<sbyte> _removing;
+
         #endregion
     }
 }

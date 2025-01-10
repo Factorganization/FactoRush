@@ -1,4 +1,5 @@
 ﻿using GameContent.CraftResources;
+using GameContent.Entities.OnFieldEntities;
 using UnityEngine;
 
 namespace GameContent.Entities.GridEntities
@@ -29,7 +30,7 @@ namespace GameContent.Entities.GridEntities
         protected override void OnUpdate()
         {
             base.OnUpdate();
-
+            
             if (!Active)
                 return;
 
@@ -47,12 +48,17 @@ namespace GameContent.Entities.GridEntities
                 if (c is null)
                     return;
             }
-            
             InstantiateResourceAt(_targetIndex, miningResource, Position + Vector3.up * 0.25f, _targetIndex);
             _spawnCounter = 0;
-            _targetIndex += (_targetIndex + 1) % GroupRef.Count;
+            _targetIndex = (_targetIndex + 1) % GroupRef.Count;
         }
 
+        public override void RemoveConveyorGroup(ConveyorGroup conveyorGroup)
+        {
+            _targetIndex = 0;
+            base.RemoveConveyorGroup(conveyorGroup);
+        }
+        
         public override void MarkActive(bool active)
         {
             base.MarkActive(active);

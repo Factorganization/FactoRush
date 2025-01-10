@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using GameContent.CraftResources;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.GridManagement;
-using TMPro;
 using UnityEngine;
 
 namespace GameContent.Entities.GridEntities
@@ -21,8 +20,8 @@ namespace GameContent.Entities.GridEntities
         
         public TileType Type { get; private set; }
 
-        protected virtual List<ConveyorGroup> GroupRef { get; set; }
-        public int Count => GroupRef.Count;
+        public virtual List<ConveyorGroup> GroupRef { get; set; }
+        
         protected bool Active { get; private set; }
         
         #region Path Find
@@ -58,9 +57,12 @@ namespace GameContent.Entities.GridEntities
             debugIndex.text = $"<size=1>{Type}</size> \n <size=3>({Index.x},{Index.y})</size>";
 #endif
         }
-        
-        public virtual void AddConveyorGroup(ConveyorGroup conveyorGroup) => GroupRef.Add(conveyorGroup);
-        
+
+        public virtual void AddConveyorGroup(ConveyorGroup conveyorGroup)
+        {
+            GroupRef.Add(conveyorGroup);
+        }
+
         public virtual void RemoveConveyorGroup(ConveyorGroup conveyorGroup) => GroupRef.Remove(conveyorGroup);
         
         public virtual void MarkActive(bool active) => Active = active;

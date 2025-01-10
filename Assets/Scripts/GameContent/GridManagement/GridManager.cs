@@ -68,17 +68,6 @@ namespace GameContent.GridManagement
             
             StartCoroutine(InitGrid());
         }
-
-        private void Update()
-        {
-            if (ConveyorGroups.Count <= 0)
-                return;
-            
-            foreach (var group in ConveyorGroups.Values)
-            {
-                group.UpdateGroup();
-            }
-        }
         
         #endregion
         
@@ -180,8 +169,6 @@ namespace GameContent.GridManagement
             
             if (_addingDynamic.Count > 0)
             {
-                //TODO le truc de division de path par _pathAddOnIndex
-                
                 sbyte i = 0;
                         
                 while (ConveyorGroups.ContainsKey(i) && ConveyorGroups[i] != null)
@@ -191,25 +178,62 @@ namespace GameContent.GridManagement
                     ConveyorGroups.Add(i, new ConveyorGroup(i));
                 else
                     ConveyorGroups[i] = new ConveyorGroup(i);
-                    
-                foreach (var t in _currentPath)
+
+                switch (_pathAddonIndex)
                 {
-                    if (InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) is not DynamicBuilding b)
-                        continue;
+                    case < 0:
+                        foreach (var t in _currentPath)
+                        {
+                            if (InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) is not DynamicBuilding b)
+                                continue;
                         
-                    ConveyorGroups[i].AddBuild(b);
-                    b.AddConveyorGroupId(i);
-                    b.SetDebugId(i); //i
-                    PlaceBuildingAt(t.Index, b);
+                            ConveyorGroups[i].AddBuild(b);
+                            b.AddConveyorGroupId(i);
+                            b.SetDebugId(i); //i
+                            PlaceBuildingAt(t.Index, b);
                         
-                    Grid[t.Index].IsSelected = false;
-                }
+                            Grid[t.Index].IsSelected = false;
+                        }
                     
-                ConveyorGroups[i].Init();
-                
+                        ConveyorGroups[i].Init();
+                        break;
+                    
+                    case >= 0:
+                        _currentPath[0].IsSelected = false;
+
+                        if (_currentPath[0].CurrentBuildingRef is not DynamicBuilding db)
+                        {
+                            CancelAdding();
+                            break;
+                        }
+                        
+                        ConveyorGroups[i].AddBuild(db);
+                        db.AddConveyorGroupId(i);
+                        db.SetDebugId(i);
+                        
+                        for (var k = 1; k < _currentPath.Count; k++)
+                        {
+                            var t = _currentPath[k];
+                            
+                            if (InstantiateBuildingAt(dynamicGenericBuild, Grid[t.Index].ETransform) is not
+                                DynamicBuilding b)
+                                continue;
+
+                            ConveyorGroups[i].AddBuild(b);
+                            b.AddConveyorGroupId(i);
+                            b.SetDebugId(i); //i
+                            PlaceBuildingAt(t.Index, b);
+
+                            Grid[t.Index].IsSelected = false;
+                        }
+
+                        ConveyorGroups[i].InitFromDynamic(_pathAddonIndex);
+                        break;
+                }  
             }
             _addingDynamic.Clear();
             _currentConveyorPath.Clear();
+            _currentPath.Clear();
             _pathAddonIndex = -1;
             
             if (_addingStatic.Count > 0)
@@ -237,12 +261,23 @@ namespace GameContent.GridManagement
         
         #region grid modifiers
         
-        public void SetPathIndex(sbyte index) => _pathAddonIndex = index;
+        public void MarkAddonFlag(sbyte index) => _pathAddonIndex = index;
         
         public void SetSelected(Vector2Int index, bool selected)
         {
             Grid[index].IsSelected = selected;
-            _currentPath.Add(Grid[index]);
+
+            switch (selected)
+            {
+                case true:
+                    if (_addingDynamic.Add(index))
+                        _currentPath.Add(Grid[index]);
+                    break;
+                
+                case false:
+                    _currentPath.Remove(Grid[index]);
+                    break;
+            }
         }
         
         public bool TryAddDynamicBuildingAt(Vector2Int from, Vector2Int previous, Vector2Int index) // yes. bool.
@@ -357,16 +392,31 @@ namespace GameContent.GridManagement
             if (!_removing.Add(index))
                 return;
             
+            _toRemove.Add(index, Grid[index].CurrentBuildingRef);
             var b = Grid[index].CurrentBuildingRef as DynamicBuilding;
-            var i = b!.ConveyorGroupIds;
+            var i = new List<sbyte>();
+            i.AddRange(b!.ConveyorGroupIds);
 
             foreach (var j in i)
             {
                 foreach (var b2 in ConveyorGroups[j])
                 {
-                    _removing.Add(b2.TileRef.Index);
-                    _toRemove.Add(b2.TileRef.Index, b2);
+                    if (i.Count >= b2.ConveyorGroupIds.Count)
+                    {
+                        if (_removing.Add(b2.TileRef.Index))
+                            _toRemove.Add(b2.TileRef.Index, b2);
+                    }
+                    else
+                    {
+                        b2.RemoveConveyorGroupId(j);
+                    }
                 }
+                ConveyorGroups[j].MarkActive(false);
+            }
+
+            foreach (var j in i)
+            {
+                ConveyorGroups[j].UpdateGroup();
                 ConveyorGroups[j].DestroyGroup();
                 ConveyorGroups.Remove(j);
             }
