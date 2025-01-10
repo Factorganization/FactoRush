@@ -1,6 +1,6 @@
 ﻿namespace GameContent.CraftResources
 {
-    public class WeaponCompOnGrid
+    public class WeaponCompOnGrid : BaseResource
     {
         
     }

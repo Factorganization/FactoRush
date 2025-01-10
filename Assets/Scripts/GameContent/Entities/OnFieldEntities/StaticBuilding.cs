@@ -1,6 +1,6 @@
 ﻿namespace GameContent.Entities.OnFieldEntities
 {
-    public class StaticBuilding : Building
+    public abstract class StaticBuilding : Building
     {
         #region methodes
 
@@ -9,7 +9,7 @@
             OnUpdate();
         }
 
-        protected virtual void OnUpdate()
+        protected override void OnUpdate()
         {
         }
 

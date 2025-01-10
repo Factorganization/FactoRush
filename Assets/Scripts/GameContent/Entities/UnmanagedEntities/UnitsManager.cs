@@ -1,5 +1,5 @@
 using System;
-using GameContent.Entities.OnFieldEntities.Buildings;
+using System.Collections.Generic;
 using GameContent.Entities.UnmanagedEntities;
 using UnityEngine;
 
@@ -8,14 +8,22 @@ public class UnitsManager : MonoBehaviour
    
     #region Fields
     
-    [SerializeField] private Unit[] units;
+    [SerializeField] public List<Unit> allyUnits;
+    [SerializeField] public List<Unit> enemyUnits;
     [SerializeField] private GameObject unitPrefab;
     
     [Header("Factory")]
     [SerializeField] private AllyBase allyBase;
     [SerializeField] private EnemyBase enemyBase;
     
+    public static UnitsManager Instance;
+    
     #endregion
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -24,7 +32,24 @@ public class UnitsManager : MonoBehaviour
     
     public void SpawnUnit(bool isAlly, TransportComponent transportComponent =  null, WeaponComponent weaponComponent = null)
     {
-        Instantiate(unitPrefab, isAlly ? allyBase.transform : enemyBase.transform);
+        // Instantiate the unit prefab and set its components
+        GameObject unit = Instantiate(unitPrefab, isAlly ? allyBase.spawnPoint.position : enemyBase.spawnPoint.position, isAlly ? allyBase.spawnPoint.rotation : enemyBase.spawnPoint.rotation);
+        Unit unitComponent = unit.GetComponent<Unit>();
+        unitComponent.isAlly = isAlly;
+        unitComponent.transportComponent = transportComponent;
+        unitComponent.weaponComponent = weaponComponent;
+        unitComponent.allyBase = allyBase;
+        unitComponent.enemyBase = enemyBase;
+        
+        // Add the unit to the units array
+        if (isAlly)
+        {
+            allyUnits.Add(unitComponent);
+        }
+        else
+        {
+            enemyUnits.Add(unitComponent);
+        }
     }
 
     private void InitialCheckup()
@@ -46,6 +71,5 @@ public class UnitsManager : MonoBehaviour
 
         if (allyBase != null && enemyBase != null) return;
         Debug.LogError(allyBase == null ? "Ally base is not instantiated" : "Enemy base is not instantiated");
-        return;
     }
 }

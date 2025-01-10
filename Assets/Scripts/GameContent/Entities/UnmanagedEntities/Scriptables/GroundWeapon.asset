@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2404a8f48c7444cbb147ef12b671422a, type: 3}
+  m_Name: GroundWeapon
+  m_EditorClassIdentifier: 
+  Damage: 10
+  AttackSpeed: 1
+  Range: 9.3
+  targetType: 0
+  IsCannon: 0
+  IsArtillery: 0
+  IsMinigun: 0
+  IsSawBlade: 0
+  IsC4: 0
+  IsLance: 0
+  IsSymbioticRifle: 0
+  IsShield: 0
+  IsRayCannon: 0
+  IsWarHammer: 0
+  MinigunSpeedIncrease: 0.05
+  LanceDamageBonus: 0.1
+  ShieldValue: 50
+  ShieldAllyRange: 5
+  RayCannonRange: 5
+  WarHammerStunDuration: 3
+  WarHammerStunRadius: 2
+  AoEArtilleryRadius: 3
