@@ -982,7 +982,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponComponent: {fileID: 11400000, guid: b65bc6d7befba3c4cb3d811a12d08bb9, type: 2}
-  transportComponent: {fileID: 11400000, guid: 71e2d9054c4839e429b4fa9418a0f41c, type: 2}
+  transportComponent: {fileID: 11400000, guid: d9e247b28633d984aac779d85d61e3bb, type: 2}
 --- !u!4 &1760735919
 Transform:
   m_ObjectHideFlags: 0

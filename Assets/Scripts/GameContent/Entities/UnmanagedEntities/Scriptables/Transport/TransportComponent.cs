@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
+using UnityEngine;
 
 namespace GameContent.Entities.UnmanagedEntities
 {
-    [CreateAssetMenu(fileName = "NewTransportComponent", menuName = "Components/TransportComponent")]
-    public class TransportComponent : ScriptableObject
+    public abstract class TransportComponent : ScriptableObject
     {
         [Header("Graph")]
         public GameObject Graph; // Graphical representation of the unit
@@ -14,5 +15,11 @@ namespace GameContent.Entities.UnmanagedEntities
 
         // Convenience property to determine mobility
         public bool CanMove => SpeedMultiplier > 0;
+
+        public virtual void UniqueBehavior(Unit unit, Unit target = null, List<Unit> allUnitsInRange = null)
+        {
+            
+        }
+        
     }
 }
