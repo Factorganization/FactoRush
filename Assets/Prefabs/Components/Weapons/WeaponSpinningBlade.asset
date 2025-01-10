@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd7e056c153d4d0a9bc58fa17d2e0a3a, type: 3}
-  m_Name: TransportBase
+  m_Script: {fileID: 11500000, guid: 01072959deab4b1f8c3307b5ed985f86, type: 3}
+  m_Name: WeaponSpinningBlade
   m_EditorClassIdentifier: 
-  Graph: {fileID: 919132149155446097, guid: b522d6c385f33a84091ef5fc0695f18d, type: 3}
-  SpeedMultiplier: 0
-  HealthMultiplier: 1.2
-  IsFlying: 0
+  Graph: {fileID: 919132149155446097, guid: 5e12db87c457ea141aad7815ab5f10df, type: 3}
+  Damage: 10
+  AttackSpeed: 1
+  Range: 5
+  targetType: 0
+  isAPriorityTarget: 0

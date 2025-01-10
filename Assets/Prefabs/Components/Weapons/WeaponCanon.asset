@@ -10,17 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4c280bd1aedb47bf8f1f768ea3a84de7, type: 3}
-  m_Name: Canonx2
+  m_Name: WeaponCanon
   m_EditorClassIdentifier: 
   Graph: {fileID: 919132149155446097, guid: b12624e51a6cd0e4d83b0c5eb3c397d5, type: 3}
   Damage: 10
-  AttackSpeed: 2
+  AttackSpeed: 1
   Range: 5
   targetType: 0
-  LanceDamageBonus: 0.1
-  ShieldValue: 50
-  ShieldAllyRange: 5
-  RayCannonRange: 5
-  WarHammerStunDuration: 3
-  WarHammerStunRadius: 2
-  AoEArtilleryRadius: 3
+  isAPriorityTarget: 0
