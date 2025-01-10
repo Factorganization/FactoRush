@@ -20,7 +20,7 @@ namespace GameContent.Entities.GridEntities
         
         public TileType Type { get; private set; }
 
-        public virtual List<ConveyorGroup> GroupRef { get; set; }
+        public virtual List<ConveyorGroup> GroupRef { get; protected set; }
         
         protected bool Active { get; private set; }
         
@@ -44,7 +44,7 @@ namespace GameContent.Entities.GridEntities
         
         #region methodes
         
-        public void Added(GridManager grid, Vector2Int index, Vector3 pos = new(), TileType type = TileType.Default)
+        public virtual void Added(GridManager grid, Vector2Int index, Vector3 pos = new(), TileType type = TileType.Default)
         {
             GroupRef = new List<ConveyorGroup>();
             Index = index;

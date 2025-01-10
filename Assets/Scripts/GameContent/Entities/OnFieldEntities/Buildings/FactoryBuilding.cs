@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GameContent.CraftResources;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 namespace GameContent.Entities.OnFieldEntities.Buildings
@@ -32,7 +33,19 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         {
             base.OnUpdate();
             
+            //Active
+
+            if (_spawnCounter <= Constants.SpawnInterval)
+            {
+                _spawnCounter += Time.deltaTime;
+                return;
+            }
             
+            if (TileRef.GroupRef.Count <= 0)
+                return;
+            
+            //TODO 
+            //des formules ma couille
         }
 
         private void CheckMiningResources()
@@ -51,6 +64,8 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
             _miningResources[type]--;
         }
         
+        
+        
         #endregion
         
         #region fields
@@ -58,7 +73,11 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         public FactoryData data;
         
         private Dictionary<MiningResourceType, int> _miningResources;
-        
+
+        private float _spawnCounter;
+
+        private float _targetIndex;
+
         #endregion
     }
 }

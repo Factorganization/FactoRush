@@ -1,5 +1,6 @@
 ﻿using GameContent.CraftResources;
 using GameContent.Entities.OnFieldEntities;
+using GameContent.GridManagement;
 using UnityEngine;
 
 namespace GameContent.Entities.GridEntities
@@ -19,6 +20,20 @@ namespace GameContent.Entities.GridEntities
         #endregion
 
         #region methodes
+
+        public override void Added(GridManager grid, Vector2Int index, Vector3 pos = new Vector3(), TileType type = TileType.Default)
+        {
+            base.Added(grid, index, pos, type);
+
+            ETransform.rotation = (index.x, index.y) switch
+            {
+                (0, 0) => Quaternion.Euler(0, 90, 0),
+                (0, > 0) => Quaternion.Euler(0, 180, 0),
+                (> 0, 0) => Quaternion.Euler(0, 0, 0),
+                (> 0, > 0) => Quaternion.Euler(0, -90, 0),
+                _ => ETransform.rotation
+            };
+        }
 
         protected override void OnStart()
         {
@@ -48,11 +63,13 @@ namespace GameContent.Entities.GridEntities
                 if (c is null)
                     return;
             }
-            InstantiateResourceAt(_targetIndex, miningResource, Position + Vector3.up * 0.25f, _targetIndex);
+            InstantiateResourceAt(_targetIndex, _miningResource, Position + Vector3.up * 0.25f, _targetIndex);
             _spawnCounter = 0;
             _targetIndex = (_targetIndex + 1) % GroupRef.Count;
         }
-
+        
+        public void SetResource(MiningResource resource) => _miningResource = resource;
+        
         public override void RemoveConveyorGroup(ConveyorGroup conveyorGroup)
         {
             _targetIndex = 0;
@@ -70,7 +87,7 @@ namespace GameContent.Entities.GridEntities
         
         #region fields
 
-        [SerializeField] private MiningResource miningResource;
+        private MiningResource _miningResource;
 
         private float _spawnCounter;
 
