@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
+using GameContent.Entities.OnFieldEntities.Buildings;
 using GameContent.GridManagement;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
@@ -112,6 +113,23 @@ namespace InputManagement
                 case HitGridType.CenterStaticHit:
                     var cst = t as StaticBuildingTile;
                     _currentStaticGroup = cst!.StaticGroup;
+                    
+                    if (cst!.CurrentBuildingRef is not null)
+                    {
+                        if (_needDeletion && _hitTimerCounter >= 0 && _currentStaticGroup == cst.StaticGroup)
+                        {
+                            GridManager.Manager.TryRemoveStaticBuildingAt(t.Index);
+                            _needDeletion = false;
+                            _startingHitType = HitGridType.None;
+                            break;
+                        }
+
+                        if (!_needDeletion)
+                        {
+                            _hitTimerCounter = Constants.DeleteTimer;
+                            _needDeletion = true;
+                        }
+                    }
                     break;
                 
                 case HitGridType.DynamicHit:
@@ -122,23 +140,10 @@ namespace InputManagement
                         
                         if (_needDeletion && _hitTimerCounter >= 0 && _currentConveyorGroup == db!.ConveyorGroupIds[0])
                         {
-                            switch (t.CurrentBuildingRef)
-                            {
-                                case null:
-                                    break;
-                                                                                          
-                                case DynamicBuilding:
-                                    GridManager.Manager.TryRemoveDynamicBuildingAt(t.Index);
-                                    break;
-                                                                                          
-                                case StaticBuilding:
-                                    GridManager.Manager.TryRemoveStaticBuildingAt(t.Index);
-                                    break;
-                            }
+                            GridManager.Manager.TryRemoveDynamicBuildingAt(t.Index);
                             _needDeletion = false;
-
                             _startingHitType = HitGridType.None;
-                            return;
+                            break;
                         }
                         
                         if (!_needDeletion)
@@ -729,7 +734,6 @@ namespace InputManagement
             switch (t.Type)
             {
                 case TileType.SideStaticTile:
-                case TileType.CenterStaticTile:
                 case TileType.DynamicTile:
                 case TileType.MineTile:
                 case TileType.WeaponTarget:
@@ -737,6 +741,13 @@ namespace InputManagement
                     if (!GridManager.Manager.IsLastSelectedTile(_currentIndex) || t.IsBlocked)
                     {
                         GridManager.Manager.CancelAdding();
+                    }
+                    break;
+                
+                case TileType.CenterStaticTile:
+                    if (!GridManager.Manager.IsLastSelectedTile(_currentIndex))
+                    {
+                        //GridManager.Manager.CancelAdding();
                     }
                     break;
                 

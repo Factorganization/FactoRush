@@ -81,7 +81,16 @@ namespace GameContent.GridManagement
         /// <item>0 : dynamic build</item>
         /// <item>01 - 09 : refinery build</item>
         /// <item>10 - 19 : assembly build</item>
-        /// <item>20 - 29 : mining build</item>
+        /// <item>20 - 29 : mining build
+        /// <list type= "Mine Resources">
+        /// <listheader>
+        /// Mine Resources
+        /// </listheader>
+        /// <item>0 : Iron</item>
+        /// <item>1 : Copper</item>
+        /// <item>2 : Gold</item>
+        /// <item>3 : Diamond</item>
+        /// </list></item>
         /// </list>
         /// </summary>
         /// <returns></returns>
@@ -189,7 +198,7 @@ namespace GameContent.GridManagement
                         
                             ConveyorGroups[i].AddBuild(b);
                             b.AddConveyorGroupId(i);
-                            b.SetDebugId(i); //i
+                            b.SetDebugId(); //i
                             PlaceBuildingAt(t.Index, b);
                         
                             Grid[t.Index].IsSelected = false;
@@ -209,7 +218,7 @@ namespace GameContent.GridManagement
                         
                         ConveyorGroups[i].AddBuild(db);
                         db.AddConveyorGroupId(i);
-                        db.SetDebugId(i);
+                        db.SetDebugId();
                         
                         for (var k = 1; k < _currentPath.Count; k++)
                         {
@@ -221,7 +230,7 @@ namespace GameContent.GridManagement
 
                             ConveyorGroups[i].AddBuild(b);
                             b.AddConveyorGroupId(i);
-                            b.SetDebugId(i); //i
+                            b.SetDebugId(); //i
                             PlaceBuildingAt(t.Index, b);
 
                             Grid[t.Index].IsSelected = false;

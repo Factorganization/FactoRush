@@ -2,11 +2,9 @@
 {
     public enum MiningResourceType : byte
     {
-        Wood,
-        Cobblestone,
         Iron,
+        Copper,
         Gold,
-        Diamond,
-        Netherite
+        Diamond
     }
 }

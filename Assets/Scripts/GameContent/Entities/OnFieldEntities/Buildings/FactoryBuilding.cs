@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GameContent.CraftResources;
+using UnityEngine;
 
 namespace GameContent.Entities.OnFieldEntities.Buildings
 {
@@ -25,6 +26,13 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
             {
                 _miningResources.Add((MiningResourceType)i, 0);
             }
+        }
+
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+            
+            
         }
 
         private void CheckMiningResources()
