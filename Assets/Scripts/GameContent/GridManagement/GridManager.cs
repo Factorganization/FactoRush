@@ -270,7 +270,7 @@ namespace GameContent.GridManagement
             switch (selected)
             {
                 case true:
-                    if (!_addingDynamic.Add(index))
+                    if (_addingDynamic.Add(index))
                         _currentPath.Add(Grid[index]);
                     break;
                 
