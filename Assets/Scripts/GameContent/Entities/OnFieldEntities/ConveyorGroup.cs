@@ -73,6 +73,10 @@ namespace GameContent.Entities.OnFieldEntities
                 }
 
                 GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
+                foreach (var d in f)
+                {
+                    GridManager.Manager.ConveyorGroups[d].UpdateGroup();
+                }
                 return;
             }
             
@@ -84,7 +88,7 @@ namespace GameContent.Entities.OnFieldEntities
                 {
                     _tempPath.Add(t);
                     t.AddConveyorGroupId(ConveyorGroupId);
-                    t.SetDebugId(ConveyorGroupId);
+                    t.SetDebugId(); //ConveyorGroupId
                 }
 
                 else
