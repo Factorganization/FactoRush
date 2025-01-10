@@ -171,7 +171,7 @@ public class TestCombat : MonoBehaviour
     
     private void ResumeTime()
     {
-        Time.timeScale = 1;
+        Time.timeScale = 1; 
     }
     
     # endregion
