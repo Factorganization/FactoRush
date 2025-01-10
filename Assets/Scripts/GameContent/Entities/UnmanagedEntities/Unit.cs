@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameContent.Entities.UnmanagedEntities.Scriptables.Transport;
 using GameContent.Entities.UnmanagedEntities.Scriptables.Weapons;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -52,6 +53,7 @@ namespace GameContent.Entities.UnmanagedEntities
         private float Range;
         public bool isExplosive = false;
         public float attackSpeed;
+        public float moveSpeed;
         public float ExplosiveRange;
 
         #endregion
@@ -66,7 +68,7 @@ namespace GameContent.Entities.UnmanagedEntities
         private void Start()
         {
             InitializeUnit();
-            InitializeVisionCone();
+            //InitializeVisionCone();
         }
 
         private void Update()
@@ -74,7 +76,7 @@ namespace GameContent.Entities.UnmanagedEntities
             if (!IsAlive) return;
             if (isStunned) return;
             
-            DrawVisionCone(); // Update the vision cone every frame
+            //DrawVisionCone(); // Update the vision cone every frame
             UpdateCooldown(); 
             
             if (!HandleCombat())
@@ -93,6 +95,7 @@ namespace GameContent.Entities.UnmanagedEntities
             float baseHealth = 100;
             attackSpeed = weaponComponent != null ? weaponComponent.AttackSpeed : 9999;
             Range = weaponComponent != null ? weaponComponent.Range : 0;
+            moveSpeed = transportComponent != null ? transportComponent.SpeedMultiplier : 0;
             currentHealth = transportComponent != null ? baseHealth * transportComponent.HealthMultiplier : baseHealth;
             if (isAirUnit)
             {
@@ -109,6 +112,10 @@ namespace GameContent.Entities.UnmanagedEntities
             {
                 var transportGraph = Instantiate(transportComponent.Graph, transform);
                 transportGraph.transform.parent = graphTransform;
+                if (transportComponent is TransportDrill)
+                {
+                    transportComponent.UniqueBehavior(this);
+                }
             }
         }
 
@@ -187,31 +194,21 @@ namespace GameContent.Entities.UnmanagedEntities
             if (isStunned) return false;
             if (!CanAttack) return false;
             
+            List<Unit> unitsInRange = GetAllUnitsInRange(Range);
+            
+            //if there is at least one unit in range, attack it
+            if (unitsInRange.Count > 0)
+            {
+                // Attack the first valid unit target, if any
+                AttackTarget(unitsInRange);
+                return true;
+            }
 
             // Adjust the origin of the cone based on the offsets
             Vector3 coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ;
 
             // Find all potential targets within the attack range
             Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, Range);
-            //draw that sphere 
-
-            // Collect all valid unit targets in range
-            List<Unit> unitsInRange = new List<Unit>();
-            foreach (var hitCollider in hitColliders)
-            {
-                Unit target = hitCollider.GetComponent<Unit>();
-                if (target != null && target.IsAlive && IsValidTarget(target) && IsInCone(target.transform.position, coneOrigin))
-                {
-                    unitsInRange.Add(target);
-                }
-            }
-
-            // Attack the first valid unit target, if any
-            if (unitsInRange.Count > 0)
-            {
-                AttackTarget(unitsInRange);
-                return true;
-            }
 
             // Handle base attacks (unchanged behavior)
             foreach (var hitCollider in hitColliders)
@@ -235,8 +232,29 @@ namespace GameContent.Entities.UnmanagedEntities
                     }
                 }
             }
-            
             return false;
+        }
+
+        private List<Unit> GetAllUnitsInRange(float range)
+        {
+            // Adjust the origin of the cone based on the offsets
+            Vector3 coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ;
+
+            // Find all potential targets within the attack range
+            Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, range);
+            //draw that sphere 
+
+            // Collect all valid unit targets in range
+            List<Unit> unitsInRange = new List<Unit>();
+            foreach (var hitCollider in hitColliders)
+            {
+                Unit target = hitCollider.GetComponent<Unit>();
+                if (target != null && target.IsAlive && IsValidTarget(target) && IsInCone(target.transform.position, coneOrigin))
+                {
+                    unitsInRange.Add(target);
+                }
+            }
+            return unitsInRange;
         }
 
 
@@ -343,9 +361,8 @@ namespace GameContent.Entities.UnmanagedEntities
             
             ResetAttackSpeed();
             
-            float speed = transportComponent.SpeedMultiplier;
-            transform.Translate(Vector3.forward * speed * Time.deltaTime);
-            velocity = transform.forward * speed;
+            transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
+            velocity = transform.forward * moveSpeed;
         }
 
         #endregion
@@ -355,12 +372,38 @@ namespace GameContent.Entities.UnmanagedEntities
         public void ApplyDamage(float damage)
         {
             currentHealth -= damage;
+            //if TransportComponent is a TransportThornmail, it will reflect damage
+            if (transportComponent != null && transportComponent is TransportThornmail)
+            {
+                transportComponent.UniqueBehavior(this, GetAllUnitsInRange(3)[0]);
+            }
+            if (transportComponent != null && transportComponent is TransportAccumulator)
+            {
+                transportComponent.UniqueBehavior(this);
+            }
+            
+            if (currentHealth <= 0)
+                DestroyUnit();
+        }
+        
+        public void ApplyDamageRaw(float damage)
+        {
+            currentHealth -= damage;
             if (currentHealth <= 0)
                 DestroyUnit();
         }
 
         private void DestroyUnit()
         {
+            //remove the unit from the list of units
+            if (isAlly)
+            {
+                UnitsManager.Instance.allyUnits.Remove(this);
+            }
+            else
+            {
+                UnitsManager.Instance.enemyUnits.Remove(this);
+            }
             Destroy(gameObject);
         }
 
@@ -379,6 +422,8 @@ namespace GameContent.Entities.UnmanagedEntities
         
         public void Stun(float duration)
         {
+            if (transportComponent != null && transportComponent is TransportInsulatingWheels) return; //Boots Imune to stun
+            
             Debug.Log($"{name} is stunned for {duration} seconds.");
             isStunned = true;
             StartCoroutine(HandleStun(duration));

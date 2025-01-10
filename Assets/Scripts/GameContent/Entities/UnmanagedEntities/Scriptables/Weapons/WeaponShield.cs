@@ -6,7 +6,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
     [CreateAssetMenu(fileName = "WeaponShield", menuName = "Components/WeaponComponents/WeaponShield")]
     public sealed class WeaponShield : WeaponComponent
     {
-        
+        [Header("Effect Parameters")]
         public float ShieldAmount = 100f; // Shield amount
         
         # region Start

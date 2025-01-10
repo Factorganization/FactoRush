@@ -1,5 +1,6 @@
+using System;
+using System.Collections.Generic;
 using GameContent.Entities.UnmanagedEntities;
-using UnityEditor;
 using UnityEngine;
 
 public class UnitsManager : MonoBehaviour
@@ -7,14 +8,22 @@ public class UnitsManager : MonoBehaviour
    
     #region Fields
     
-    [SerializeField] private Unit[] units;
+    [SerializeField] public List<Unit> allyUnits;
+    [SerializeField] public List<Unit> enemyUnits;
     [SerializeField] private GameObject unitPrefab;
     
     [Header("Factory")]
     [SerializeField] private AllyBase allyBase;
     [SerializeField] private EnemyBase enemyBase;
     
+    public static UnitsManager Instance;
+    
     #endregion
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -33,9 +42,14 @@ public class UnitsManager : MonoBehaviour
         unitComponent.enemyBase = enemyBase;
         
         // Add the unit to the units array
-#if UNITY_EDITOR
-        ArrayUtility.Add(ref units, unitComponent); //TODO Change
-#endif
+        if (isAlly)
+        {
+            allyUnits.Add(unitComponent);
+        }
+        else
+        {
+            enemyUnits.Add(unitComponent);
+        }
     }
 
     private void InitialCheckup()
