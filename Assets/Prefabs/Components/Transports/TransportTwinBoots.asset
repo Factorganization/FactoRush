@@ -9,13 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ab61e341c0a462b9ed3f6c30e976d0b, type: 3}
-  m_Name: WeaponC4
+  m_Script: {fileID: 11500000, guid: a75f1ba42706418f9f7935eebb61aa5b, type: 3}
+  m_Name: TransportTwinBoots
   m_EditorClassIdentifier: 
-  Graph: {fileID: 919132149155446097, guid: 85f7bf2456f684742b9ae9530319714e, type: 3}
-  Damage: 200
-  AttackSpeed: 2
-  Range: 1
-  targetType: 0
-  isAPriorityTarget: 0
-  ExplosionRangeC4: 12
+  Graph: {fileID: 919132149155446097, guid: f42cbdd58194ccf438af380648a2878b, type: 3}
+  SpeedMultiplier: 1.5
+  HealthMultiplier: 1.2
+  IsFlying: 0

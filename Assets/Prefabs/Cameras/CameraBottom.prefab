@@ -30,8 +30,7 @@ Transform:
   m_LocalPosition: {x: 3, y: 43.2, z: -15.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 7146580054348282071}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 65.547, y: 0, z: 0}
 --- !u!20 &4845488857675319336
@@ -93,34 +92,3 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1159132034573007588}
   m_Enabled: 1
---- !u!1 &6574814843850770063
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7146580054348282071}
-  m_Layer: 0
-  m_Name: //Cameras
-  m_TagString: EditorOnly
-  m_Icon: {fileID: 2800000, guid: 4724f3b6006a28f4ca8f7de7bf926d39, type: 3}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &7146580054348282071
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6574814843850770063}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.5413193, y: -0, z: -0, w: 0.84081715}
-  m_LocalPosition: {x: -3, y: -4.1369553, z: 45.575607}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6878924888288764921}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

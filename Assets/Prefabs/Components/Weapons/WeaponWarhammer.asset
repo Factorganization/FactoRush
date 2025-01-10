@@ -9,18 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c280bd1aedb47bf8f1f768ea3a84de7, type: 3}
-  m_Name: WeaponCanon
+  m_Script: {fileID: 11500000, guid: e15c22f2430a40a0bd20563faafcaa37, type: 3}
+  m_Name: WeaponWarhammer
   m_EditorClassIdentifier: 
   Graph: {fileID: 919132149155446097, guid: a031382ef63eddc449ab574b9b8e2bdd, type: 3}
   Damage: 10
   AttackSpeed: 1
   Range: 5
   targetType: 0
-  LanceDamageBonus: 0.1
-  ShieldValue: 50
-  ShieldAllyRange: 5
-  RayCannonRange: 5
-  WarHammerStunDuration: 3
-  WarHammerStunRadius: 2
-  AoEArtilleryRadius: 3
+  isAPriorityTarget: 0
+  StunDuration: 0

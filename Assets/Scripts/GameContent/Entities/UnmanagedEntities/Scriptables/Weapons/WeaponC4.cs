@@ -24,7 +24,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             // Apply damage to all units in range and lose 33% of max health
             foreach (var unit in allUnitsInRange)
             {
-                unit.ApplyDamage(Damage);
+                unit.ApplyDamage(attacker.damage);
             }
             attacker.ApplyDamage(attacker.currentHealth / 3);
         }

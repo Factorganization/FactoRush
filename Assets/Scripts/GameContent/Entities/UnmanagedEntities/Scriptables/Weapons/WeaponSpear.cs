@@ -27,11 +27,11 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             }
             if (priorityTarget != null)
             {
-                priorityTarget.ApplyDamage(Damage * damageMultiplier);
+                priorityTarget.ApplyDamage(attacker.damage * damageMultiplier);
             }
             else
             {
-                target.ApplyDamage(Damage * damageMultiplier);
+                target.ApplyDamage(attacker.damage * damageMultiplier);
             }
             
         }
