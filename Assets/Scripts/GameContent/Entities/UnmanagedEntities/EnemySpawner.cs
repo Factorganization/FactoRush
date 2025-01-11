@@ -17,8 +17,9 @@ public class EnemySpawner : MonoBehaviour
     public float timeBetweenLines = 10f; // Temps entre chaque ligne
     public float delayBetweenUnits = 0.5f; // Délai entre chaque unité sur la même ligne
 
-    private ComponentAtlas componentAtlas; 
-    private Queue<string> linesQueue; 
+    private ComponentAtlas componentAtlas; // Référence à l'atlas des composants
+    private Queue<string> linesQueue; // File d'attente pour stocker les lignes du fichier
+    private System.Random random; // Générateur de nombres aléatoires
 
     #endregion
 
@@ -33,6 +34,7 @@ public class EnemySpawner : MonoBehaviour
     {
         linesQueue = new Queue<string>();
         componentAtlas = ComponentAtlas.Instance;
+        random = new System.Random(); // Initialiser le générateur de nombres aléatoires
         ReadFile(); // Charger les données du fichier
         StartCoroutine(ProcessFile()); // Commencer à traiter les lignes
     }
@@ -41,7 +43,7 @@ public class EnemySpawner : MonoBehaviour
 
     #region Methods
 
-    // Lecture du fichier dans Resources/EnemyWave/
+    // Lecture du fichier dans Resources/EnemyData/
     private void ReadFile()
     {
         string filePath = Path.Combine(Application.dataPath, "Resources/EnemyWave", $"{enemyDataId}.txt");
@@ -73,14 +75,77 @@ public class EnemySpawner : MonoBehaviour
 
             if (line.Trim() != "-") // Ignorer les lignes contenant seulement "-"
             {
-                StartCoroutine(SpawnEnemies(line));
+                if (line.StartsWith("/"))
+                {
+                    StartCoroutine(SpawnRandomEnemies(line));
+                }
+                else
+                {
+                    StartCoroutine(SpawnEnemies(line));
+                }
             }
 
             yield return new WaitForSeconds(timeBetweenLines); // Attendre un délai configurable avant de traiter la prochaine ligne
         }
     }
 
-    // Spawn des ennemis définis sur une ligne avec un délai configurable
+    // Spawn d'un nombre aléatoire d'ennemis définis sur une ligne commençant par "/"
+    private IEnumerator SpawnRandomEnemies(string line)
+    {
+        // Extraire le nombre d'unités à choisir aléatoirement
+        string[] parts = line.Split(' ');
+        if (parts.Length < 2 || !int.TryParse(parts[0].Substring(1), out int count))
+        {
+            Debug.LogError($"Format de ligne aléatoire invalide : {line}");
+            yield break;
+        }
+
+        string[] enemyDataArray = parts[1].Split(',');
+
+        // Si le nombre d'unités à choisir est supérieur au nombre disponible, prendre tout
+        count = Mathf.Min(count, enemyDataArray.Length);
+
+        // Mélanger les données disponibles et prendre les `count` premières
+        List<string> shuffledEnemies = new List<string>(enemyDataArray);
+        for (int i = 0; i < shuffledEnemies.Count; i++)
+        {
+            int randomIndex = random.Next(i, shuffledEnemies.Count);
+            (shuffledEnemies[i], shuffledEnemies[randomIndex]) = (shuffledEnemies[randomIndex], shuffledEnemies[i]);
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            string enemyData = shuffledEnemies[i];
+            if (enemyData.Length == 4) // Vérifie si l'entrée est valide (4 caractères)
+            {
+                // Parse les données pour le transport et l'arme
+                int transportId = int.Parse(enemyData.Substring(0, 2)); // Premiers 2 chiffres
+                int weaponId = int.Parse(enemyData.Substring(2, 2));   // Derniers 2 chiffres
+
+                // Trouve les composants correspondants dans l'Atlas
+                TransportComponent transportComponent = GetTransportComponent(transportId);
+                WeaponComponent weaponComponent = GetWeaponComponent(weaponId);
+
+                // Vérifie que les composants existent
+                if (transportComponent != null && weaponComponent != null)
+                {
+                    UnitsManager.Instance.SpawnUnit(false, transportComponent, weaponComponent, null, i * delayBetweenUnits);
+                }
+                else
+                {
+                    Debug.LogError($"Composants non trouvés pour Transport ID: {transportId}, Weapon ID: {weaponId}");
+                }
+            }
+            else
+            {
+                Debug.LogError($"Format de données invalide : {enemyData}");
+            }
+
+            yield return new WaitForSeconds(delayBetweenUnits); // Attendre avant de spawner la prochaine unité
+        }
+    }
+
+    // Spawn des ennemis définis sur une ligne
     private IEnumerator SpawnEnemies(string line)
     {
         string[] enemyDataArray = line.Split(',');
@@ -113,7 +178,7 @@ public class EnemySpawner : MonoBehaviour
                 Debug.LogError($"Format de données invalide : {enemyData}");
             }
 
-            yield return null; // Attendre le prochain frame avant de continuer
+            yield return new WaitForSeconds(delayBetweenUnits); // Attendre avant de spawner la prochaine unité
         }
     }
 
@@ -156,4 +221,3 @@ public class EnemySpawner : MonoBehaviour
 
     #endregion
 }
-
