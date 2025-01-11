@@ -41,7 +41,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             // Appliquer les dégâts à la cible préférée et aux stun les autres unités du même type dans la portée
             if (priorityTarget != null)
             {
-                priorityTarget.ApplyDamage(Damage);
+                priorityTarget.ApplyDamage(attacker.damage);
                 foreach (var unit in allUnitsInRange)
                 {
                     if (unit.GetType() == priorityTarget.GetType())

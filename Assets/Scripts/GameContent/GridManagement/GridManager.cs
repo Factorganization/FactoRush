@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameContent.CraftResources;
 using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.Entities.OnFieldEntities.Buildings;
@@ -78,7 +79,7 @@ namespace GameContent.GridManagement
         /// <listheader>
         /// ID to Tile Type
         /// </listheader>
-        /// <item>0 : dynamic build</item>
+        /// <item>0 : dynamic build (ground)</item>
         /// <item>01 - 09 : refinery build</item>
         /// <item>10 - 19 : assembly build</item>
         /// <item>20 - 29 : mining build
@@ -124,7 +125,7 @@ namespace GameContent.GridManagement
                             var mT = Instantiate(mineTile, transform);
                             Grid.Add(tId, mT);
                             mT.Added(this, tId, tPos, TileType.MineTile);
-                            mT.ETransform.rotation = grid[i][j] % 2 != 0 ? Quaternion.Euler(0, 90, 0) : Quaternion.Euler(0, -90, 0);
+                            mT.SetResource(miningResources[grid[i][j] % 20]); // B)
                             break;
                         
                         case >= 10 when grid[i][j] % 2 == 0:
@@ -552,17 +553,15 @@ namespace GameContent.GridManagement
         
         [SerializeField] private MineTile mineTile;
 
+        [SerializeField] private MiningResource[] miningResources;
+        
         [SerializeField] private WeaponTargetTile weaponTargetTile;
         
         [SerializeField] private TransTargetTile transTargetTile;
-        
-        //TODO a mettre dans atlas séparé
 
         [SerializeField] private DynamicBuilding dynamicGenericBuild;
         
         [SerializeField] private StaticBuilding staticGenericBuild;
-        
-        //End TODO
         
         #endregion
 

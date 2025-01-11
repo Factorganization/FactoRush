@@ -241,6 +241,11 @@ MonoBehaviour:
     type: 3}
   mineTile: {fileID: 1741442189675310021, guid: 35d1afae9ddd7954882b69bf122584ea,
     type: 3}
+  miningResources:
+  - {fileID: 681019658827251185, guid: 3574de7e9776c3841b5cf4ca3bad607b, type: 3}
+  - {fileID: 681019658827251185, guid: 5eabafb5d87fc1a419654d9b384c35c5, type: 3}
+  - {fileID: 681019658827251185, guid: f53a1538e0ecf184f8cb865196abedee, type: 3}
+  - {fileID: 681019658827251185, guid: 8bf741a2fcf56164fabbbe0ffc4d480d, type: 3}
   weaponTargetTile: {fileID: 5108611750359047397, guid: 019b1a76afc6bf144b6e45a711c1b3ba,
     type: 3}
   transTargetTile: {fileID: 3046626806428066251, guid: 44cf80b51a96f8840a9950dc3d135d0c,
