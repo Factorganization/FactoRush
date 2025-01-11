@@ -67,7 +67,7 @@ namespace GameContent.Entities.GridEntities
         
         public virtual void MarkActive(bool active) => Active = active;
 
-        protected virtual void InstantiateResourceAt(int conveyorIndex, BaseResource resource, Vector3 pos, int pathIndex)
+        protected virtual void InstantiateResourceAt(int conveyorIndex, BaseResource resource, Vector3 pos)
         {
             var r = Instantiate(resource, pos, Quaternion.identity);
             r.Created(GroupRef[conveyorIndex]);

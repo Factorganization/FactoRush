@@ -35,7 +35,7 @@ namespace GameContent.Entities.GridEntities
 
         public override void RemoveConveyorGroup(ConveyorGroup conveyorGroup) {}
 
-        protected override void InstantiateResourceAt(int conveyoorIndex, BaseResource resource, Vector3 pos, int pathIndex) {}
+        protected override void InstantiateResourceAt(int conveyoorIndex, BaseResource resource, Vector3 pos) {}
 
         protected override void DestroyResource(int conveyorIndex, BaseResource resource) {}
 

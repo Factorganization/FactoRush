@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using GameContent.CraftResources;
-using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 namespace GameContent.Entities.OnFieldEntities.Buildings
@@ -43,40 +42,51 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
             
             if (TileRef.GroupRef.Count <= 0)
                 return;
-            
-            //TODO 
-            //des formules ma couille
-        }
 
-        private void CheckMiningResources()
-        {
-            
+            if (_miningResources[MiningResourceType.Iron] < data.recipe.iron ||
+                _miningResources[MiningResourceType.Copper] < data.recipe.copper ||
+                _miningResources[MiningResourceType.Gold] < data.recipe.gold)
+                return;
+
+            InstantiateResourceAt(_targetIndex, Position + Vector3.up * 0.25f);
+            ResourceRemoved(MiningResourceType.Iron, data.recipe.iron);
+            ResourceRemoved(MiningResourceType.Copper, data.recipe.copper);
+            ResourceRemoved(MiningResourceType.Gold, data.recipe.gold);
+            _spawnCounter = 0;
+            _targetIndex = (_targetIndex + 1) % TileRef.GroupRef.Count;
         }
         
         public void ResourceAdded(MiningResourceType type)
         {
             _miningResources[type]++;
-            CheckMiningResources();
         }
 
-        public void ResourceRemoved(MiningResourceType type)
+        private void ResourceRemoved(MiningResourceType type, int amount)
         {
-            _miningResources[type]--;
+            _miningResources[type] -= amount;
         }
-        
-        
+
+        private void InstantiateResourceAt(int conveyorIndex, Vector3 pos)
+        {
+            var r = Instantiate(unitComponent, pos, Quaternion.identity);
+            r.Created(TileRef.GroupRef[conveyorIndex]);
+            r.SetUnitComponent(data.component);
+            TileRef.GroupRef[conveyorIndex].AddResource(r);
+        }
         
         #endregion
         
         #region fields
 
-        public FactoryData data;
+        [SerializeField] private FactoryData data;
+
+        [SerializeField] private RefinedResource unitComponent; // j'ai chié sur les noms là ...
         
         private Dictionary<MiningResourceType, int> _miningResources;
 
         private float _spawnCounter;
 
-        private float _targetIndex;
+        private int _targetIndex;
 
         #endregion
     }

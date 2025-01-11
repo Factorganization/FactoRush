@@ -5,10 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/_Dev/Thomas/Scene/FightScene.unity
     guid: ddcc9ba2e2dfe024b8d9f5853f7b512b
-  - enabled: 0
+  - enabled: 1
     path: "Assets/_Dev/Cl\xE9ment/Scenes/ClemScene.unity"
     guid: c850ee8c3b14cc8459e7e186857cf567
   m_configObjects:

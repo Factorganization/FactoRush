@@ -79,6 +79,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   graphTransform: {fileID: 5393111111622747883}
   data: {fileID: 11400000, guid: 8324faa67579c9e4683a48d2a7f319ee, type: 2}
+  unitComponent: {fileID: 1300889114357160967, guid: 1bf02b02f21c7934bb39b1c8a92cd735,
+    type: 3}
 --- !u!1001 &6823286167849808572
 PrefabInstance:
   m_ObjectHideFlags: 0

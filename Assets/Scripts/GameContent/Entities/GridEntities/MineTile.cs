@@ -63,7 +63,7 @@ namespace GameContent.Entities.GridEntities
                 if (c is null)
                     return;
             }
-            InstantiateResourceAt(_targetIndex, _miningResource, Position + Vector3.up * 0.25f, _targetIndex);
+            InstantiateResourceAt(_targetIndex, _miningResource, Position + Vector3.up * 0.25f);
             _spawnCounter = 0;
             _targetIndex = (_targetIndex + 1) % GroupRef.Count;
         }
