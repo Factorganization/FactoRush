@@ -41,7 +41,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
                 {
                     if (unit.GetType() == priorityTarget.GetType())
                     {
-                        unit.ApplyDamage(Damage);
+                        unit.ApplyDamage(attacker.damage);
                     }
                 }
             }

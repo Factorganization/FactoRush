@@ -23,7 +23,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             }
             if (lowestHealthUnit != null)
             {
-                lowestHealthUnit.ApplyDamage(Damage);
+                lowestHealthUnit.ApplyDamage(attacker.damage);
             }
         }
         

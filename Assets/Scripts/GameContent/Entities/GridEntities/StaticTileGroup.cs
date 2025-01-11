@@ -20,7 +20,7 @@ namespace GameContent.Entities.GridEntities
         /// <summary>
         /// /!\ NE PAS CALL AVANT FIN DE GEN DE MAP /!\
         /// </summary>
-        private CenterStaticBuildingTile CenterRef => this[2] as CenterStaticBuildingTile;
+        public CenterStaticBuildingTile CenterRef => this[2] as CenterStaticBuildingTile;
         
         #endregion
         

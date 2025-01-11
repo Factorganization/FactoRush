@@ -20,7 +20,7 @@ namespace GameContent.Entities.GridEntities
         
         public TileType Type { get; private set; }
 
-        public virtual List<ConveyorGroup> GroupRef { get; set; }
+        public virtual List<ConveyorGroup> GroupRef { get; protected set; }
         
         protected bool Active { get; private set; }
         
@@ -44,7 +44,7 @@ namespace GameContent.Entities.GridEntities
         
         #region methodes
         
-        public void Added(GridManager grid, Vector2Int index, Vector3 pos = new(), TileType type = TileType.Default)
+        public virtual void Added(GridManager grid, Vector2Int index, Vector3 pos = new(), TileType type = TileType.Default)
         {
             GroupRef = new List<ConveyorGroup>();
             Index = index;
@@ -67,7 +67,7 @@ namespace GameContent.Entities.GridEntities
         
         public virtual void MarkActive(bool active) => Active = active;
 
-        protected virtual void InstantiateResourceAt(int conveyorIndex, BaseResource resource, Vector3 pos, int pathIndex)
+        protected virtual void InstantiateResourceAt(int conveyorIndex, BaseResource resource, Vector3 pos)
         {
             var r = Instantiate(resource, pos, Quaternion.identity);
             r.Created(GroupRef[conveyorIndex]);

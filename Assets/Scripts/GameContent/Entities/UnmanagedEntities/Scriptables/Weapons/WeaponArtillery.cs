@@ -15,7 +15,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             {
                 if (unit.isAirUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
                 {
-                    unit.ApplyDamage(Damage);
+                    unit.ApplyDamage(attacker.damage);
                     targetFound = true;
                 }
             }
@@ -25,7 +25,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
                 {
                     if (!unit.isAirUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
                     {
-                        unit.ApplyDamage(Damage);
+                        unit.ApplyDamage(attacker.damage);
                         break;
                     }
                 }

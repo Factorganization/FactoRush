@@ -53,7 +53,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             if (preferredTarget != null)
             {
                 float damageMultiplier = !preferredTarget.isAirUnit ? 2f : 1f;
-                preferredTarget.ApplyDamage(Damage * damageMultiplier);
+                preferredTarget.ApplyDamage(attacker.damage * damageMultiplier);
             }
         }
         

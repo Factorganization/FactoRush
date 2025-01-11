@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using GameContent.CraftResources;
-using GameContent.Entities.OnFieldEntities;
+﻿using GameContent.CraftResources;
 
 namespace GameContent.Entities.GridEntities
 {
@@ -17,21 +14,9 @@ namespace GameContent.Entities.GridEntities
             set;
         }
 
-        public override List<ConveyorGroup> GroupRef
-        {
-            get => null;
-            set { }
-        }
-
         #endregion
         
         #region methodes
-        
-        public override void AddConveyorGroup(ConveyorGroup conveyorGroup) {}
-
-        public override void RemoveConveyorGroup(ConveyorGroup conveyorGroup) {}
-        
-        protected override void InstantiateResourceAt(int conveyorIndex, BaseResource resource, Vector3 pos, int pathIndex) {}
         
         protected override void DestroyResource(int conveyorIndex, BaseResource resource) {}
         

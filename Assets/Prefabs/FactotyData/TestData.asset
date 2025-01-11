@@ -13,10 +13,8 @@ MonoBehaviour:
   m_Name: TestData
   m_EditorClassIdentifier: 
   partType: 0
+  component: {fileID: 11400000, guid: 6d05a620ecb6b374680d94959589dc1b, type: 2}
   recipe:
-    NecessaryMineResource1: 0
-    NecessaryMineResource2: 0
-    NecessaryMineResource3: 2
-    NecessaryMineResource4: 3
-    NecessaryMineResource5: 0
-    NecessaryMineResource6: 0
+    iron: 1
+    copper: 1
+    gold: 0

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using GameContent.Entities.UnmanagedEntities;
 using UnityEngine;
@@ -30,8 +31,14 @@ public class UnitsManager : MonoBehaviour
         InitialCheckup();
     }
     
-    public void SpawnUnit(bool isAlly, TransportComponent transportComponent =  null, WeaponComponent weaponComponent = null)
+    public void SpawnUnit(bool isAlly, TransportComponent transportComponent =  null, WeaponComponent weaponComponent = null, Unit cloneOf = null, float delay = 0)
     {
+        StartCoroutine(SpawnUnitCoroutine(isAlly, transportComponent, weaponComponent, cloneOf, delay));
+    }
+    
+    private IEnumerator SpawnUnitCoroutine(bool isAlly, TransportComponent transportComponent =  null, WeaponComponent weaponComponent = null, Unit cloneOf = null, float delay = 0)
+    {
+        yield return new WaitForSeconds(delay);
         // Instantiate the unit prefab and set its components
         GameObject unit = Instantiate(unitPrefab, isAlly ? allyBase.spawnPoint.position : enemyBase.spawnPoint.position, isAlly ? allyBase.spawnPoint.rotation : enemyBase.spawnPoint.rotation);
         Unit unitComponent = unit.GetComponent<Unit>();
@@ -49,6 +56,12 @@ public class UnitsManager : MonoBehaviour
         else
         {
             enemyUnits.Add(unitComponent);
+        }
+        
+        // Set the clone bool if Needed
+        if (cloneOf != null)
+        {
+            unitComponent.alreadyCloned = true;
         }
     }
 

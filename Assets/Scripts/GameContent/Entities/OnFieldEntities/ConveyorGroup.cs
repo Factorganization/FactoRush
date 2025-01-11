@@ -52,6 +52,7 @@ namespace GameContent.Entities.OnFieldEntities
                 return;
             
             GraphInit();
+            TrySetRefineryRef();
         }
 
         public void InitFromDynamic(sbyte index)
@@ -106,6 +107,8 @@ namespace GameContent.Entities.OnFieldEntities
             ToStaticTile.AddConveyorGroup(this);
             FromStaticTile.MarkActive(true);
             ToStaticTile.MarkActive(true);
+            
+            TrySetRefineryRef();
             
             _tempPath.Clear();
         }
@@ -165,6 +168,15 @@ namespace GameContent.Entities.OnFieldEntities
             GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
             UnsetSelf();
             return false;
+        }
+
+        private void TrySetRefineryRef()
+        {
+            if (FromStaticTile is not StaticBuildingTile s)
+                return;
+            
+            var c = GridManager.Manager.StaticGroups[s.StaticGroup].CenterRef;
+            c.AddConveyorGroup(this);
         }
         
         public void AddResource(BaseResource resource) => _conveyedResources.Add(resource);
