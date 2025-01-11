@@ -16,5 +16,5 @@ MonoBehaviour:
   Damage: 0
   AttackSpeed: 999
   Range: 0
-  targetType: 0
+  targetType: 2
   isAPriorityTarget: 0

@@ -16,6 +16,6 @@ MonoBehaviour:
   Damage: 10
   AttackSpeed: 1
   Range: 5
-  targetType: 0
+  targetType: 2
   isAPriorityTarget: 0
   ExplosionRangeC4: 0
