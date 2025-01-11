@@ -436,7 +436,12 @@ namespace GameContent.Entities.UnmanagedEntities
             //if TransportComponent is a TransportThornmail, it will reflect damage
             if (transportComponent != null && transportComponent is TransportThornmail)
             {
-                transportComponent.UniqueBehavior(this, GetAllUnitsInRange(3)[0]);
+                var target = GetAllUnitsInRange(3);
+                if (target.Count > 0)
+                {
+                    transportComponent.UniqueBehavior(this, target[0]);
+                }
+                
             }
             if (transportComponent != null && transportComponent is TransportAccumulator)
             {
