@@ -72,6 +72,8 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         
         public void SetTargetIndex(int target) => _targetIndex = target;
         
+        public void SetFactoryData(FactoryData fd) => data = fd;
+        
         #endregion
         
         #region fields

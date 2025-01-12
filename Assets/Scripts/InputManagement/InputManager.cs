@@ -2,7 +2,9 @@ using UnityEngine;
 using System;
 using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
+using GameContent.Entities.OnFieldEntities.Buildings;
 using GameContent.GridManagement;
+using GameContent.InGameUI;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
@@ -89,8 +91,15 @@ namespace InputManagement
         {
             GridManager.Manager.CurrentLockMode = GridLockMode.BuildingLocked; //Lock grid to prevent abusive list update
             
-            if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
+            if (!Physics.Raycast(ray, out var hit, 100, interactableMask))
                 return;
+
+            if (hit.collider.TryGetComponent(out Card card))
+            {
+                card.SetSelected(true);
+                _currentFactoryData = card.Data;
+                return;
+            }
             
             if (!hit.collider.TryGetComponent(out Tile t)) //start drag if hit side of static
                 return;
@@ -973,6 +982,12 @@ namespace InputManagement
 
         [SerializeField] private Camera isoCamera;
 
+        [SerializeField] private LayerMask interactableMask;
+
+        private Card _currentSelectedCard;
+        
+        private FactoryData _currentFactoryData;
+        
         private HitGridType _startingHitType;
 
         private Vector2Int _startingIndex;
