@@ -37,6 +37,7 @@ namespace GameContent.Entities.OnFieldEntities
             {
                 ConveyorGroupIds.Remove(i);
             }
+            _removing.Clear();
         }
         
         public void AddConveyorGroupId(sbyte conveyorId) => ConveyorGroupIds.Add(conveyorId);

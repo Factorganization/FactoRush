@@ -341,7 +341,12 @@ namespace InputManagement
                     if (t.Index == _currentIndex)
                     {
                         if (t.Index == _startingIndex)
-                            GridManager.Manager.SetSelected(_startingIndex, true);
+                        {
+                            if (t.IsBlocked)
+                                GridManager.Manager.SetSelected(_startingIndex, true);
+                            else
+                                _startingHitType = HitGridType.None;
+                        }
                         break;
                     }
 
@@ -735,12 +740,19 @@ namespace InputManagement
                 case TileType.SideStaticTile:
                 case TileType.DynamicTile:
                 case TileType.MineTile:
-                case TileType.WeaponTarget:
-                case TileType.TransTarget:
                     if (!GridManager.Manager.IsLastSelectedTile(_currentIndex) || t.IsBlocked)
                     {
                         GridManager.Manager.CancelAdding();
                     }
+                    break;
+                
+                case TileType.WeaponTarget:
+                case TileType.TransTarget:
+                    if (/*!GridManager.Manager.IsLastSelectedTile(_currentIndex) || */t.IsBlocked)
+                    {
+                        GridManager.Manager.CancelAdding();
+                    }
+                    GridManager.Manager.SetSelected(_currentIndex, true);
                     break;
                 
                 case TileType.CenterStaticTile:

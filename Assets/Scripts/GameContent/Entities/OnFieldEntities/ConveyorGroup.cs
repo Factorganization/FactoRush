@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GameContent.CraftResources;
 using GameContent.Entities.GridEntities;
+using GameContent.Entities.OnFieldEntities.Buildings;
 using GameContent.GridManagement;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -42,6 +43,41 @@ namespace GameContent.Entities.OnFieldEntities
 
             FromStaticTile = this[0].TileRef;
             ToStaticTile = this[Count - 1].TileRef;
+
+            if (FromStaticTile is SideStaticBuildingTile s)
+            {
+                var c = GridManager.Manager.StaticGroups[s.StaticGroup].CenterRef;
+                if (c.GroupRef.Count >= 1)
+                {
+                    var g = c.GroupRef[0];
+                    if ((g.ToStaticTile is WeaponTargetTile && ToStaticTile is TransTargetTile) ||
+                        (g.ToStaticTile is TransTargetTile && ToStaticTile is WeaponTargetTile))
+                    {
+                        foreach (var b in this)
+                        {
+                            b.TileRef.CurrentBuildingRef = null;
+                            Object.Destroy(b.gameObject);
+                        }
+                        GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
+                        return;
+                    }
+                }
+
+                if (c.CurrentBuildingRef is FactoryBuilding f)
+                {
+                    if ((f.UnitResourceType == 0 && ToStaticTile is WeaponTargetTile) ||
+                        (f.UnitResourceType == 1 && ToStaticTile is TransTargetTile))
+                    {
+                        foreach (var b in this)
+                        {
+                            b.TileRef.CurrentBuildingRef = null;
+                            Object.Destroy(b.gameObject);
+                        }
+                        GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
+                        return;
+                    }
+                }
+            }
             
             FromStaticTile.AddConveyorGroup(this);
             ToStaticTile.AddConveyorGroup(this);
@@ -57,7 +93,8 @@ namespace GameContent.Entities.OnFieldEntities
 
         public void InitFromDynamic(sbyte index)
         {
-            var f = GridManager.Manager.ConveyorGroups[index][0];
+            var c = GridManager.Manager.ConveyorGroups[index];
+            var f = c[0];
             
             if (!(f.TileRef is MineTile && 
                   this[Count - 1].TileRef is SideStaticBuildingTile) &&
@@ -80,8 +117,26 @@ namespace GameContent.Entities.OnFieldEntities
                 }
                 return;
             }
-            
-            var c = GridManager.Manager.ConveyorGroups[index];
+
+            if ((this[Count - 1].TileRef is WeaponTargetTile && c.ToStaticTile is TransTargetTile) ||
+                (this[Count - 1].TileRef is TransTargetTile && c.ToStaticTile is WeaponTargetTile))
+            {
+                this[0].RemoveConveyorGroupId(ConveyorGroupId);
+                
+                for (var j = 1; j < Count; j++)
+                {
+                    var b = this[j];
+                    b.TileRef.CurrentBuildingRef = null;
+                    Object.Destroy(b.gameObject);
+                }
+
+                GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
+                foreach (var d in f)
+                {
+                    GridManager.Manager.ConveyorGroups[d].UpdateGroup();
+                }
+                return;
+            }
             
             foreach (var t in c)
             {
@@ -169,7 +224,7 @@ namespace GameContent.Entities.OnFieldEntities
             UnsetSelf();
             return false;
         }
-
+        
         private void TrySetRefineryRef()
         {
             if (FromStaticTile is not StaticBuildingTile s)
@@ -196,6 +251,12 @@ namespace GameContent.Entities.OnFieldEntities
                 }
                 _conveyedResources.Clear();
             }
+
+            if (FromStaticTile is SideStaticBuildingTile s)
+            {
+                var g = s.StaticGroup;
+                GridManager.Manager.StaticGroups[g].CenterRef.RemoveConveyorGroup(this);
+            }
             
             FromStaticTile.RemoveConveyorGroup(this);
             ToStaticTile.RemoveConveyorGroup(this);
@@ -209,6 +270,19 @@ namespace GameContent.Entities.OnFieldEntities
             foreach (var d in DynamicBuildings)
             {
                 d.UpdateBuild();
+            }
+        }
+
+        public bool CheckPathTarget(int type)
+        {
+            switch (type)
+            {
+                case 0 when ToStaticTile is WeaponTargetTile:
+                case 1 when ToStaticTile is TransTargetTile:
+                    return false;
+
+                default:
+                    return true;
             }
         }
         
@@ -235,7 +309,7 @@ namespace GameContent.Entities.OnFieldEntities
         private readonly List<BaseResource> _conveyedResources;
 
         //C'est pas fou en fait
-        private static readonly Comparison<DynamicBuilding> TypeComparer = (a, b) => (int)Mathf.Sign((byte)a.TileRef.Type - (byte)b.TileRef.Type);
+        private static readonly Comparison<DynamicBuilding> typeComparer = (a, b) => (int)Mathf.Sign((byte)a.TileRef.Type - (byte)b.TileRef.Type);
 
         #endregion
     }
