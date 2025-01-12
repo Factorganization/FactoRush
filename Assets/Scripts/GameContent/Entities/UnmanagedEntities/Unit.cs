@@ -275,7 +275,7 @@ namespace GameContent.Entities.UnmanagedEntities
                 if (isAlly)
                 {
                     EnemyBase enemyBase = hitCollider.GetComponent<EnemyBase>();
-                    if (enemyBase != null && IsInCone(enemyBase.transform.position, coneOrigin))
+                    if (enemyBase != null)
                     {
                         AttackEnemyBase(enemyBase);
                         return true;
@@ -284,7 +284,7 @@ namespace GameContent.Entities.UnmanagedEntities
                 else
                 {
                     AllyBase allyBase = hitCollider.GetComponent<AllyBase>();
-                    if (allyBase != null && IsInCone(allyBase.transform.position, coneOrigin))
+                    if (allyBase != null)
                     {
                         AttackAllyBase(allyBase);
                         return true;
@@ -308,21 +308,14 @@ namespace GameContent.Entities.UnmanagedEntities
             foreach (var hitCollider in hitColliders)
             {
                 Unit target = hitCollider.GetComponent<Unit>();
-                if (target != null && target.IsAlive && IsValidTarget(target) && IsInCone(target.transform.position, coneOrigin))
+                if (target != null && target.IsAlive && IsValidTarget(target))
                 {
                     unitsInRange.Add(target);
                 }
             }
             return unitsInRange;
         }
-
-
-        private bool IsInCone(Vector3 targetPosition, Vector3 coneOrigin)
-        {
-            Vector3 directionToTarget = (targetPosition - coneOrigin).normalized;
-            float angle = Vector3.Angle(transform.forward, directionToTarget);
-            return angle <= ConeAngle / 2;
-        }
+        
 
         private void AttackTarget(List<Unit> unitsInRange)
         {
@@ -336,11 +329,16 @@ namespace GameContent.Entities.UnmanagedEntities
                 }
             }
 
+            if (weaponComponent is not null && weaponComponent is WeaponRailgun railgunComponent)
+            {
+                var TargetForRailgun = GetAllUnitsInRange(railgunComponent.EffectRange);
+                Debug.Log("TargetForRailgun.Count: " + TargetForRailgun.Count);
+                weaponComponent.Attack(this, unitsInRange[0], TargetForRailgun);
+            }
+
             weaponComponent.Attack(this, unitsInRange[0], unitsInRange );
             ResetCooldown();
             ResetRange();
-
-            Debug.Log($"{name} attacked {unitsInRange[0].name} for {weaponComponent.Damage} damage.");
         }
         
         private void AttackEnemyBase(EnemyBase enemyBase)
@@ -508,6 +506,8 @@ namespace GameContent.Entities.UnmanagedEntities
         
         public void Stun(float duration)
         {
+            // Stop all HandleStun coroutines
+            StopAllCoroutines();
             if (transportComponent != null && transportComponent is TransportInsulatingWheels) return; //Boots Imune to stun
             
             Debug.Log($"{name} is stunned for {duration} seconds.");
