@@ -23,10 +23,11 @@ namespace GameContent.Entities.GridEntities
             }
 
             var w = GridManager.Manager.AssemblyTileGroups[AssemblyId].WeaponTile;
-            if (RefinedResources.Count > 0 && w.RefinedResources.Count > 0)
-            {
-                UnitsManager.Instance.SpawnUnit(true, RemoveResource() as TransportComponent, w.RemoveResource() as WeaponComponent);
-            }
+            if (RefinedResources.Count <= 0 || w.RefinedResources.Count <= 0)
+                return;
+            
+            UnitsManager.Instance.SpawnUnit(true, RemoveResource() as TransportComponent, w.RemoveResource() as WeaponComponent);
+            _spawnCounter = 0;
         }
 
         #endregion

@@ -3,9 +3,7 @@
     public sealed class AssemblyTileGroup : TileList
     {
         #region properties
-        
-        public sbyte AssemblyId { get; }
-        
+
         public WeaponTargetTile WeaponTile { get; private set; }
         
         public TransTargetTile TransTile { get; private set; }
@@ -16,7 +14,6 @@
 
         public AssemblyTileGroup(sbyte assemblyId, params Tile[] tiles) : base(tiles)
         {
-            AssemblyId = assemblyId;
         }
 
         #endregion

@@ -17,7 +17,7 @@ namespace GameContent.Entities.GridEntities
             set;
         }
 
-        public Queue<UnitComponent> RefinedResources { get; private set; } = new();
+        public Queue<UnitComponent> RefinedResources { get; } = new();
 
         #endregion
         
