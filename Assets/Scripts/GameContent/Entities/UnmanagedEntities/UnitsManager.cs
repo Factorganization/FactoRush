@@ -12,6 +12,8 @@ public class UnitsManager : MonoBehaviour
     [SerializeField] public List<Unit> allyUnits;
     [SerializeField] public List<Unit> enemyUnits;
     [SerializeField] private GameObject unitPrefab;
+    [SerializeField] private WeaponComponent weaponComponentDefault;
+    [SerializeField] private TransportComponent transportComponentDefault;
     
     [Header("Factory")]
     [SerializeField] private AllyBase allyBase;
@@ -36,15 +38,25 @@ public class UnitsManager : MonoBehaviour
         StartCoroutine(SpawnUnitCoroutine(isAlly, transportComponent, weaponComponent, cloneOf, delay));
     }
     
-    private IEnumerator SpawnUnitCoroutine(bool isAlly, TransportComponent transportComponent =  null, WeaponComponent weaponComponent = null, Unit cloneOf = null, float delay = 0)
+    private IEnumerator SpawnUnitCoroutine(bool isAlly, TransportComponent transportComponent = null, WeaponComponent weaponComponent = null, Unit cloneOf = null, float delay = 0)
     {
         yield return new WaitForSeconds(delay);
         // Instantiate the unit prefab and set its components
         GameObject unit = Instantiate(unitPrefab, isAlly ? allyBase.spawnPoint.position : enemyBase.spawnPoint.position, isAlly ? allyBase.spawnPoint.rotation : enemyBase.spawnPoint.rotation);
         Unit unitComponent = unit.GetComponent<Unit>();
         unitComponent.isAlly = isAlly;
+        // Set the default components if the parameters are null
+        if (transportComponent == null)
+        {
+            transportComponent = transportComponentDefault;
+        }
+        if (weaponComponent == null)
+        {
+            weaponComponent = weaponComponentDefault;
+        }
         unitComponent.transportComponent = transportComponent;
         unitComponent.weaponComponent = weaponComponent;
+        
         unitComponent.allyBase = allyBase;
         unitComponent.enemyBase = enemyBase;
         

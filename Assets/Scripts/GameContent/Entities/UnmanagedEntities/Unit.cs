@@ -446,7 +446,7 @@ namespace GameContent.Entities.UnmanagedEntities
         public void ApplyDamage(float damage)
         {
             //if TransportComponent is a TransportThornmail, it will reflect damage
-            if (transportComponent != null && transportComponent is TransportThornmail)
+            if (transportComponent is TransportThornmail)
             {
                 var target = GetAllUnitsInRange(thornmailRange);
                 if (target.Count > 0)
@@ -455,12 +455,12 @@ namespace GameContent.Entities.UnmanagedEntities
                 }
                 
             }
-            if (transportComponent != null && transportComponent is TransportAccumulator)
+            if (transportComponent is TransportAccumulator)
             {
                 transportComponent.UniqueBehavior(this);
             }
             
-            if (transportComponent != null && transportComponent is TransportSlider && !hasDash)
+            if (transportComponent is TransportSlider && !hasDash)
             {
                 transportComponent.UniqueBehavior(this);
                 hasDash = true;
