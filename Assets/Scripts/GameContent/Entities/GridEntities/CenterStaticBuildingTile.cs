@@ -1,4 +1,5 @@
-﻿using GameContent.CraftResources;
+﻿using System.Collections.Generic;
+using GameContent.CraftResources;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.Entities.OnFieldEntities.Buildings;
 using GameContent.GridManagement;
@@ -23,11 +24,23 @@ namespace GameContent.Entities.GridEntities
             set
             {
                 _currentBuildingRef = value;
-                if (_currentBuildingRef is not null)
-                    CheckSelfSendingType();
+                switch (_currentBuildingRef)
+                {
+                    case null:
+                        return;
+                    case DynamicBuilding d:
+                        SecondaryBuildRefs.Add(d);
+                        _currentBuildingRef = null;
+                        return;
+                    default:
+                        CheckSelfSendingType();
+                        break;
+                }
             }
         }
-
+        
+        public List<Building> SecondaryBuildRefs { get; } = new();
+        
         #endregion
         
         #region methodes
@@ -53,7 +66,7 @@ namespace GameContent.Entities.GridEntities
             if (_currentBuildingRef is FactoryBuilding f)
                 f.SetTargetIndex(0);
         }
-
+        
         #endregion
         
         #region fields
