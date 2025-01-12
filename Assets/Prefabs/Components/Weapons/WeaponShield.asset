@@ -16,6 +16,6 @@ MonoBehaviour:
   Damage: 10
   AttackSpeed: 1
   Range: 5
-  targetType: 0
-  isAPriorityTarget: 0
+  targetType: 3
+  isAPriorityTarget: 1
   ShieldAmount: 100
