@@ -25,17 +25,10 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
                 }
             }
 
-            // Si aucune cible prioritaire n'est trouvée, chercher une cible 
+            // Si aucune cible prioritaire n'est trouvée, default à la target
             if (priorityTarget == null)
             {
-                foreach (var unit in allUnitsInRange)
-                {
-                    if (unit.isAirUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
-                    {
-                        priorityTarget = unit;
-                        break; // Trouve la première cible dans la portée
-                    }
-                }
+                priorityTarget = target;
             }
 
             // Appliquer les dégâts à la cible préférée et aux stun les autres unités du même type dans la portée
@@ -44,7 +37,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
                 priorityTarget.ApplyDamage(attacker.damage);
                 foreach (var unit in allUnitsInRange)
                 {
-                    if (unit.GetType() == priorityTarget.GetType())
+                    if (unit.isAirUnit == priorityTarget.isAirUnit)
                     {
                         //if (unit != priorityTarget) divide stun duration by 2
                         unit.Stun(unit == priorityTarget ? StunDuration : StunDuration / 2);

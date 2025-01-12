@@ -6,6 +6,11 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
     [CreateAssetMenu(fileName = "WeaponRailgun", menuName = "Components/WeaponComponents/WeaponRailgun")]
     public sealed class WeaponRailgun : WeaponComponent
     {
+        
+        [Header("Unique Effect Parameters")]
+        public float EffectRange = 5f; // Range of the effect
+        
+        
         #region Unique Effects Handlers
         protected override void HandleUniqueEffect(Unit attacker, Unit target, List<Unit> allUnitsInRange)
         {
@@ -24,14 +29,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             // Si aucune cible prioritaire n'est trouvée, chercher une cible 
             if (priorityTarget == null)
             {
-                foreach (var unit in allUnitsInRange)
-                {
-                    if (unit.isAirUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
-                    {
-                        priorityTarget = unit;
-                        break; // Trouve la première cible dans la portée
-                    }
-                }
+               priorityTarget = target;
             }
 
             // Appliquer les dégâts à la cible préférée et aux autres unités du même type dans la portée
@@ -39,7 +37,8 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             {
                 foreach (var unit in allUnitsInRange)
                 {
-                    if (unit.GetType() == priorityTarget.GetType())
+                    Debug.Log("unit.isAirUnit: " + unit.isAirUnit + " priorityTarget.isAirUnit: " + priorityTarget.isAirUnit);
+                    if (unit.isAirUnit == priorityTarget.isAirUnit)
                     {
                         unit.ApplyDamage(attacker.damage);
                     }

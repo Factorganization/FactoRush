@@ -23,6 +23,9 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Transport
                     float closestDistance = Mathf.Infinity;
                     foreach (var enemyUnit in UnitsManager.Instance.enemyUnits)
                     {
+                        // Si l'unité est volante on la skip
+                        if (enemyUnit.isAirUnit) continue;
+                        
                         float distance = Vector3.Distance(unit.transform.position, enemyUnit.transform.position);
                         if (distance < closestDistance)
                         {
@@ -38,6 +41,9 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Transport
                     float closestDistance = Mathf.Infinity;
                     foreach (var allyUnit in UnitsManager.Instance.allyUnits)
                     {
+                        // Si l'unité est volante on la skip
+                        if (allyUnit.isAirUnit) continue;
+                        
                         float distance = Vector3.Distance(unit.transform.position, allyUnit.transform.position);
                         if (distance < closestDistance)
                         {
@@ -47,12 +53,14 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Transport
                     }
                 }
                 
+                
                 // Teleport the unit right behind the closest unit
                 unit.transform.position = unit.isAlly ? closestEnemyUnit.transform.position - closestEnemyUnit.transform.forward : closestAllyUnit.transform.position - closestAllyUnit.transform.forward;
             }
             catch (Exception e)
             {
-                Debug.Log("No units found, normal spawn");
+                // Wallah c'est pas propre mais un peu quand meme jsp 
+                // Dcp si c'est null juste ça fait pas d'erreur mdr
             }
             
         }
