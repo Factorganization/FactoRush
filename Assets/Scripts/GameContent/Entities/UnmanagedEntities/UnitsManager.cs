@@ -91,7 +91,7 @@ public class UnitsManager : MonoBehaviour
         }
         if (unitPrefab == null)
         {
-            Debug.LogError("Unit prefab is not assigned in the inspector. Please assign it.");
+            Debug.LogError("Charles lit l'erreur stp");
         }
 
         if (allyBase != null && enemyBase != null) return;
