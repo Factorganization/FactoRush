@@ -1,4 +1,5 @@
-﻿using GameContent.GridManagement;
+﻿using GameContent.Entities.UnmanagedEntities;
+using GameContent.GridManagement;
 using UnityEngine;
 
 namespace GameContent.Entities.GridEntities
@@ -20,10 +21,11 @@ namespace GameContent.Entities.GridEntities
                 _spawnCounter += Time.deltaTime;
                 return;
             }
-            
-            if (RefinedResources.Count > 0 && GridManager.Manager.AssemblyTileGroups[AssemblyId].WeaponTile.RefinedResources.Count > 0)
+
+            var w = GridManager.Manager.AssemblyTileGroups[AssemblyId].WeaponTile;
+            if (RefinedResources.Count > 0 && w.RefinedResources.Count > 0)
             {
-                //UnitsManager.Instance.SpawnUnit();
+                UnitsManager.Instance.SpawnUnit(true, RemoveResource() as TransportComponent, w.RemoveResource() as WeaponComponent);
             }
         }
 
