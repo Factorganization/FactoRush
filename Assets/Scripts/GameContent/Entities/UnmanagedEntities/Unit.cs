@@ -57,6 +57,7 @@ namespace GameContent.Entities.UnmanagedEntities
         private bool isStunned = false;
         private float attackCooldown = 0;
         public float Range;
+        public TargetType targetType;
         public bool isExplosive = false;
         public float attackSpeed;
         public float moveSpeed;
@@ -65,6 +66,7 @@ namespace GameContent.Entities.UnmanagedEntities
         public bool alreadyCloned = false;
         public bool canDash = false;
         private bool hasDash = false;
+        public float thornmailRange = 3f;
 
         #endregion
 
@@ -148,6 +150,14 @@ namespace GameContent.Entities.UnmanagedEntities
                 var weaponGraph = Instantiate(weaponComponent.Graph, transform);
                 weaponGraph.transform.parent = graphTransform;
                 weaponComponent.Initialize(this);
+                if (weaponComponent.targetType == TargetType.TransportDependent)
+                {
+                    targetType = transportComponent is null ? TargetType.Ground : transportComponent.IsFlying ? TargetType.Air : TargetType.Ground;
+                }
+                else
+                {
+                    targetType = weaponComponent.targetType;
+                }
             }
             if (transportComponent != null)
             {
@@ -160,6 +170,10 @@ namespace GameContent.Entities.UnmanagedEntities
                 if (transportComponent is TransportSlider)
                 {
                     canDash = true;
+                }
+                if (transportComponent is TransportThornmail thornmail)
+                {
+                    thornmailRange = thornmail.range;
                 }
             }
         }
@@ -363,7 +377,7 @@ namespace GameContent.Entities.UnmanagedEntities
             }
             
 
-            return weaponComponent.targetType switch
+            return targetType switch
             {
                 TargetType.Ground => !target.isAirUnit,
                 TargetType.Air => target.isAirUnit,
@@ -436,7 +450,12 @@ namespace GameContent.Entities.UnmanagedEntities
             //if TransportComponent is a TransportThornmail, it will reflect damage
             if (transportComponent != null && transportComponent is TransportThornmail)
             {
-                transportComponent.UniqueBehavior(this, GetAllUnitsInRange(3)[0]);
+                var target = GetAllUnitsInRange(thornmailRange);
+                if (target.Count > 0)
+                {
+                    transportComponent.UniqueBehavior(this, target[0]);
+                }
+                
             }
             if (transportComponent != null && transportComponent is TransportAccumulator)
             {

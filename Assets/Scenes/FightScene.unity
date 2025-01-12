@@ -5811,7 +5811,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Transport Accumulator
+  m_Text: Transport Accumulat
 --- !u!222 &866908109
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6813,6 +6813,7 @@ MonoBehaviour:
     type: 3}
   mineTile: {fileID: 1741442189675310021, guid: 35d1afae9ddd7954882b69bf122584ea,
     type: 3}
+  miningResources: []
   weaponTargetTile: {fileID: 5108611750359047397, guid: 019b1a76afc6bf144b6e45a711c1b3ba,
     type: 3}
   transTargetTile: {fileID: 3046626806428066251, guid: 44cf80b51a96f8840a9950dc3d135d0c,
@@ -7891,7 +7892,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Transport Accumulator
+  m_Text: Transport Accumulat
 --- !u!222 &1257774053
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13906,6 +13907,84 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2142532542}
   m_CullTransparentMesh: 1
+--- !u!1001 &2267788723886783723
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 655948915299898741, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: enemyDataId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 813160001454790160, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 813160001454790160, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 813160001454790160, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 813160001454790160, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 813160001454790160, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 813160001454790160, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 813160001454790160, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 813160001454790160, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 813160001454790160, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 813160001454790160, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7622723637095140687, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_Name
+      value: GameManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 7622723637095140687, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 72464c2d4f4ff16458c7968f90f65463, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -13917,3 +13996,4 @@ SceneRoots:
   - {fileID: 1169929616}
   - {fileID: 21931850}
   - {fileID: 1760735919}
+  - {fileID: 2267788723886783723}
