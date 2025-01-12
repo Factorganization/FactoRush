@@ -35,6 +35,11 @@ public class UnitsManager : MonoBehaviour
     
     public void SpawnUnit(bool isAlly, TransportComponent transportComponent =  null, WeaponComponent weaponComponent = null, Unit cloneOf = null, float delay = 0)
     {
+        if (unitPrefab == null)
+        {
+            Debug.LogError("Unit prefab is not assigned in the inspector");
+            return;
+        }
         StartCoroutine(SpawnUnitCoroutine(isAlly, transportComponent, weaponComponent, cloneOf, delay));
     }
     
