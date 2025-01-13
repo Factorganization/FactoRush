@@ -33,7 +33,7 @@ namespace GameContent.GridManagement
 
                 foreach (var n in neighbours)
                 {
-                    if (n.IsBlocked || !n.IsSelected || closedList.Contains(n) || Mathf.Abs(currentTile.Index.y - n.Index.y) > 1 || Mathf.Abs(currentTile.Index.x - n.Index.x) > 1)
+                    if ((n.IsBlocked && n is not CenterStaticBuildingTile) || !n.IsSelected || closedList.Contains(n) || Mathf.Abs(currentTile.Index.y - n.Index.y) > 1 || Mathf.Abs(currentTile.Index.x - n.Index.x) > 1)
                         continue;
 
                     n.G = GetManhattanDistance(startTile, n);
@@ -71,7 +71,7 @@ namespace GameContent.GridManagement
 
                 foreach (var n in neighbours)
                 {
-                    if (n is CenterStaticBuildingTile or WeaponTargetTile or TransTargetTile or MineTile || n.IsBlocked || closedList.Contains(n) || Mathf.Abs(currentTile.Index.y - n.Index.y) > 1 || Mathf.Abs(currentTile.Index.x - n.Index.x) > 1)
+                    if (n is CenterStaticBuildingTile or WeaponTargetTile or TransTargetTile or MineTile or CenterStaticBuildingTile|| n.IsBlocked || closedList.Contains(n) || Mathf.Abs(currentTile.Index.y - n.Index.y) > 1 || Mathf.Abs(currentTile.Index.x - n.Index.x) > 1)
                         continue;
 
                     n.G = GetManhattanDistance(startTile, n);

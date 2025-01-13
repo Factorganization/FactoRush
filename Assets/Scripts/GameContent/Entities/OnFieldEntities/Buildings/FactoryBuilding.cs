@@ -38,7 +38,7 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
             
             if (TileRef.GroupRef.Count <= 0)
                 return;
-
+            
             if (_miningResources[MiningResourceType.Iron] < data.recipe.iron ||
                 _miningResources[MiningResourceType.Copper] < data.recipe.copper ||
                 _miningResources[MiningResourceType.Gold] < data.recipe.gold)
