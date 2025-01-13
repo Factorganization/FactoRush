@@ -1,0 +1,18 @@
+# Vous pouvez meme faire des commentaires genre ça c'est pas lu
+
+# Les sauts de lignes pose pas de problème mais évitez quand meme
+
+/2 0101,0201,0101,0201
+# Quand vous mettez un slash suivi d'un chiffre, c'est pour indiquer le nombre d'ennemi qui vont spawn parmis ceux qui suivent (ça fait au hasard)
+- 
+
+# un tiret ça fait une vague vide 
+
+0105,0605,0309
+# Ici ça va spawn les 3 
+-
+-
+0404
+0708,0506,0802
+-
+

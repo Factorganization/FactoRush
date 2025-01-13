@@ -1,25 +1,40 @@
-﻿namespace GameContent.Entities.GridEntities
+﻿using GameContent.Entities.UnmanagedEntities;
+using GameContent.GridManagement;
+using UnityEngine;
+
+namespace GameContent.Entities.GridEntities
 {
     /// <summary>
-    /// Even id key
+    /// used to type comparison
+    /// manage the update of the group (arbitrary choice)
     /// </summary>
-    public sealed class TransTargetTile : Tile
+    public sealed class TransTargetTile : UnitAssemblyTile
     {
-        #region properties
+        #region methodes
 
-        public override bool IsBlocked => CurrentBuildingRef is not null;
-
-        public override bool IsSelected
+        protected override void OnUpdate()
         {
-            get;
-            set;
+            base.OnUpdate();
+            
+            if (_spawnCounter <= Constants.UnitSpawnInterval)
+            {
+                _spawnCounter += Time.deltaTime;
+                return;
+            }
+
+            var w = GridManager.Manager.AssemblyTileGroups[AssemblyId].WeaponTile;
+            if (RefinedResources.Count <= 0 || w.RefinedResources.Count <= 0)
+                return;
+            
+            UnitsManager.Instance.SpawnUnit(true, RemoveResource() as TransportComponent, w.RemoveResource() as WeaponComponent);
+            _spawnCounter = 0;
         }
 
         #endregion
-
+        
         #region fields
 
-        //TODO queue
+        private float _spawnCounter;
 
         #endregion
     }

@@ -14,7 +14,7 @@ namespace GameContent.Entities.GridEntities
 
         public GridManager Grid { get; private set; }
 
-        public Building CurrentBuildingRef { get; set; }
+        public virtual Building CurrentBuildingRef { get; set; }
         
         public Vector2Int Index { get; private set; }
         

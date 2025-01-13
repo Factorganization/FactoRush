@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &813160001454790160
 Transform:
   m_ObjectHideFlags: 0
@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15d097d60d9cd1046aeafe7c49baf8fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unitPrefab: {fileID: 0}
 --- !u!114 &655948915299898741
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58,6 +59,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15b88c07c682de942bd36ff8362c480d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyDataId: 1
+  timeBetweenLines: 10
+  delayBetweenUnits: 0.5
 --- !u!114 &5243086204959658101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -70,6 +74,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c99d73dd70a34b14b615da3c1398e492, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  transportBase: {fileID: 11400000, guid: 41f7dd991066c8f4c822616af75f7b55, type: 2}
+  transportPropeller: {fileID: 11400000, guid: 9bf95d844bb1021469aa1f52567f2e79, type: 2}
+  transportThornmail: {fileID: 11400000, guid: 96bab05829b325b46af7913614aef39e, type: 2}
+  transportAccumulator: {fileID: 11400000, guid: 6d05a620ecb6b374680d94959589dc1b,
+    type: 2}
+  transportDrill: {fileID: 11400000, guid: d9e247b28633d984aac779d85d61e3bb, type: 2}
+  transportInsulatingWheels: {fileID: 11400000, guid: e46888cf674823e4b9e49be4b74b92ec,
+    type: 2}
+  transportSlider: {fileID: 11400000, guid: cf03f2e8430c2b3448013fb9f0583922, type: 2}
+  transportTwinBoots: {fileID: 11400000, guid: f7c2ce05b921d2c41a3c67a0c255ff65, type: 2}
   weaponBase: {fileID: 11400000, guid: 5ea97ef9467a08c4fa463492b689f2c5, type: 2}
   weaponArtillery: {fileID: 11400000, guid: 7fd26f136fd71ae4890a8c340c94c14c, type: 2}
   weaponC4: {fileID: 11400000, guid: de3a091dcaf9b524d9af50faca869c68, type: 2}
@@ -83,13 +97,3 @@ MonoBehaviour:
   weaponSymbioticRifle: {fileID: 11400000, guid: 0d4ed0877475cf44bb5e33b8f9c0e68c,
     type: 2}
   weaponWarhammer: {fileID: 11400000, guid: 31590d85d4f72674ebe4434828cab961, type: 2}
-  transportBase: {fileID: 11400000, guid: 41f7dd991066c8f4c822616af75f7b55, type: 2}
-  transportPropeller: {fileID: 11400000, guid: 9bf95d844bb1021469aa1f52567f2e79, type: 2}
-  transportThornmail: {fileID: 11400000, guid: 96bab05829b325b46af7913614aef39e, type: 2}
-  transportAccumulator: {fileID: 11400000, guid: 6d05a620ecb6b374680d94959589dc1b,
-    type: 2}
-  transportDrill: {fileID: 11400000, guid: d9e247b28633d984aac779d85d61e3bb, type: 2}
-  transportInsulatingWheels: {fileID: 11400000, guid: e46888cf674823e4b9e49be4b74b92ec,
-    type: 2}
-  transportSlider: {fileID: 11400000, guid: cf03f2e8430c2b3448013fb9f0583922, type: 2}
-  transportTwinBoots: {fileID: 11400000, guid: f7c2ce05b921d2c41a3c67a0c255ff65, type: 2}

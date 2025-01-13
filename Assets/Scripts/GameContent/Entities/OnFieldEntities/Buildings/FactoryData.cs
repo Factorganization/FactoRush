@@ -1,6 +1,5 @@
 ﻿using GameContent.Entities.UnmanagedEntities.Scriptables;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GameContent.Entities.OnFieldEntities.Buildings
 {

@@ -27,6 +27,8 @@ namespace GameContent.GridManagement
 
         public Dictionary<sbyte, ConveyorGroup> ConveyorGroups { get; private set; }
 
+        public Dictionary<sbyte, AssemblyTileGroup> AssemblyTileGroups { get; private set; }
+        
         public Dictionary<byte, FactoryBuilding> FactoryRefs => _factoryRefs;
         
         public Dictionary<Vector2Int, Tile> Grid { get; private set; }
@@ -56,6 +58,7 @@ namespace GameContent.GridManagement
             
             Grid = new Dictionary<Vector2Int, Tile>();
             StaticGroups = new Dictionary<byte, StaticTileGroup>();
+            AssemblyTileGroups = new Dictionary<sbyte, AssemblyTileGroup>();
             ConveyorGroups = new Dictionary<sbyte, ConveyorGroup>();
             _currentConveyorPath = new List<DynamicBuilding>();
             _factoryRefs = new Dictionary<byte, FactoryBuilding>();
@@ -128,16 +131,28 @@ namespace GameContent.GridManagement
                             mT.SetResource(miningResources[grid[i][j] % 20]); // B)
                             break;
                         
-                        case >= 10 when grid[i][j] % 2 == 0:
-                            var tTt = Instantiate(transTargetTile, transform);
-                            Grid.Add(tId, tTt);
-                            tTt.Added(this, tId, tPos, TileType.TransTarget);
-                            break;
-                        
-                        case >= 10 when grid[i][j] % 2 != 0:
-                            var wTt = Instantiate(weaponTargetTile, transform);
-                            Grid.Add(tId, wTt);
-                            wTt.Added(this, tId, tPos, TileType.WeaponTarget);
+                        case >= 10:
+                            var k = (sbyte)(grid[i][j] % 20);
+                            
+                            if (!AssemblyTileGroups.ContainsKey(k))
+                            {
+                                AssemblyTileGroups.Add(k, new AssemblyTileGroup(k));
+                                
+                                var tTt = Instantiate(transTargetTile, transform);
+                                Grid.Add(tId, tTt);
+                                AssemblyTileGroups[k].AddTile(tTt);
+                                tTt.Added(this, tId, tPos, TileType.TransTarget);
+                                tTt.InitAssemblyTile(k);
+                            }
+
+                            else
+                            {
+                                var wTt = Instantiate(weaponTargetTile, transform);
+                                Grid.Add(tId, wTt);
+                                AssemblyTileGroups[k].AddTile(wTt);
+                                wTt.Added(this, tId, tPos, TileType.WeaponTarget);
+                                wTt.InitAssemblyTile(k);
+                            }
                             break;
                         
                         case > 0:
@@ -367,12 +382,14 @@ namespace GameContent.GridManagement
             return false;
         }
         
-        public bool TryAddStaticBuildingAt(Vector2Int index, Vector3 pos, byte staticGroupId) // bool again
+        public bool TryAddStaticBuildingAt(Vector2Int index, Vector3 pos, byte staticGroupId, out StaticBuilding b) // bool again
         {
+            b = null;
+            
             if (!_addingStatic.Add(index))
                 return false;
             
-            var b = Instantiate(staticGenericBuild, Grid[index].ETransform);
+            b = Instantiate(staticGenericBuild, Grid[index].ETransform);
             _factoryRefs[staticGroupId] = b as FactoryBuilding;
             _toAddStatic.Add(index, b);
             b.TargetPosition = pos;

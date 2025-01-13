@@ -8,8 +8,8 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
     public sealed class FactoryBuilding : StaticBuilding
     {
         #region properties
-        
-        public List<AssemblyBuilding> AssemblyBuildingRef { get; set; }
+
+        public int UnitResourceType => data.partType;
 
         #endregion
         
@@ -18,8 +18,6 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         protected override void OnStart()
         {
             base.OnStart();
-            
-            AssemblyBuildingRef = new List<AssemblyBuilding>();
 
             _miningResources = new Dictionary<MiningResourceType, int>();
             for (var i = 0; i < Enum.GetValues(typeof(MiningResourceType)).Length; i++)
@@ -31,8 +29,6 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         protected override void OnUpdate()
         {
             base.OnUpdate();
-            
-            //Active
 
             if (_spawnCounter <= Constants.SpawnInterval)
             {
@@ -73,6 +69,10 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
             r.SetUnitComponent(data.component);
             TileRef.GroupRef[conveyorIndex].AddResource(r);
         }
+        
+        public void SetTargetIndex(int target) => _targetIndex = target;
+        
+        public void SetFactoryData(FactoryData fd) => data = fd;
         
         #endregion
         
