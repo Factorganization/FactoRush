@@ -37,6 +37,9 @@ namespace InputManagement
         {
             SetDeleteTimer();
             
+            if (EncyclopediaUI.Encyclopedia.IsOpen)
+                return;
+            
             if (Touch.activeTouches.Count <= 0)
                 return;
             
@@ -994,7 +997,7 @@ namespace InputManagement
         [SerializeField] private Camera isoCamera;
 
         [SerializeField] private LayerMask interactableMask;
-
+        
         private Card _currentSelectedCard;
         
         private FactoryData _currentFactoryData;

@@ -1,9 +1,14 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace GameContent.Entities.UnmanagedEntities
 {
     public class ComponentAtlas : MonoBehaviour
     {
+        public List<TransportComponent> Transports { get; private set; }
+        
+        public List<WeaponComponent> Weapons { get; private set; }
+        
         [Header("Transport Components")]
         [SerializeField] public TransportComponent transportBase;
         [SerializeField] public TransportComponent transportPropeller;
@@ -32,6 +37,32 @@ namespace GameContent.Entities.UnmanagedEntities
         private void Awake()
         {
             Instance = this;
+            
+            Transports = new List<TransportComponent>
+            {
+                transportBase,
+                transportPropeller,
+                transportThornmail,
+                transportAccumulator,
+                transportDrill,
+                transportInsulatingWheels,
+                transportSlider,
+                transportTwinBoots
+            };
+            Weapons = new List<WeaponComponent>
+            {
+                weaponBase,
+                weaponArtillery,
+                weaponC4,
+                weaponCanon,
+                weaponMinigun,
+                weaponRailgun,
+                weaponShield,
+                weaponSpear,
+                weaponSpinningBlade,
+                weaponSymbioticRifle,
+                weaponWarhammer
+            };
         }
     }
 }

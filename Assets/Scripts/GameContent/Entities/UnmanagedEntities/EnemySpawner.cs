@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using GameContent.Entities.UnmanagedEntities;
+using GameContent.InGameUI;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class EnemySpawner : MonoBehaviour
     private ComponentAtlas componentAtlas; // Référence à l'atlas des composants
     private Queue<string> linesQueue; // File d'attente pour stocker les lignes du fichier
     private System.Random random; // Générateur de nombres aléatoires
-
+    
     #endregion
 
     #region Unity Methods
@@ -59,6 +60,7 @@ public class EnemySpawner : MonoBehaviour
                     linesQueue.Enqueue(trimmedLine);
                 }
             }
+            EncyclopediaUI.Encyclopedia.InitEnemyEncyclopedia(linesQueue);
         }
         else
         {

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - AllyFactory
   - EnnemyFactory
+  - SecondaryCam
   layers:
   - Default
   - TransparentFX
