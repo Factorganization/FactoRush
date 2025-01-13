@@ -67,7 +67,8 @@ namespace GameContent.Entities.UnmanagedEntities
         public bool canDash = false;
         private bool hasDash = false;
         public float thornmailRange = 3f;
-
+        public Unit lastTarget;
+        
         #endregion
 
         #region Unity Lifecycle

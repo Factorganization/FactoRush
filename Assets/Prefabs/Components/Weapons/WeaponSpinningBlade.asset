@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: WeaponSpinningBlade
   m_EditorClassIdentifier: 
   Graph: {fileID: 919132149155446097, guid: 5e12db87c457ea141aad7815ab5f10df, type: 3}
-  Damage: 10
+  Damage: 20
   AttackSpeed: 1
-  Range: 5
+  Range: 1
   targetType: 3
   isAPriorityTarget: 0

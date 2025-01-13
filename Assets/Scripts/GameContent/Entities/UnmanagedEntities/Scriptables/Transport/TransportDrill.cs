@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace GameContent.Entities.UnmanagedEntities.Scriptables.Transport
@@ -25,6 +26,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Transport
                     {
                         // Si l'unité est volante on la skip
                         if (enemyUnit.isAirUnit) continue;
+                        if (enemyUnit.ETransform.position.x > 53) continue; // On skip les unités qui sont après les 2 tiers du terrain
                         
                         float distance = Vector3.Distance(unit.transform.position, enemyUnit.transform.position);
                         if (distance < closestDistance)
@@ -43,6 +45,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Transport
                     {
                         // Si l'unité est volante on la skip
                         if (allyUnit.isAirUnit) continue;
+                        if (allyUnit.ETransform.position.x < 46) continue; // On skip les unités qui sont après les 2 tiers du terrain
                         
                         float distance = Vector3.Distance(unit.transform.position, allyUnit.transform.position);
                         if (distance < closestDistance)

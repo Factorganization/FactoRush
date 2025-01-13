@@ -26,24 +26,31 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
                 }
             }
 
-            // Si aucune cible prioritaire n'est trouvée, chercher une cible 
-            if (priorityTarget == null)
-            {
-               priorityTarget = target;
-            }
-
-            // Appliquer les dégâts à la cible préférée et aux autres unités du même type dans la portée
-            if (priorityTarget != null)
+            if (priorityTarget is null) // if no priority target is found, target the last target
             {
                 foreach (var unit in allUnitsInRange)
                 {
-                    Debug.Log("unit.isAirUnit: " + unit.isAirUnit + " priorityTarget.isAirUnit: " + priorityTarget.isAirUnit);
-                    if (unit.isAirUnit == priorityTarget.isAirUnit)
+                    if (unit == attacker.lastTarget)
                     {
-                        unit.ApplyDamage(attacker.damage);
+                        priorityTarget = unit;
+                        break;
                     }
                 }
             }
+            
+            priorityTarget ??= target; // if no priority target is found, target the default target
+            
+
+            // Appliquer les dégâts à la cible préférée et aux autres unités du même type dans la portée
+            
+            foreach (var unit in allUnitsInRange)
+            {
+                if (unit.isAirUnit == priorityTarget.isAirUnit)
+                {
+                    unit.ApplyDamage(attacker.damage);
+                }
+            }
+            
         }
         
         #endregion
