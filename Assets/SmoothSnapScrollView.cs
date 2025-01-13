@@ -1,58 +1,130 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem.EnhancedTouch;
+using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 public class SmoothSnapScrollView : MonoBehaviour
 {
     public ScrollRect scrollRect; // Référence au ScrollRect
-    public float snapSpeed = 10f; // Vitesse de la transition vers la position cible
-    public RectTransform content; // Le RectTransform du contenu
-    public int numberOfItems = 5; // Nombre d'éléments à afficher
-    private float[] snapPoints; // Positions des points de *snap*
-    private float targetNormalizedPosition; // Position cible
-    private bool isSnapping; // Indique si une transition est en cours
+    public float snapSpeed = 10f; // Vitesse de la transition
+    public float threshold = 0.2f; // Seuil pour changer de panneau
+    private int currentPanel = 1; // Index du panneau actuel
+    private bool isTouching = false; // Si l'utilisateur touche l'écran
+    private bool isSnapping = false; // Si une transition est en cours
 
-    private void Start()
+    private readonly float[] panelPositions = { 0f, 0.5f, 1f }; // Positions des panneaux (0, 1, 2)
+    private float startTouchPosition; // Position de départ du swipe
+    private float endTouchPosition; // Position de fin du swipe
+
+    private void Awake()
     {
-        // Calculer les positions des points de *snap* en fonction du nombre d'éléments
-        snapPoints = new float[numberOfItems];
-        float stepSize = 1f / (numberOfItems - 1); // Espace entre les positions normalisées
-        for (int i = 0; i < numberOfItems; i++)
-        {
-            snapPoints[i] = i * stepSize;
-        }
+        EnhancedTouchSupport.Enable();
     }
 
     private void Update()
     {
+        HandleTouchInput();
+
+        // Lancer le snapping si l'utilisateur ne touche pas l'écran et qu'une transition est nécessaire
+        if (!isTouching && !isSnapping)
+        {
+            SnapToClosestPanel();
+        }
+
+        // Si un snapping est en cours, continue la transition
         if (isSnapping)
         {
-            // Transition fluide vers la position cible
-            scrollRect.horizontalNormalizedPosition = Mathf.Lerp(scrollRect.horizontalNormalizedPosition, targetNormalizedPosition, snapSpeed * Time.deltaTime);
+            SmoothSnapToTarget();
+        }
+    }
 
-            // Arrêter la transition une fois proche de la cible
-            if (Mathf.Abs(scrollRect.horizontalNormalizedPosition - targetNormalizedPosition) < 0.001f)
+    private void HandleTouchInput()
+    {
+        // Vérifier s'il y a des touches actives
+        if (Touch.activeTouches.Count > 0)
+        {
+            isTouching = true;
+            isSnapping = false; // Arrêter le snapping pendant que l'utilisateur interagit
+
+            // Détecter le début et la fin du swipe
+            var touch = Touch.activeTouches[0];
+            if (touch.phase == UnityEngine.InputSystem.TouchPhase.Began)
             {
-                scrollRect.horizontalNormalizedPosition = targetNormalizedPosition;
-                isSnapping = false;
+                startTouchPosition = touch.screenPosition.x / Screen.width;
+            }
+            else if (touch.phase == UnityEngine.InputSystem.TouchPhase.Ended)
+            {
+                endTouchPosition = touch.screenPosition.x / Screen.width;
+                EvaluateSwipe(); // Évaluer le swipe pour décider si on change de panneau
+                isTouching = false;
             }
         }
     }
 
-    public void OnEndDrag()
+    private void EvaluateSwipe()
     {
-        // Trouver le point de *snap* le plus proche
-        float closestDistance = Mathf.Infinity;
-        for (int i = 0; i < snapPoints.Length; i++)
+        float swipeDistance = endTouchPosition - startTouchPosition;
+
+        if (Mathf.Abs(swipeDistance) > threshold)
         {
-            float distance = Mathf.Abs(scrollRect.horizontalNormalizedPosition - snapPoints[i]);
-            if (distance < closestDistance)
+            if (swipeDistance > 0 && currentPanel > 0)
             {
-                closestDistance = distance;
-                targetNormalizedPosition = snapPoints[i];
+                currentPanel--; // Aller au panneau précédent
+            }
+            else if (swipeDistance < 0 && currentPanel < panelPositions.Length - 1)
+            {
+                currentPanel++; // Aller au panneau suivant
             }
         }
 
-        // Lancer la transition vers le point de *snap*
+        // Activer le snapping pour aligner avec le panneau cible
         isSnapping = true;
+    }
+
+    private void SnapToClosestPanel()
+    {
+        float currentPosition = scrollRect.horizontalNormalizedPosition;
+        int closestPanel = GetClosestPanelIndex(currentPosition);
+
+        // Si aucun swipe n'a été détecté, rester sur le panneau actuel
+        currentPanel = closestPanel;
+        isSnapping = true;
+    }
+
+    private int GetClosestPanelIndex(float currentPosition)
+    {
+        int closestIndex = 0;
+        float minDistance = Mathf.Abs(currentPosition - panelPositions[0]);
+
+        for (int i = 1; i < panelPositions.Length; i++)
+        {
+            float distance = Mathf.Abs(currentPosition - panelPositions[i]);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestIndex = i;
+            }
+        }
+
+        return closestIndex;
+    }
+
+    private void SmoothSnapToTarget()
+    {
+        float targetPosition = panelPositions[currentPanel];
+
+        // Effectuer une interpolation linéaire vers la position cible
+        scrollRect.horizontalNormalizedPosition = Mathf.Lerp(
+            scrollRect.horizontalNormalizedPosition,
+            targetPosition,
+            snapSpeed * Time.deltaTime
+        );
+
+        // Vérifier si la position cible est atteinte (précision arbitraire)
+        if (Mathf.Abs(scrollRect.horizontalNormalizedPosition - targetPosition) < 0.001f)
+        {
+            scrollRect.horizontalNormalizedPosition = targetPosition;
+            isSnapping = false;
+        }
     }
 }
