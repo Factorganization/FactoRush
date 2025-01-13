@@ -382,12 +382,14 @@ namespace GameContent.GridManagement
             return false;
         }
         
-        public bool TryAddStaticBuildingAt(Vector2Int index, Vector3 pos, byte staticGroupId) // bool again
+        public bool TryAddStaticBuildingAt(Vector2Int index, Vector3 pos, byte staticGroupId, out StaticBuilding b) // bool again
         {
+            b = null;
+            
             if (!_addingStatic.Add(index))
                 return false;
             
-            var b = Instantiate(staticGenericBuild, Grid[index].ETransform);
+            b = Instantiate(staticGenericBuild, Grid[index].ETransform);
             _factoryRefs[staticGroupId] = b as FactoryBuilding;
             _toAddStatic.Add(index, b);
             b.TargetPosition = pos;

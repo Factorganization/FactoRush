@@ -20,19 +20,17 @@ namespace GameContent.InGameUI
         {
             base.OnStart();
             _originPos = Position;
-            _offsetPos = _originPos + new Vector3(0, posOffset, posOffset);
+            _offsetPos = _originPos + new Vector3(0, posOffset.x, posOffset.y);
         }
 
         protected override void OnUpdate()
         {
-            base.OnUpdate();
-
             Position = _selected switch
             {
-                true when Vector3.Distance(Position, _offsetPos) > 0.1f
-                    => Vector3.MoveTowards(Position, _offsetPos, Time.deltaTime * 10f),
-                false when Vector3.Distance(Position, _originPos) > 0.1f 
-                    => Vector3.MoveTowards(Position, _originPos, Time.deltaTime * 10f),
+                true when Vector3.Distance(Position, _offsetPos) > 0.01f
+                    => Vector3.MoveTowards(Position, _offsetPos, Time.deltaTime * 20f),
+                false when Vector3.Distance(Position, _originPos) > 0.01f 
+                    => Vector3.MoveTowards(Position, _originPos, Time.deltaTime * 20f),
                 _ => Position
             };
         }
@@ -48,7 +46,7 @@ namespace GameContent.InGameUI
 
         [SerializeField] private FactoryData factoryData;
         
-        [SerializeField] private float posOffset;
+        [SerializeField] private Vector2 posOffset;
 
         private Vector3 _originPos;
         

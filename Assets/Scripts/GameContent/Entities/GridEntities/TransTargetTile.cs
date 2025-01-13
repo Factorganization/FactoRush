@@ -16,7 +16,7 @@ namespace GameContent.Entities.GridEntities
         {
             base.OnUpdate();
             
-            if (_spawnCounter <= Constants.SpawnInterval)
+            if (_spawnCounter <= Constants.UnitSpawnInterval)
             {
                 _spawnCounter += Time.deltaTime;
                 return;

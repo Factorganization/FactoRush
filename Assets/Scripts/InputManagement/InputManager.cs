@@ -96,7 +96,16 @@ namespace InputManagement
 
             if (hit.collider.TryGetComponent(out Card card))
             {
+                _currentSelectedCard?.SetSelected(false);
+                if (_currentSelectedCard == card)
+                {
+                    _currentSelectedCard = null;
+                    _currentFactoryData = null;
+                    return;
+                }
+                
                 card.SetSelected(true);
+                _currentSelectedCard = card;
                 _currentFactoryData = card.Data;
                 return;
             }
@@ -113,7 +122,6 @@ namespace InputManagement
             {
                 case HitGridType.SideStaticHit:
                     var sst = t as StaticBuildingTile;
-                    //checker
                     _currentStaticGroup = sst!.StaticGroup;
                     GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     break;
@@ -121,6 +129,17 @@ namespace InputManagement
                 case HitGridType.CenterStaticHit:
                     var cst = t as StaticBuildingTile;
                     _currentStaticGroup = cst!.StaticGroup;
+
+                    if (cst.CurrentBuildingRef is null && _currentSelectedCard is not null && _currentFactoryData is not null)
+                    {
+                        GridManager.Manager.TryAddStaticBuildingAt(_startingIndex, cst.Position + Vector3.up / 2, _currentStaticGroup, out var b);
+                        if (b is FactoryBuilding fb)
+                        {
+                            fb.SetFactoryData(_currentFactoryData);
+                            _currentSelectedCard.WasPlaced = true;
+                        }
+                        break;
+                    }
                     
                     if (cst!.CurrentBuildingRef is not null)
                     {
@@ -177,6 +196,10 @@ namespace InputManagement
                 default:
                     throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
             }
+            
+            _currentSelectedCard?.SetSelected(false);
+            _currentFactoryData = null;
+            _currentSelectedCard = null;
         }
 
         private void HandleTouchMoved(Ray ray)
@@ -818,18 +841,6 @@ namespace InputManagement
             switch (t.Type)
             {
                 case TileType.CenterStaticTile:
-                    if (t is not StaticBuildingTile st)
-                        break;
-                    
-                    if(st.CurrentBuildingRef is not null)
-                        break;
-                    
-                    if (st.StaticGroup == _currentStaticGroup)
-                        GridManager.Manager.TryAddStaticBuildingAt(st.Index, st.Position + Vector3.up / 2, _currentStaticGroup);
-                    //TODO open build selection panel
-                    
-                    break;
-                
                 case TileType.DynamicTile:
                 case TileType.SideStaticTile:
                 case TileType.Default:
