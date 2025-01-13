@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
@@ -12,20 +14,31 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             Unit priorityTarget = null;
             foreach (var unit in allUnitsInRange)
             {
-                if (unit.weaponComponent != null && unit.weaponComponent.isAPriorityTarget)
+                if (unit.weaponComponent && unit.weaponComponent.isAPriorityTarget)
                 {
                     priorityTarget = unit;
                     break;
                 }
             }
-            if (priorityTarget != null)
+            
+            
+            
+            if (priorityTarget is null) // if no priority target is found, target the last target
             {
-                priorityTarget.ApplyDamage(attacker.damage);
+                foreach (var unit in allUnitsInRange)
+                {
+                    if (unit == attacker.lastTarget)
+                    {
+                        priorityTarget = unit;
+                        break;
+                    }
+                }
             }
-            else
-            {
-                target.ApplyDamage(attacker.damage);
-            }
+            
+            priorityTarget ??= target; // if no priority target is found, target the default target
+            
+            priorityTarget.ApplyDamage(attacker.damage);
+            
         }
     }
     

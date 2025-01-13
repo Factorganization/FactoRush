@@ -223,10 +223,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.4816688
-  m_Height: 1.5537195
+  m_Radius: 0.38405344
+  m_Height: 1.9123005
   m_Direction: 1
-  m_Center: {x: 1.1016392e-15, y: 1.0701191, z: 0.78552735}
+  m_Center: {x: 2.1420413e-15, y: 0.89082927, z: 0.6879116}
 --- !u!114 &1535771559338506703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,6 +257,7 @@ MonoBehaviour:
   isAlly: 0
   velocity: {x: 0, y: 0, z: 0}
   Range: 0
+  targetType: 0
   isExplosive: 0
   attackSpeed: 0
   moveSpeed: 0
@@ -264,6 +265,8 @@ MonoBehaviour:
   ExplosiveRange: 0
   alreadyCloned: 0
   canDash: 0
+  thornmailRange: 3
+  lastTarget: {fileID: 0}
 --- !u!1 &2943948156272146429
 GameObject:
   m_ObjectHideFlags: 0
