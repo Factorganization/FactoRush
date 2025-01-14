@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using GameContent.CraftResources;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.GridManagement;
-using TMPro;
 using UnityEngine;
 
 namespace GameContent.Entities.GridEntities

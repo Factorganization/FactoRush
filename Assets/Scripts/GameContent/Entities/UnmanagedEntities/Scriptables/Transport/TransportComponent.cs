@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using GameContent.Entities.UnmanagedEntities.Scriptables;
-using NUnit.Framework;
 using UnityEngine;
 
 namespace GameContent.Entities.UnmanagedEntities

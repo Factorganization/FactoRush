@@ -1,7 +1,6 @@
 ﻿using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.GridManagement;
-using UnityEngine;
 
 namespace GameContent.CraftResources
 {

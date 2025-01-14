@@ -34,6 +34,8 @@ namespace GameContent.InGameUI
             {
                 i[j] = int.Parse(cards[(2 * j)..(2 * j + 2)]);
             }
+            Debug.Log("Card parser" + cards);
+            Debug.Log("Game Manager deck " + GameManager.Instance.deck);
             return i;
         }
         

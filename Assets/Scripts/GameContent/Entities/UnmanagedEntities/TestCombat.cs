@@ -1,4 +1,3 @@
-using System;
 using GameContent.Entities.UnmanagedEntities;
 using UnityEngine;
 using UnityEngine.UI;
