@@ -35,6 +35,8 @@ namespace GameContent.GridManagement
         
         public Dictionary<byte, StaticTileGroup> StaticGroups { get; private set; }
 
+        public Transform[] DynamicBuildingsGraphs => dynamicBuildingGraphs;
+        
         #endregion
         
         #region methodes
@@ -138,20 +140,21 @@ namespace GameContent.GridManagement
                             {
                                 AssemblyTileGroups.Add(k, new AssemblyTileGroup(k));
                                 
-                                var tTt = Instantiate(transTargetTile, transform);
-                                Grid.Add(tId, tTt);
-                                AssemblyTileGroups[k].AddTile(tTt);
-                                tTt.Added(this, tId, tPos, TileType.TransTarget);
-                                tTt.InitAssemblyTile(k);
-                            }
-
-                            else
-                            {
                                 var wTt = Instantiate(weaponTargetTile, transform);
                                 Grid.Add(tId, wTt);
                                 AssemblyTileGroups[k].AddTile(wTt);
                                 wTt.Added(this, tId, tPos, TileType.WeaponTarget);
                                 wTt.InitAssemblyTile(k);
+                            }
+
+                            else
+                            {
+                                var tTt = Instantiate(transTargetTile, transform);
+                                Grid.Add(tId, tTt);
+                                AssemblyTileGroups[k].AddTile(tTt);
+                                tTt.Added(this, tId, tPos, TileType.TransTarget);
+                                tTt.InitAssemblyTile(k);
+                                tTt.SetWeaponRef(AssemblyTileGroups[k].WeaponTile);
                             }
                             break;
                         
@@ -163,12 +166,12 @@ namespace GameContent.GridManagement
                             }
                             
                             var c = StaticGroups[grid[i][j]].Count + 1;
-                            var sBt = Instantiate(c == 3 ? centerStaticBuildTile : sideStaticBuildTile, transform);
+                            var sBt = Instantiate( centerStaticBuildTile, transform);
                             
                             Grid.Add(tId, sBt);
                             StaticGroups[grid[i][j]].AddTile(sBt);
                             
-                            sBt.Added(this, tId, tPos, StaticBuildingTile.GetStaticType(c));
+                            sBt.Added(this, tId, tPos, TileType.CenterStaticTile);
                             sBt.InitStaticTile(grid[i][j], StaticBuildingTile.GetStaticRotation(c));
                             break;
                     }
@@ -300,14 +303,40 @@ namespace GameContent.GridManagement
                     break;
                 
                 case false:
+                    _addingDynamic.Remove(index);
                     _currentPath.Remove(Grid[index]);
                     break;
             }
         }
+
+        public void TryCorrectPath(Vector2Int from, Vector2Int to)
+        {
+            _currentPath = PathFinder.FindPath(Grid[from], Grid[to]);
+            foreach (var i in _addingDynamic)
+            {
+                if (_currentPath.Contains(Grid[i]))
+                    continue;
+                
+                Grid[i].IsSelected = false;
+                _pathExceed.Add(i);
+            }
+            
+            if (_pathExceed.Count <= 0)
+                return;
+            
+            foreach (var i in _pathExceed)
+            {
+                _addingDynamic.Remove(i);
+            }
+            
+            _lastSelectedTile = _currentPath[^2];
+            
+            _pathExceed.Clear();
+        }
         
         public bool TryAddDynamicBuildingAt(Vector2Int from, Vector2Int previous, Vector2Int index) // yes. bool.
         {
-            if ((IsSpecTile(Grid[index]) && index != from) || Grid[index].IsBlocked)
+            if ((IsSpecTile(Grid[index]) && index != from) || (Grid[index].IsBlocked && Grid[index] is not CenterStaticBuildingTile))
                 return false;
             
             if (_lastSelectedTile is not null && Vector2Int.Distance(index, _lastSelectedTile.Index) > 1.1f)
@@ -480,8 +509,23 @@ namespace GameContent.GridManagement
 
         private void RemoveBuildingAt(Vector2Int index, Building building)
         {
-            Grid[index].CurrentBuildingRef = null;
-            Destroy(building.gameObject);
+            switch (Grid[index])
+            {
+                case CenterStaticBuildingTile when building is FactoryBuilding:
+                    Destroy(building.gameObject);
+                    Grid[index].CurrentBuildingRef = null;
+                    break;
+                
+                case CenterStaticBuildingTile when building is DynamicBuilding:
+                    Destroy(building.gameObject);
+                    break;
+                
+                default:
+                    Destroy(building.gameObject);
+                    Grid[index].CurrentBuildingRef = null;
+                    break;
+                
+            }
         }
 
         #endregion
@@ -577,6 +621,8 @@ namespace GameContent.GridManagement
         [SerializeField] private TransTargetTile transTargetTile;
 
         [SerializeField] private DynamicBuilding dynamicGenericBuild;
+        
+        [SerializeField] private Transform[] dynamicBuildingGraphs;
         
         [SerializeField] private StaticBuilding staticGenericBuild;
         

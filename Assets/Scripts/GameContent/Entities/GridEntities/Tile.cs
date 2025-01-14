@@ -57,7 +57,7 @@ namespace GameContent.Entities.GridEntities
             debugIndex.text = $"<size=1>{Type}</size> \n <size=3>({Index.x},{Index.y})</size>";
 #endif
         }
-
+        
         public virtual void AddConveyorGroup(ConveyorGroup conveyorGroup)
         {
             GroupRef.Add(conveyorGroup);

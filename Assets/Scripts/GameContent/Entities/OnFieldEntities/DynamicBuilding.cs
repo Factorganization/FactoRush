@@ -58,7 +58,7 @@ namespace GameContent.Entities.OnFieldEntities
         
         [SerializeField] private TMP_Text conveyorGroupId;
 
-        private HashSet<sbyte> _removing;
+        private HashSet<sbyte> _removing = new();
 
         #endregion
     }
