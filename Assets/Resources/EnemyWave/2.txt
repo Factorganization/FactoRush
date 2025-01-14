@@ -1,4 +1,4 @@
-T=7.5
+T=7,5
 
 #Niveau 1, Introduction Systèmes du Jeu
 
