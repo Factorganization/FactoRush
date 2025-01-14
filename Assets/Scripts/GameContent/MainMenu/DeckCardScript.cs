@@ -9,7 +9,7 @@ namespace GameContent.MainMenu
         [SerializeField] public DeckCardScriptable deckCardScriptable;
         
         
-        private SpriteRenderer spriteRenderer;
+        private Image spriteRenderer;
         private Button button;
 
         private void Awake()
@@ -17,14 +17,15 @@ namespace GameContent.MainMenu
             button = GetComponent<Button>();
             button.onClick.AddListener(() =>
             {
-                deckCardScriptable.isInDeck = !deckCardScriptable.isInDeck;
+                OnButtonPressed();
             });
         }
 
         private void Start()
         {
-            spriteRenderer = GetComponent<SpriteRenderer>();
+            spriteRenderer = GetComponent<Image>();
             spriteRenderer.sprite = deckCardScriptable.cardImage;
+            
         }
 
         // Grey out the card if it is in the deck
@@ -32,18 +33,20 @@ namespace GameContent.MainMenu
         {
             if (deckCardScriptable.isInDeck)
             {
-                GetComponent<SpriteRenderer>().color = Color.grey;
+                spriteRenderer.color = Color.grey;
             }
             else
             {
-                GetComponent<SpriteRenderer>().color = Color.white;
+                spriteRenderer.color = Color.white;
             }
         }
         
         private void OnButtonPressed()
         {
-            deckCardScriptable.isInDeck = !deckCardScriptable.isInDeck;
-            
+            if (DeckManager.Instance.addCard(this))
+            {
+                deckCardScriptable.isInDeck = !deckCardScriptable.isInDeck;
+            }
         }
         
         
