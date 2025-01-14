@@ -1,5 +1,4 @@
-﻿using GameContent.GridManagement;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace GameContent.InGameUI
 {
@@ -9,9 +8,6 @@ namespace GameContent.InGameUI
 
         public void SetStartButton()
         {
-            if (GridManager.Manager.CurrentLockMode is not GridLockMode.Unlocked)
-                return;
-
             GameManager.Instance.CanStart = true;
         }
 
