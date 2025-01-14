@@ -63,18 +63,18 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(3);
         victoryText.gameObject.SetActive(false);
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("MainScene");
     }
     private void DoInitStart()
     {
         // if CurrentScene is MainMenu
-        if (SceneManager.GetActiveScene().name == "MainMenu")
+        if (SceneManager.GetActiveScene().name == "MainScene")
         {
             enemySpawner.enabled = false;
         }
         
         // if CurrentScene is Game
-        if (SceneManager.GetActiveScene().name == "Game")
+        if (SceneManager.GetActiveScene().name == "ClemScene")
         {
             if (enemySpawner.enabled) return;
             enemySpawner.enabled = true;
@@ -85,11 +85,11 @@ public class GameManager : MonoBehaviour
     {
         if (level == 1)
         {
-            deck = "0404141400";
+            deck = "0404141414";
         }
         if (level == 2)
         {
-            deck = "0414090714";
+            deck = "0414090700";
         }
         enemySpawner.enemyDataId = level.ToString();
         LevelToLoad = level.ToString();
