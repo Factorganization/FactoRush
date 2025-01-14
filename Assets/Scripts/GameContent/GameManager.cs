@@ -11,6 +11,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private EnemySpawner enemySpawner;
 
     public string deck = "0102030412";
+
+    public string LevelToLoad;
+    
+    public bool CanStart { get; set; }
     
     #endregion
     
@@ -27,6 +31,7 @@ public class GameManager : MonoBehaviour
     {
         DontDestroyOnLoad(this);
         DoInitStart();
+        CanStart = false;
     }
     
     private void Update()
@@ -54,7 +59,16 @@ public class GameManager : MonoBehaviour
     
     public void Play(int level)
     {
+        if (level == 1)
+        {
+            deck = "0404141400";
+        }
+        if (level == 2)
+        {
+            deck = "0414090714";
+        }
         enemySpawner.enemyDataId = level.ToString();
+        LevelToLoad = level.ToString();
         SceneManager.LoadScene("ClemScene");
     }
     

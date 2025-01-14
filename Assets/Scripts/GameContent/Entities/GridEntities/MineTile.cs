@@ -1,6 +1,8 @@
-﻿using GameContent.CraftResources;
+﻿using System;
+using GameContent.CraftResources;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.GridManagement;
+using Mono.Cecil;
 using UnityEngine;
 
 namespace GameContent.Entities.GridEntities
@@ -46,7 +48,7 @@ namespace GameContent.Entities.GridEntities
         {
             base.OnUpdate();
             
-            if (!Active)
+            if (!Active || !GameManager.Instance.CanStart)
                 return;
 
             if (_spawnCounter <= Constants.SpawnInterval)
@@ -68,7 +70,26 @@ namespace GameContent.Entities.GridEntities
             _targetIndex = (_targetIndex + 1) % GroupRef.Count;
         }
         
-        public void SetResource(MiningResource resource) => _miningResource = resource;
+        public void SetResource(MiningResource resource)
+        { 
+            _miningResource = resource;
+            switch (_miningResource.resourceType)
+            {
+                case MiningResourceType.Iron:
+                    graphs[0].SetActive(true);
+                    break;
+                
+                case MiningResourceType.Copper:
+                    graphs[1].SetActive(true);
+                    break;
+                
+                case MiningResourceType.Gold:
+                    graphs[2].SetActive(true);
+                    break;
+                case MiningResourceType.Diamond:
+                    break;
+            }
+        }
         
         public override void RemoveConveyorGroup(ConveyorGroup conveyorGroup)
         {
@@ -87,6 +108,8 @@ namespace GameContent.Entities.GridEntities
         
         #region fields
 
+        [SerializeField] private GameObject[] graphs;
+        
         private MiningResource _miningResource;
 
         private float _spawnCounter;

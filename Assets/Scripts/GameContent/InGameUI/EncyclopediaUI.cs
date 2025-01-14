@@ -22,11 +22,6 @@ namespace GameContent.InGameUI
             _transportIds = new HashSet<int>();
             _weaponIds = new HashSet<int>();
         }
-
-        private void Start()
-        {
-            InitPlayerEncyclopedia();
-        }
         
         public void SetEncyclopedia()
         {
@@ -46,7 +41,7 @@ namespace GameContent.InGameUI
             }
         }
 
-        public void InitPlayerEncyclopedia()
+        public void InitPlayerEncyclopedia(CardAtlas atlas, int[] indexes)
         {
             
         }
@@ -124,7 +119,7 @@ namespace GameContent.InGameUI
         [SerializeField] private GameObject weaponCardPanelUI;
         
         [SerializeField] private GameObject transportCardPanelUI;
-            
+        
         private HashSet<int> _transportIds;
         
         private HashSet<int> _weaponIds;
