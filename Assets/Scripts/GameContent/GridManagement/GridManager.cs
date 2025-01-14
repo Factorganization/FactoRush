@@ -34,8 +34,6 @@ namespace GameContent.GridManagement
         public Dictionary<Vector2Int, Tile> Grid { get; private set; }
         
         public Dictionary<byte, StaticTileGroup> StaticGroups { get; private set; }
-
-        public Transform[] DynamicBuildingsGraphs => dynamicBuildingGraphs;
         
         #endregion
         
@@ -622,8 +620,6 @@ namespace GameContent.GridManagement
         [SerializeField] private TransTargetTile transTargetTile;
 
         [SerializeField] private DynamicBuilding dynamicGenericBuild;
-        
-        [SerializeField] private Transform[] dynamicBuildingGraphs;
         
         [SerializeField] private StaticBuilding staticGenericBuild;
         

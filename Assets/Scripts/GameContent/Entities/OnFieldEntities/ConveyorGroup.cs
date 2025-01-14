@@ -206,21 +206,36 @@ namespace GameContent.Entities.OnFieldEntities
         
         private void GraphInit()
         {
-            for (var i = 0; i < Count - 1; i++)
+            for (var i = 1; i < Count - 1; i++)
             {
+                var incident = this[i].TileRef.Index - this[i - 1].TileRef.Index;
+                var next = this[i + 1].TileRef.Index - this[i].TileRef.Index;
+
+                if (Mathf.Approximately(Vector2.SignedAngle(incident, next), 90))
+                    this[i].SetGraphId(1);
+                
+                else if(Mathf.Approximately(Vector2.SignedAngle(incident, next), 0))
+                    this[i].SetGraphId(0);
+                
+                else if(Mathf.Approximately(Vector2.SignedAngle(incident, next), -90))
+                    this[i].SetGraphId(2);
+                
                 var r = DynamicBuilding.GetRotation(this[i + 1].TileRef.Index - this[i].TileRef.Index);
                 this[i].SetGraph(this[i].Position, Quaternion.Euler(0, r, 0));
             }
             
-            this[0].gameObject.SetActive(false);
             this[Count - 1].gameObject.SetActive(false);
+            if (this[0].TileRef is not DynamicBuildingTile)
+                this[0].gameObject.SetActive(false);
+            
+            
             
             if (this[Count - 1].TileRef is not CenterStaticBuildingTile t)
                 return;
 
-            var s = GridManager.Manager.StaticGroups[t.StaticGroup];
-            var r2 = DynamicBuilding.GetRotation(s[0].Index - this[Count - 1].TileRef.Index);
-            this[Count - 1].SetGraph(this[Count - 1].Position, Quaternion.Euler(0, r2, 0), false);
+            //var s = GridManager.Manager.StaticGroups[t.StaticGroup];
+            //var r2 = DynamicBuilding.GetRotation(s[0].Index - this[Count - 1].TileRef.Index);
+            //this[Count - 1].SetGraph(this[Count - 1].Position, Quaternion.Euler(0, r2, 0), false);
         }
         
         private bool CheckPathJump()
