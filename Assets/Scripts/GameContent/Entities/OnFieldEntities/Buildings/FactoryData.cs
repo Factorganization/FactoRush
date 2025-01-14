@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using GameContent.Entities.UnmanagedEntities.Scriptables;
+using UnityEngine;
 
 namespace GameContent.Entities.OnFieldEntities.Buildings
 {
@@ -9,7 +10,7 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         [Range(0, 1)]
         public int partType;
         
-        //public PartData partData;
+        public UnitComponent component;
         
         public Recipe recipe;
     }
@@ -17,22 +18,10 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
     [System.Serializable]
     public struct Recipe
     {
-        [Header("Wood")]
-        public int NecessaryMineResource1;
+        public int iron;
         
-        [Header("Cobble")]
-        public int NecessaryMineResource2;
+        public int copper;
         
-        [Header("Iron")]
-        public int NecessaryMineResource3;
-        
-        [Header("Gold")]
-        public int NecessaryMineResource4;
-
-        [Header("Diamond")]
-        public int NecessaryMineResource5;
-        
-        [Header("Netherite")]
-        public int NecessaryMineResource6;
+        public int gold;
     }
 }

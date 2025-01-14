@@ -37,6 +37,7 @@ namespace GameContent.Entities.OnFieldEntities
             {
                 ConveyorGroupIds.Remove(i);
             }
+            _removing.Clear();
         }
         
         public void AddConveyorGroupId(sbyte conveyorId) => ConveyorGroupIds.Add(conveyorId);
@@ -57,7 +58,7 @@ namespace GameContent.Entities.OnFieldEntities
         
         [SerializeField] private TMP_Text conveyorGroupId;
 
-        private HashSet<sbyte> _removing;
+        private HashSet<sbyte> _removing = new();
 
         #endregion
     }

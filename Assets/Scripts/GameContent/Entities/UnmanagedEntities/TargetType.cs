@@ -4,6 +4,7 @@
     {
             Ground,
             Air,
-            Both
+            Both,
+            TransportDependent
     }
 }

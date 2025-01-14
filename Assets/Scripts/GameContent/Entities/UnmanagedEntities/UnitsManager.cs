@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using GameContent.Entities.UnmanagedEntities;
 using UnityEngine;
@@ -10,7 +11,9 @@ public class UnitsManager : MonoBehaviour
     
     [SerializeField] public List<Unit> allyUnits;
     [SerializeField] public List<Unit> enemyUnits;
-    [SerializeField] private GameObject unitPrefab;
+    [SerializeField] private Unit unitPrefab;
+    [SerializeField] private WeaponComponent weaponComponentDefault;
+    [SerializeField] private TransportComponent transportComponentDefault;
     
     [Header("Factory")]
     [SerializeField] private AllyBase allyBase;
@@ -30,14 +33,35 @@ public class UnitsManager : MonoBehaviour
         InitialCheckup();
     }
     
-    public void SpawnUnit(bool isAlly, TransportComponent transportComponent =  null, WeaponComponent weaponComponent = null)
+    public void SpawnUnit(bool isAlly, TransportComponent transportComponent =  null, WeaponComponent weaponComponent = null, Unit cloneOf = null, float delay = 0)
     {
+        if (unitPrefab == null)
+        {
+            Debug.LogError("Unit prefab is not assigned in the inspector");
+            return;
+        }
+        StartCoroutine(SpawnUnitCoroutine(isAlly, transportComponent, weaponComponent, cloneOf, delay));
+    }
+    
+    private IEnumerator SpawnUnitCoroutine(bool isAlly, TransportComponent transportComponent = null, WeaponComponent weaponComponent = null, Unit cloneOf = null, float delay = 0)
+    {
+        yield return new WaitForSeconds(delay);
         // Instantiate the unit prefab and set its components
-        GameObject unit = Instantiate(unitPrefab, isAlly ? allyBase.spawnPoint.position : enemyBase.spawnPoint.position, isAlly ? allyBase.spawnPoint.rotation : enemyBase.spawnPoint.rotation);
-        Unit unitComponent = unit.GetComponent<Unit>();
+        var unitComponent = Instantiate(unitPrefab, isAlly ? allyBase.spawnPoint.position : enemyBase.spawnPoint.position, isAlly ? allyBase.spawnPoint.rotation : enemyBase.spawnPoint.rotation);
+        //Unit unitComponent = unit.GetComponent<Unit>();
         unitComponent.isAlly = isAlly;
+        // Set the default components if the parameters are null
+        if (transportComponent == null)
+        {
+            transportComponent = transportComponentDefault;
+        }
+        if (weaponComponent == null)
+        {
+            weaponComponent = weaponComponentDefault;
+        }
         unitComponent.transportComponent = transportComponent;
         unitComponent.weaponComponent = weaponComponent;
+        
         unitComponent.allyBase = allyBase;
         unitComponent.enemyBase = enemyBase;
         
@@ -49,6 +73,12 @@ public class UnitsManager : MonoBehaviour
         else
         {
             enemyUnits.Add(unitComponent);
+        }
+        
+        // Set the clone bool if Needed
+        if (cloneOf != null)
+        {
+            unitComponent.alreadyCloned = true;
         }
     }
 
@@ -66,7 +96,7 @@ public class UnitsManager : MonoBehaviour
         }
         if (unitPrefab == null)
         {
-            Debug.LogError("Unit prefab is not assigned in the inspector. Please assign it.");
+            Debug.LogError("Charles lit l'erreur stp");
         }
 
         if (allyBase != null && enemyBase != null) return;

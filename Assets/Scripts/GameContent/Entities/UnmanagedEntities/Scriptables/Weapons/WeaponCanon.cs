@@ -9,7 +9,6 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
         #region Unique Effects Handlers
         protected override void HandleUniqueEffect(Unit attacker, Unit target, List<Unit> allUnitsInRange)
         {
-            Unit preferredTarget = null;
             Unit priorityTarget = null;
             
             // Priorité aux cibles prioritaires
@@ -21,40 +20,39 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
                     break; // Trouve la première cible prioritaire dans la portée
                 }
             }
-            // Priorité aux cibles au sol
-            foreach (var unit in allUnitsInRange)
-            {
-                if (!unit.isAirUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
-                {
-                    preferredTarget = unit;
-                    break; // Trouve la première cible au sol dans la portée
-                }
-            }
-            
-            if (priorityTarget != null)
-            {
-                preferredTarget = priorityTarget;
-            }
 
-            // Si aucune cible au sol n'est trouvée, chercher une cible aérienne
-            if (preferredTarget == null)
+            if (priorityTarget is null)
             {
+                // Priorité aux cibles au sol
                 foreach (var unit in allUnitsInRange)
                 {
-                    if (unit.isAirUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
+                    if (!unit.isAirUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
                     {
-                        preferredTarget = unit;
-                        break; // Trouve la première cible aérienne dans la portée
+                        priorityTarget = unit;
+                        break; // Trouve la première cible au sol dans la portée
                     }
                 }
             }
+            
+            if (priorityTarget is null) // if no priority target is found, target the last target
+            {
+                foreach (var unit in allUnitsInRange)
+                {
+                    if (unit == attacker.lastTarget)
+                    {
+                        priorityTarget = unit;
+                        break;
+                    }
+                }
+            }
+            
+            priorityTarget ??= target; // if no priority target is found, target the default target
+
 
             // Appliquer les dégâts à la cible préférée
-            if (preferredTarget != null)
-            {
-                float damageMultiplier = !preferredTarget.isAirUnit ? 2f : 1f;
-                preferredTarget.ApplyDamage(Damage * damageMultiplier);
-            }
+            float damageMultiplier = !priorityTarget.isAirUnit ? 2f : 1f;
+            priorityTarget.ApplyDamage(attacker.damage * damageMultiplier);
+            
         }
         
         #endregion

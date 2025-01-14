@@ -6,6 +6,11 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
     [CreateAssetMenu(fileName = "WeaponRailgun", menuName = "Components/WeaponComponents/WeaponRailgun")]
     public sealed class WeaponRailgun : WeaponComponent
     {
+        
+        [Header("Unique Effect Parameters")]
+        public float EffectRange = 5f; // Range of the effect
+        
+        
         #region Unique Effects Handlers
         protected override void HandleUniqueEffect(Unit attacker, Unit target, List<Unit> allUnitsInRange)
         {
@@ -21,30 +26,31 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
                 }
             }
 
-            // Si aucune cible prioritaire n'est trouvée, chercher une cible 
-            if (priorityTarget == null)
+            if (priorityTarget is null) // if no priority target is found, target the last target
             {
                 foreach (var unit in allUnitsInRange)
                 {
-                    if (unit.isAirUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
+                    if (unit == attacker.lastTarget)
                     {
                         priorityTarget = unit;
-                        break; // Trouve la première cible dans la portée
+                        break;
                     }
                 }
             }
+            
+            priorityTarget ??= target; // if no priority target is found, target the default target
+            
 
             // Appliquer les dégâts à la cible préférée et aux autres unités du même type dans la portée
-            if (priorityTarget != null)
+            
+            foreach (var unit in allUnitsInRange)
             {
-                foreach (var unit in allUnitsInRange)
+                if (unit.isAirUnit == priorityTarget.isAirUnit)
                 {
-                    if (unit.GetType() == priorityTarget.GetType())
-                    {
-                        unit.ApplyDamage(Damage);
-                    }
+                    unit.ApplyDamage(attacker.damage);
                 }
             }
+            
         }
         
         #endregion

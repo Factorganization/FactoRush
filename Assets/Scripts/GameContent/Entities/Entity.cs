@@ -16,6 +16,8 @@ namespace GameContent.Entities
         
         public Vector3 TargetPosition { get; set; }
         
+        public Transform GraphTransform => graphTransform;
+        
         #endregion
         
         #region methodes
@@ -57,10 +59,11 @@ namespace GameContent.Entities
         {
         }
         
-        public void SetGraph(Vector3 pos, Quaternion rot)
+        public void SetGraph(Vector3 pos, Quaternion rot, bool active = true)
         {
             graphTransform.position = pos;
             graphTransform.rotation = rot;
+            graphTransform.gameObject.SetActive(active);
         }
         
         protected static float SquareDistance(Vector3 a, Vector3 b) => (b- a).x * (b -a).x + (b - a).y * (b - a).y + (b - a).z * (b - a).z;

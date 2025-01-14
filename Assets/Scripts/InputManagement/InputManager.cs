@@ -4,6 +4,7 @@ using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.Entities.OnFieldEntities.Buildings;
 using GameContent.GridManagement;
+using GameContent.InGameUI;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
@@ -35,6 +36,9 @@ namespace InputManagement
         private void Update()
         {
             SetDeleteTimer();
+            
+            if (EncyclopediaUI.Encyclopedia.IsOpen)
+                return;
             
             if (Touch.activeTouches.Count <= 0)
                 return;
@@ -90,8 +94,24 @@ namespace InputManagement
         {
             GridManager.Manager.CurrentLockMode = GridLockMode.BuildingLocked; //Lock grid to prevent abusive list update
             
-            if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
+            if (!Physics.Raycast(ray, out var hit, 100, interactableMask))
                 return;
+
+            if (hit.collider.TryGetComponent(out Card card))
+            {
+                _currentSelectedCard?.SetSelected(false);
+                if (_currentSelectedCard == card)
+                {
+                    _currentSelectedCard = null;
+                    _currentFactoryData = null;
+                    return;
+                }
+                
+                card.SetSelected(true);
+                _currentSelectedCard = card;
+                _currentFactoryData = card.Data;
+                return;
+            }
             
             if (!hit.collider.TryGetComponent(out Tile t)) //start drag if hit side of static
                 return;
@@ -105,7 +125,6 @@ namespace InputManagement
             {
                 case HitGridType.SideStaticHit:
                     var sst = t as StaticBuildingTile;
-                    //checker
                     _currentStaticGroup = sst!.StaticGroup;
                     GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     break;
@@ -130,7 +149,7 @@ namespace InputManagement
                             _needDeletion = true;
                         }
                     }
-                    break;
+                    return;
                 
                 case HitGridType.DynamicHit:
                     var dt = t as DynamicBuildingTile;
@@ -169,6 +188,10 @@ namespace InputManagement
                 default:
                     throw new ArgumentOutOfRangeException(nameof(t.Type), t.Type, null);
             }
+            
+            _currentSelectedCard?.SetSelected(false);
+            _currentFactoryData = null;
+            _currentSelectedCard = null;
         }
 
         private void HandleTouchMoved(Ray ray)
@@ -247,7 +270,7 @@ namespace InputManagement
         
         private void HandleTouchEnded(Ray ray)
         {
-            _hasDragged = true;
+            _hasDragged = false;
             
             if (!Physics.Raycast(ray, out var hit, 100, LayerMask.GetMask("Tile")))
             {
@@ -342,12 +365,20 @@ namespace InputManagement
                     if (t.Index == _currentIndex)
                     {
                         if (t.Index == _startingIndex)
-                            GridManager.Manager.SetSelected(_startingIndex, true);
+                        {
+                            if (t.IsBlocked)
+                                GridManager.Manager.SetSelected(_startingIndex, true);
+                            else
+                                _startingHitType = HitGridType.None;
+                        }
                         break;
                     }
 
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
+                    
+                    if (GridManager.Manager.Grid[_lastIndex] is CenterStaticBuildingTile)
+                        GridManager.Manager.SetSelected(_lastIndex, false);
                     
                     if (_currentIndex != _startingIndex)
                     {
@@ -371,6 +402,9 @@ namespace InputManagement
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
                     
+                    if (GridManager.Manager.Grid[_lastIndex] is CenterStaticBuildingTile)
+                        GridManager.Manager.SetSelected(_lastIndex, false);
+                    
                     if (_currentIndex != _startingIndex)
                     {
                         GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
@@ -389,7 +423,7 @@ namespace InputManagement
 
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
-                    GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex); // AAAAAAAAAAAAAAAAAAAAAAAAA
+                    GridManager.Manager.SetSelected(_currentIndex, true); // AAAAAAAAAAAAAAAAAAAAAAAAA
                     break;
                     
                 case TileType.Default:
@@ -481,7 +515,7 @@ namespace InputManagement
             switch (t.Type)
             {
                 case TileType.SideStaticTile:
-                    var sst = t as StaticBuildingTile;
+                    /*var sst = t as StaticBuildingTile;
                     if (sst!.IsBlocked || sst!.StaticGroup != _currentStaticGroup)
                     {
                         _startingHitType = HitGridType.None;
@@ -490,17 +524,58 @@ namespace InputManagement
                     {
                         _startingHitType = HitGridType.SideStaticHit;
                         _startingIndex = sst.Index;
-                    }
+                    }*/
                     break;
                 
                 case TileType.CenterStaticTile:
+                    var cst = t as CenterStaticBuildingTile;
+                    if (t.Index == _currentIndex)
+                    {
+                        if (t.Index == _startingIndex)
+                        {
+                            if (!cst!.IsFull)
+                                GridManager.Manager.SetSelected(_startingIndex, true);
+                            else
+                                _startingHitType = HitGridType.None;
+                        }
+                        break;
+                    }
+
+                    _lastIndex = _currentIndex;
+                    _currentIndex = t.Index;
+                    
+                    if (GridManager.Manager.IsEmptyPath())
+                    {
+                        GridManager.Manager.CancelAdding();
+                        _startingHitType = HitGridType.None;
+                    }
+                    break;
+                    
                 case TileType.DynamicTile:
                 case TileType.MineTile:
                 case TileType.WeaponTarget:
                 case TileType.TransTarget:
-                case TileType.Default:
+                    if (t.Index == _currentIndex)
+                        break;
+
+                    _lastIndex = _currentIndex;
+                    _currentIndex = t.Index;
+                    
+                    if (_currentIndex != _startingIndex)
+                    {
+                        GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
+                    }
+
+                    if (GridManager.Manager.IsEmptyPath())
+                    {
+                        GridManager.Manager.CancelAdding();
+                        _startingHitType = HitGridType.None;
+                    }
                     break;
 
+                case TileType.Default:
+                    break;
+                
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -525,6 +600,9 @@ namespace InputManagement
                     
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
+                    
+                    if (GridManager.Manager.Grid[_lastIndex] is CenterStaticBuildingTile)
+                        GridManager.Manager.SetSelected(_lastIndex, false);
                     
                     if (_currentIndex != _startingIndex)
                     {
@@ -552,6 +630,9 @@ namespace InputManagement
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
 
+                    if (GridManager.Manager.Grid[_lastIndex] is CenterStaticBuildingTile)
+                        GridManager.Manager.SetSelected(_lastIndex, false);
+                    
                     GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     
                     if (GridManager.Manager.IsEmptyPath())
@@ -567,7 +648,8 @@ namespace InputManagement
 
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
-                    GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex); // Dark Magic of Chaos again
+                    GridManager.Manager.SetSelected(_currentIndex, true); // Dark Magic of Chaos again
+                    GridManager.Manager.TryCorrectPath(_startingIndex, _currentIndex);
                     break;
                 
                 case TileType.Default:
@@ -597,6 +679,9 @@ namespace InputManagement
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
                     
+                    if (GridManager.Manager.Grid[_lastIndex] is CenterStaticBuildingTile)
+                        GridManager.Manager.SetSelected(_lastIndex, false);
+                    
                     if (_currentIndex != _startingIndex)
                     {
                         GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
@@ -623,6 +708,9 @@ namespace InputManagement
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
 
+                    if (GridManager.Manager.Grid[_lastIndex] is CenterStaticBuildingTile)
+                        GridManager.Manager.SetSelected(_lastIndex, false);
+                    
                     GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     
                     if (GridManager.Manager.IsEmptyPath())
@@ -638,7 +726,7 @@ namespace InputManagement
 
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
-                    GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex); // Dark Magic of Chaos again
+                    GridManager.Manager.SetSelected(_currentIndex, true); // Dark Magic of Chaos again
                     break;
                 
                 case TileType.Default:
@@ -668,6 +756,9 @@ namespace InputManagement
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
                     
+                    if (GridManager.Manager.Grid[_lastIndex] is CenterStaticBuildingTile)
+                        GridManager.Manager.SetSelected(_lastIndex, false);
+                    
                     if (_currentIndex != _startingIndex)
                     {
                         GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
@@ -694,6 +785,9 @@ namespace InputManagement
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
 
+                    if (GridManager.Manager.Grid[_lastIndex] is CenterStaticBuildingTile)
+                        GridManager.Manager.SetSelected(_lastIndex, false);
+                    
                     GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex);
                     
                     if (GridManager.Manager.IsEmptyPath())
@@ -709,7 +803,7 @@ namespace InputManagement
 
                     _lastIndex = _currentIndex;
                     _currentIndex = t.Index;
-                    GridManager.Manager.TryAddDynamicBuildingAt(_startingIndex, _lastIndex, _currentIndex); // Dark Magic of Chaos again
+                    GridManager.Manager.SetSelected(_currentIndex, true); // Dark Magic of Chaos again
                     break;
                 
                 case TileType.Default:
@@ -736,19 +830,28 @@ namespace InputManagement
                 case TileType.SideStaticTile:
                 case TileType.DynamicTile:
                 case TileType.MineTile:
-                case TileType.WeaponTarget:
-                case TileType.TransTarget:
                     if (!GridManager.Manager.IsLastSelectedTile(_currentIndex) || t.IsBlocked)
                     {
                         GridManager.Manager.CancelAdding();
                     }
                     break;
                 
-                case TileType.CenterStaticTile:
-                    if (!GridManager.Manager.IsLastSelectedTile(_currentIndex))
+                case TileType.WeaponTarget:
+                case TileType.TransTarget:
+                    if (/*!GridManager.Manager.IsLastSelectedTile(_currentIndex) || */t.IsBlocked)
                     {
-                        //GridManager.Manager.CancelAdding();
+                        GridManager.Manager.CancelAdding();
                     }
+                    GridManager.Manager.SetSelected(_currentIndex, true);
+                    break;
+                
+                case TileType.CenterStaticTile:
+                    var cst = t as CenterStaticBuildingTile;
+                    if (cst!.IsFull)
+                    {
+                        GridManager.Manager.CancelAdding();
+                    }
+                    GridManager.Manager.SetSelected(_currentIndex, true);
                     break;
                 
                 case TileType.Default:
@@ -798,24 +901,35 @@ namespace InputManagement
             switch (t.Type)
             {
                 case TileType.CenterStaticTile:
-                    if (t is not StaticBuildingTile st)
+                    var cst = t as StaticBuildingTile;
+                    if (cst!.CurrentBuildingRef is null && _currentSelectedCard is not null && _currentFactoryData is not null && !_hasDragged && _currentStaticGroup == cst.StaticGroup)
+                    {
+                        GridManager.Manager.TryAddStaticBuildingAt(_startingIndex, cst.Position + Vector3.up / 2, _currentStaticGroup, out var b);
+                        if (b is FactoryBuilding fb)
+                        {
+                            fb.SetFactoryData(_currentFactoryData);
+                            _currentSelectedCard.WasPlaced = true;
+                        }
+                    }
+                    _currentSelectedCard?.SetSelected(false);
+                    _currentFactoryData = null;
+                    _currentSelectedCard = null;
+                    break;
+                
+                case TileType.MineTile:
+                case TileType.WeaponTarget:
+                case TileType.TransTarget:
+                    if (/*!GridManager.Manager.IsLastSelectedTile(_currentIndex) || */ t.IsBlocked)
+                    {
+                        GridManager.Manager.CancelAdding();
                         break;
-                    
-                    if(st.CurrentBuildingRef is not null)
-                        break;
-                    
-                    if (st.StaticGroup == _currentStaticGroup)
-                        GridManager.Manager.TryAddStaticBuildingAt(st.Index, st.Position + Vector3.up / 2, _currentStaticGroup);
-                    //TODO open build selection panel
-                    
+                    }
+                    GridManager.Manager.SetSelected(_currentIndex, true);
                     break;
                 
                 case TileType.DynamicTile:
                 case TileType.SideStaticTile:
                 case TileType.Default:
-                case TileType.MineTile:
-                case TileType.WeaponTarget:
-                case TileType.TransTarget:
                     break;
                 
                 default:
@@ -838,10 +952,12 @@ namespace InputManagement
                     break;
                 
                 case TileType.CenterStaticTile:
-                    if (!GridManager.Manager.IsLastSelectedTile(_currentIndex))
+                    var cst = t as CenterStaticBuildingTile;
+                    if (cst!.IsFull)
                     {
-                        //GridManager.Manager.CancelAdding();
+                        GridManager.Manager.CancelAdding();
                     }
+                    GridManager.Manager.SetSelected(_currentIndex, true);
                     break;
                     
                 case TileType.SideStaticTile:
@@ -874,10 +990,12 @@ namespace InputManagement
                     break;
                 
                 case TileType.CenterStaticTile:
-                    if (!GridManager.Manager.IsLastSelectedTile(_currentIndex))
+                    var cst = t as CenterStaticBuildingTile;
+                    if (cst!.IsFull)
                     {
                         GridManager.Manager.CancelAdding();
                     }
+                    GridManager.Manager.SetSelected(_currentIndex, true);
                     break;
                 
                 case TileType.SideStaticTile:
@@ -910,10 +1028,12 @@ namespace InputManagement
                     break;
                 
                 case TileType.CenterStaticTile:
-                    if (!GridManager.Manager.IsLastSelectedTile(_currentIndex))
+                    var cst = t as CenterStaticBuildingTile;
+                    if (cst!.IsFull)
                     {
                         GridManager.Manager.CancelAdding();
                     }
+                    GridManager.Manager.SetSelected(_currentIndex, true);
                     break;
                     
                 case TileType.SideStaticTile:
@@ -962,6 +1082,12 @@ namespace InputManagement
 
         [SerializeField] private Camera isoCamera;
 
+        [SerializeField] private LayerMask interactableMask;
+        
+        private Card _currentSelectedCard;
+        
+        private FactoryData _currentFactoryData;
+        
         private HitGridType _startingHitType;
 
         private Vector2Int _startingIndex;
