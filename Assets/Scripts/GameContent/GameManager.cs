@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     
     [SerializeField] private EnemySpawner enemySpawner;
+
+    public string deck = "0102030412";
     
     #endregion
     
