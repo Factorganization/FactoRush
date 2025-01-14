@@ -1,3 +1,4 @@
+T=5,5
 # Vous pouvez meme faire des commentaires genre ça c'est pas lu
 
 # Les sauts de lignes pose pas de problème mais évitez quand meme
