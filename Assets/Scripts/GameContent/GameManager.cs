@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
     {
         if (level == 1)
         {
-            deck = "0404141414";
+            deck = "0404141400";
         }
         if (level == 2)
         {
