@@ -186,11 +186,8 @@ namespace GameContent.Entities.OnFieldEntities
         
         private void GraphInit()
         {
-            for (var i = 0; i < Count; i++)
+            for (var i = 0; i < Count - 1; i++)
             {
-                if (i >= Count - 1)
-                    continue;
-                
                 var r = DynamicBuilding.GetRotation(this[i + 1].TileRef.Index - this[i].TileRef.Index);
                 this[i].SetGraph(this[i].Position, Quaternion.Euler(0, r, 0));
             }

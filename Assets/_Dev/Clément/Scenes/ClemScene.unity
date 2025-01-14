@@ -4310,6 +4310,14 @@ MonoBehaviour:
     type: 3}
   dynamicGenericBuild: {fileID: 4155439601221061712, guid: 77c36428ed7128042a96e4a43759d983,
     type: 3}
+  dynamicBuildingGraphs:
+  - {fileID: -8679921383154817045, guid: 603b03f238c255948b6d7b560e535bd9, type: 3}
+  - {fileID: -8679921383154817045, guid: a31b21c0dd9851a4ba358e8e74148d14, type: 3}
+  - {fileID: -8679921383154817045, guid: 8cc4a2f1d5a4475469ad503ee4cf5a0b, type: 3}
+  - {fileID: -8679921383154817045, guid: 6aa5237a9fe9e98468e8d28099ce9e9b, type: 3}
+  - {fileID: -8679921383154817045, guid: dc2e79e7b84b73741af4258f0db8a951, type: 3}
+  - {fileID: -8679921383154817045, guid: 22389543d75e40447811097922909fe1, type: 3}
+  - {fileID: -8679921383154817045, guid: c39695da8a65a9d4881c7ec3199cb0bd, type: 3}
   staticGenericBuild: {fileID: 1592278743168102029, guid: f1b4d369670f61e409b895cb02e6709c,
     type: 3}
 --- !u!114 &1169929618

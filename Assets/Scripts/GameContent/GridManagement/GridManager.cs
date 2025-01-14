@@ -35,6 +35,8 @@ namespace GameContent.GridManagement
         
         public Dictionary<byte, StaticTileGroup> StaticGroups { get; private set; }
 
+        public Transform[] DynamicBuildingsGraphs => dynamicBuildingGraphs;
+        
         #endregion
         
         #region methodes
@@ -138,20 +140,21 @@ namespace GameContent.GridManagement
                             {
                                 AssemblyTileGroups.Add(k, new AssemblyTileGroup(k));
                                 
-                                var tTt = Instantiate(transTargetTile, transform);
-                                Grid.Add(tId, tTt);
-                                AssemblyTileGroups[k].AddTile(tTt);
-                                tTt.Added(this, tId, tPos, TileType.TransTarget);
-                                tTt.InitAssemblyTile(k);
-                            }
-
-                            else
-                            {
                                 var wTt = Instantiate(weaponTargetTile, transform);
                                 Grid.Add(tId, wTt);
                                 AssemblyTileGroups[k].AddTile(wTt);
                                 wTt.Added(this, tId, tPos, TileType.WeaponTarget);
                                 wTt.InitAssemblyTile(k);
+                            }
+
+                            else
+                            {
+                                var tTt = Instantiate(transTargetTile, transform);
+                                Grid.Add(tId, tTt);
+                                AssemblyTileGroups[k].AddTile(tTt);
+                                tTt.Added(this, tId, tPos, TileType.TransTarget);
+                                tTt.InitAssemblyTile(k);
+                                tTt.SetWeaponRef(AssemblyTileGroups[k].WeaponTile);
                             }
                             break;
                         
@@ -618,6 +621,8 @@ namespace GameContent.GridManagement
         [SerializeField] private TransTargetTile transTargetTile;
 
         [SerializeField] private DynamicBuilding dynamicGenericBuild;
+        
+        [SerializeField] private Transform[] dynamicBuildingGraphs;
         
         [SerializeField] private StaticBuilding staticGenericBuild;
         

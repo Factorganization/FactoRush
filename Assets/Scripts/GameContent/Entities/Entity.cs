@@ -16,6 +16,8 @@ namespace GameContent.Entities
         
         public Vector3 TargetPosition { get; set; }
         
+        public Transform GraphTransform => graphTransform;
+        
         #endregion
         
         #region methodes
