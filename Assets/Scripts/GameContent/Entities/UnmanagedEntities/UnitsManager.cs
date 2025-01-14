@@ -46,6 +46,7 @@ public class UnitsManager : MonoBehaviour
             return;
         }
         
+        if (UnitsManager.Instance == null) return;
         StartCoroutine(SpawnUnitCoroutine(isAlly, transportComponent, weaponComponent, cloneOf, delay));
     }
     

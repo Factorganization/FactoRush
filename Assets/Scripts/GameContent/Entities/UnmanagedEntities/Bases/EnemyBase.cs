@@ -22,7 +22,7 @@ namespace GameContent.Entities.UnmanagedEntities
         protected override void Die()
         {
             Debug.Log("Enemy is dead");
-            GameManager.Instance.EnemyWin();
+            GameManager.Instance.AllyWin();
         }
 
         public override void TakeDamage(float damage)

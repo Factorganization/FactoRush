@@ -43,8 +43,8 @@ namespace GameContent.GridManagement
 
         private void Awake()
         {
-            if (Manager is not null)
-                throw new Exception("Only one instance of a GridManager can be active at a time.");
+            /*if (Manager is not null)
+                throw new Exception("Only one instance of a GridManager can be active at a time.");*/
             
             Manager = this;
         }

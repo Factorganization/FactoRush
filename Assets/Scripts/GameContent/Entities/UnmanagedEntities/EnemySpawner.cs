@@ -158,7 +158,7 @@ public class EnemySpawner : MonoBehaviour
                 WeaponComponent weaponComponent = GetWeaponComponent(weaponId);
 
                 // Vérifie que les composants existent
-                if (transportComponent != null && weaponComponent != null)
+                if (transportComponent != null && weaponComponent != null && UnitsManager.Instance is not null)
                 {
                     UnitsManager.Instance.SpawnUnit(false, transportComponent, weaponComponent, null, i * delayBetweenUnits);
                 }
@@ -195,7 +195,7 @@ public class EnemySpawner : MonoBehaviour
                 WeaponComponent weaponComponent = GetWeaponComponent(weaponId);
 
                 // Vérifie que les composants existent
-                if (transportComponent != null && weaponComponent != null)
+                if (transportComponent != null && weaponComponent != null && UnitsManager.Instance is not null)
                 {
                     UnitsManager.Instance.SpawnUnit(false, transportComponent, weaponComponent, null, i * delayBetweenUnits);
                 }
