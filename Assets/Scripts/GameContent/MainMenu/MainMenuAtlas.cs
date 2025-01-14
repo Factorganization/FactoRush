@@ -16,6 +16,12 @@ public class MainMenuAtlas : MonoBehaviour
     [SerializeField] public Button collectionPanelButton;
     [Space] 
     [SerializeField] public Button deckCard1;
+    [SerializeField] public Button deckCard2;
+    [SerializeField] public Button deckCard3;
+    [SerializeField] public Button deckCard4;
+    [SerializeField] public Button deckCard5;
+    
+    
 
     #endregion
 }
