@@ -16,37 +16,51 @@ public class SmoothSnapScrollView : MonoBehaviour
     private float startTouchPosition; // Position de départ du swipe
     private float endTouchPosition; // Position de fin du swipe
 
+    // Nouveaux champs ajoutés
+    public RectTransform[] panels; // Les panneaux (assignés manuellement)
+    private Vector2 initialPanel1Position; // Position verticale initiale du panneau principal
+    private bool verticalScrollingEnabled = true; // État du défilement vertical
+
     private void Awake()
     {
         EnhancedTouchSupport.Enable();
+
+        if (panels != null && panels.Length > 1)
+        {
+            initialPanel1Position = panels[1].anchoredPosition; // Utiliser la position locale
+        }
     }
+
 
     private void Update()
     {
         HandleTouchInput();
 
-        // Lancer le snapping si l'utilisateur ne touche pas l'écran et qu'une transition est nécessaire
         if (!isTouching && !isSnapping)
         {
             SnapToClosestPanel();
         }
 
-        // Si un snapping est en cours, continue la transition
         if (isSnapping)
         {
             SmoothSnapToTarget();
         }
+
+        // Désactiver ou activer le scrolling vertical en fonction du panneau
+        scrollRect.vertical = verticalScrollingEnabled;
+
+        // Appeler AdjustVerticalOffsets pour garantir une mise à jour continue
+        AdjustVerticalOffsets();
     }
+
 
     private void HandleTouchInput()
     {
-        // Vérifier s'il y a des touches actives
         if (Touch.activeTouches.Count > 0)
         {
             isTouching = true;
-            isSnapping = false; // Arrêter le snapping pendant que l'utilisateur interagit
+            isSnapping = false;
 
-            // Détecter le début et la fin du swipe
             var touch = Touch.activeTouches[0];
             if (touch.phase == UnityEngine.InputSystem.TouchPhase.Began)
             {
@@ -55,7 +69,7 @@ public class SmoothSnapScrollView : MonoBehaviour
             else if (touch.phase == UnityEngine.InputSystem.TouchPhase.Ended)
             {
                 endTouchPosition = touch.screenPosition.x / Screen.width;
-                EvaluateSwipe(); // Évaluer le swipe pour décider si on change de panneau
+                EvaluateSwipe();
                 isTouching = false;
             }
         }
@@ -69,16 +83,19 @@ public class SmoothSnapScrollView : MonoBehaviour
         {
             if (swipeDistance > 0 && currentPanel > 0)
             {
-                currentPanel--; // Aller au panneau précédent
+                currentPanel--;
             }
             else if (swipeDistance < 0 && currentPanel < panelPositions.Length - 1)
             {
-                currentPanel++; // Aller au panneau suivant
+                currentPanel++;
             }
         }
 
         // Activer le snapping pour aligner avec le panneau cible
         isSnapping = true;
+
+        // Activer/désactiver le scrolling vertical en fonction du panneau cible
+        verticalScrollingEnabled = currentPanel == 1;
     }
 
     private void SnapToClosestPanel()
@@ -86,9 +103,11 @@ public class SmoothSnapScrollView : MonoBehaviour
         float currentPosition = scrollRect.horizontalNormalizedPosition;
         int closestPanel = GetClosestPanelIndex(currentPosition);
 
-        // Si aucun swipe n'a été détecté, rester sur le panneau actuel
         currentPanel = closestPanel;
         isSnapping = true;
+
+        // Activer/désactiver le scrolling vertical en fonction du panneau cible
+        verticalScrollingEnabled = currentPanel == 1;
     }
 
     private int GetClosestPanelIndex(float currentPosition)
@@ -113,18 +132,36 @@ public class SmoothSnapScrollView : MonoBehaviour
     {
         float targetPosition = panelPositions[currentPanel];
 
-        // Effectuer une interpolation linéaire vers la position cible
         scrollRect.horizontalNormalizedPosition = Mathf.Lerp(
             scrollRect.horizontalNormalizedPosition,
             targetPosition,
             snapSpeed * Time.deltaTime
         );
 
-        // Vérifier si la position cible est atteinte (précision arbitraire)
         if (Mathf.Abs(scrollRect.horizontalNormalizedPosition - targetPosition) < 0.001f)
         {
             scrollRect.horizontalNormalizedPosition = targetPosition;
             isSnapping = false;
         }
     }
+
+    private void AdjustVerticalOffsets()
+    {
+        if (panels == null || panels.Length <= 1) return;
+
+        // Récupérer la position verticale relative du panneau principal
+        float verticalOffset = panels[1].parent.GetComponent<RectTransform>().anchoredPosition.y;
+
+        // Appliquer cet offset aux panneaux latéraux
+        for (int i = 0; i < panels.Length; i++)
+        {
+            if (i == 1) continue; // Ignorer le panneau principal
+
+            // Ajuster la position verticale des panneaux latéraux
+            Vector2 currentPosition = panels[i].anchoredPosition;
+            panels[i].anchoredPosition = new Vector2(currentPosition.x, - verticalOffset + 633f); // JE SAIS PAS COMMENT ÇA MARCHE MAIS ÇA MARCHE
+        }
+    }
+
+
 }
