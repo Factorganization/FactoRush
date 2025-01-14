@@ -55,11 +55,30 @@ public class EnemySpawner : MonoBehaviour
             {
                 // Ignorer les lignes vides ou commençant par un commentaire
                 string trimmedLine = line.Split('#')[0].Trim(); // Ignore tout après un #
+            
+                // Gestion de la ligne de configuration du temps (T=...)
+                if (trimmedLine.StartsWith("T"))
+                {
+                    string[] parts = trimmedLine.Split('=');
+                    if (parts.Length == 2 && float.TryParse(parts[1].Trim(), out float parsedTime))
+                    {
+                        timeBetweenLines = parsedTime;
+                        Debug.Log($"Intervalle entre lignes mis à jour : {timeBetweenLines} secondes");
+                    }
+                    else
+                    {
+                        Debug.LogError($"Erreur de parsing de la ligne de temps : {trimmedLine}");
+                    }
+                    continue;
+                }
+
+                // Ajouter les lignes restantes à la file d'attente
                 if (!string.IsNullOrEmpty(trimmedLine))
                 {
                     linesQueue.Enqueue(trimmedLine);
                 }
             }
+            
             EncyclopediaUI.Encyclopedia.InitEnemyEncyclopedia(linesQueue);
         }
         else
@@ -67,6 +86,7 @@ public class EnemySpawner : MonoBehaviour
             Debug.LogError($"Fichier introuvable : {filePath}");
         }
     }
+
 
     // Traitement des lignes avec un intervalle configurable
     private IEnumerator ProcessFile()

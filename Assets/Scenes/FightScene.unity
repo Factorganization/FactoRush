@@ -366,6 +366,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3475166466731147281, guid: f1b44563d6b859941ab4083dd3c51dde,
+        type: 3}
+      propertyPath: unitPrefab
+      value: 
+      objectReference: {fileID: 1535771559338506703, guid: a7c443844fc3bb245a00c4676c7ba49f,
+        type: 3}
     - target: {fileID: 8378154746547507874, guid: f1b44563d6b859941ab4083dd3c51dde,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6820,6 +6826,7 @@ MonoBehaviour:
     type: 3}
   dynamicGenericBuild: {fileID: 4155439601221061712, guid: 77c36428ed7128042a96e4a43759d983,
     type: 3}
+  dynamicBuildingGraphs: []
   staticGenericBuild: {fileID: 1592278743168102029, guid: f1b4d369670f61e409b895cb02e6709c,
     type: 3}
 --- !u!114 &1169929618
@@ -6835,6 +6842,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isoCamera: {fileID: 1573745070}
+  interactableMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &1171803961
 GameObject:
   m_ObjectHideFlags: 0
@@ -13969,6 +13979,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: GameManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 7622723637095140687, guid: 72464c2d4f4ff16458c7968f90f65463,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
