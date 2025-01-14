@@ -155,6 +155,7 @@ namespace GameContent.GridManagement
                                 tTt.Added(this, tId, tPos, TileType.TransTarget);
                                 tTt.InitAssemblyTile(k);
                                 tTt.SetWeaponRef(AssemblyTileGroups[k].WeaponTile);
+                                tTt.SetBinTileRef(AssemblyTileGroups[k].WeaponTile);
                             }
                             break;
                         

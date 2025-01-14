@@ -328,16 +328,14 @@ namespace InputManagement
         {
             switch (_startingHitType)
             {
+                case HitGridType.None:
                 case HitGridType.MineTile:
                 case HitGridType.DynamicHit:
                 case HitGridType.TransTarget:
                 case HitGridType.WeaponTarget:
                 case HitGridType.SideStaticHit:
-                    GridManager.Manager.CancelAdding();
-                    break;
-                
                 case HitGridType.CenterStaticHit:
-                case HitGridType.None:
+                    GridManager.Manager.CancelAdding();
                     break;
 
                 default:
@@ -930,6 +928,7 @@ namespace InputManagement
                 case TileType.DynamicTile:
                 case TileType.SideStaticTile:
                 case TileType.Default:
+                    GridManager.Manager.CancelAdding();
                     break;
                 
                 default:

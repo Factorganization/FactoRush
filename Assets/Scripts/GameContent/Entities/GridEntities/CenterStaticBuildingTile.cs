@@ -60,9 +60,19 @@ namespace GameContent.Entities.GridEntities
 
             if (GroupRef.Count <= 0)
                 return;
-            
-            if (!GroupRef[0].CheckPathTarget(f.UnitResourceType))
-                    GridManager.Manager.TryRemoveDynamicBuildingAt(GroupRef[0][1].TileRef.Index);
+
+            if (!GroupRef[0].CheckPathTarget(this, f))
+            {
+                GridManager.Manager.TryRemoveDynamicBuildingAt(GroupRef[0][1].TileRef.Index);
+                return;
+            }
+
+            foreach (var group in GroupRef)
+            {
+                var u = group.ToStaticTile as UnitAssemblyTile;
+                u!.TargetType = f.UnitResourceType;
+                u.BinTileGroupRef.TargetType = f.UnitResourceType == 0 ? 1 : 0;
+            }
         }
 
         public override void RemoveConveyorGroup(ConveyorGroup conveyorGroup)
