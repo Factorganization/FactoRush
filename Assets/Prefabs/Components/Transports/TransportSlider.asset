@@ -16,4 +16,4 @@ MonoBehaviour:
   SpeedMultiplier: 1.5
   HealthMultiplier: 0.5
   IsFlying: 0
-  dashRange: 6
+  dashRange: 5

@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Graph: {fileID: 7662823858768839167, guid: f77a5ec189106af4e9739fa49a39acf6, type: 3}
   Damage: 10
-  AttackSpeed: 0.5
+  AttackSpeed: 1
   Range: 5
   targetType: 2
   isAPriorityTarget: 0
-  MinigunSpeedMultiplier: 0.5
+  MinigunSpeedMultiplier: 0.75
+  MinigunMinimumAttackSpeed: 0.25
