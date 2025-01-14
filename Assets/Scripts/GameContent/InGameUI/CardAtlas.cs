@@ -15,7 +15,7 @@ namespace GameContent.InGameUI
 
         private void Start()
         {
-            _cardsIds = CardParser(test);
+            _cardsIds = CardParser(GameManager.Instance.deck);
 
             for (var i = 0; i < cards.Length; i++)
             {

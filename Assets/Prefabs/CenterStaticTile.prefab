@@ -69,6 +69,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   graphTransform: {fileID: 2409490437033226757}
+  debugIndex: {fileID: 4345483588012449887}
   preSelectionAvailable: {fileID: 2020686877476218047}
 --- !u!1 &2020686877476218047
 GameObject:

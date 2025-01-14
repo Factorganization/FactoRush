@@ -452,6 +452,57 @@ namespace GameContent.GridManagement
             var i = new List<sbyte>();
             i.AddRange(b!.ConveyorGroupIds);
 
+            var c = ConveyorGroups[i[0]];
+            for (var k = c.Count - 1; k >= 0; k--)
+            {
+                if (i.Count >= c[k].ConveyorGroupIds.Count)
+                    continue;
+
+                var l = new HashSet<float>();
+                var inc = c[k].TileRef.Index - c[k - 1].TileRef.Index;
+                var next = c[k + 1].TileRef.Index - c[k].TileRef.Index;
+                var a = Vector2.SignedAngle(inc, next);
+
+                var cb = c[0].TileRef.GroupRef;
+
+                foreach (var i2 in cb)
+                {
+                    next = i2[k + 1].TileRef.Index - i2[k].TileRef.Index;
+                    var a2 = Vector2.SignedAngle(inc, next);
+                    if (Mathf.Approximately(a, a2))
+                        continue;
+                    
+                    l.Add(a2);
+                }
+                
+                if (l.Contains(-90) && l.Contains(90))
+                    c[k].SetGraphId(5);
+            
+                else if (l.Contains(0) && l.Contains(90))
+                    c[k].SetGraphId(3);
+            
+                else if (l.Contains(-90) && l.Contains(0))
+                    c[k].SetGraphId(4);
+                
+                else if (l.Contains(90))
+                    c[k].SetGraphId(1);
+                
+                else if (l.Contains(-90))
+                    c[k].SetGraphId(2);
+                
+                else if (l.Contains(0))
+                    c[k].SetGraphId(0);
+
+                var angle = DynamicBuilding.GetRotation(c[k].TileRef.Index - c[k - 1].TileRef.Index);
+                if (l.Count == 1 && l.Contains(-90))
+                    angle += 90;
+                if (l.Count == 1 && l.Contains(90))
+                    angle -= 90;
+                c[k].SetGraph(c[k].Position, Quaternion.Euler(0, angle, 0));
+                
+                break;
+            }
+            
             foreach (var j in i)
             {
                 foreach (var b2 in ConveyorGroups[j])
