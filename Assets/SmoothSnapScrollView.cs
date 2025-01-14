@@ -50,7 +50,8 @@ public class SmoothSnapScrollView : MonoBehaviour
         scrollRect.vertical = verticalScrollingEnabled;
 
         // Appeler AdjustVerticalOffsets pour garantir une mise à jour continue
-        AdjustVerticalOffsets();
+        //AdjustVerticalOffsets();
+        // Plus nécessaire jsuis con
     }
 
 
@@ -144,24 +145,7 @@ public class SmoothSnapScrollView : MonoBehaviour
             isSnapping = false;
         }
     }
-
-    private void AdjustVerticalOffsets()
-    {
-        if (panels == null || panels.Length <= 1) return;
-
-        // Récupérer la position verticale relative du panneau principal
-        float verticalOffset = panels[1].parent.GetComponent<RectTransform>().anchoredPosition.y;
-
-        // Appliquer cet offset aux panneaux latéraux
-        for (int i = 0; i < panels.Length; i++)
-        {
-            if (i == 1) continue; // Ignorer le panneau principal
-
-            // Ajuster la position verticale des panneaux latéraux
-            Vector2 currentPosition = panels[i].anchoredPosition;
-            panels[i].anchoredPosition = new Vector2(currentPosition.x, - verticalOffset + 633f); // JE SAIS PAS COMMENT ÇA MARCHE MAIS ÇA MARCHE
-        }
-    }
+    
 
 
 }

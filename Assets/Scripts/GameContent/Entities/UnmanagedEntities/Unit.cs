@@ -69,6 +69,9 @@ namespace GameContent.Entities.UnmanagedEntities
         public float thornmailRange = 3f;
         public Unit lastTarget;
         
+        public ParticleSystem stunParticles;
+        public ParticleSystem weaponParticles;
+        
         #endregion
 
         #region Unity Lifecycle
@@ -146,10 +149,23 @@ namespace GameContent.Entities.UnmanagedEntities
                 transform.position += Vector3.up * 3f; // Lift the unit off the ground
             }
             
+            // Get Stun Particles
+            if (ETransform.Find("FX") != null)
+            {
+                stunParticles = ETransform.Find("FX").GetComponent<ParticleSystem>();
+            }
+            // Get Weapon particles in the children of the children of graphTransform
+            
             if (weaponComponent != null)
             {
                 var weaponGraph = Instantiate(weaponComponent.Graph, transform);
                 weaponGraph.transform.parent = graphTransform;
+                
+                // Initialize the weapon particles if they exist
+                if (weaponGraph.transform.Find("FX") != null)
+                {
+                    weaponParticles = weaponGraph.transform.Find("FX").GetComponent<ParticleSystem>();
+                }
                 weaponComponent.Initialize(this);
                 if (weaponComponent.targetType == TargetType.TransportDependent)
                 {
@@ -261,6 +277,9 @@ namespace GameContent.Entities.UnmanagedEntities
             {
                 // Attack the first valid unit target, if any
                 AttackTarget(unitsInRange);
+                // if weaponparticles is not null, play the particles
+                if(weaponParticles != null)
+                    weaponParticles.Play(true);
                 return true;
             }
 
@@ -279,6 +298,8 @@ namespace GameContent.Entities.UnmanagedEntities
                     if (enemyBase != null)
                     {
                         AttackEnemyBase(enemyBase);
+                        if(weaponParticles != null)
+                            weaponParticles.Play(true);
                         return true;
                     }
                 }
@@ -288,6 +309,8 @@ namespace GameContent.Entities.UnmanagedEntities
                     if (allyBase != null)
                     {
                         AttackAllyBase(allyBase);
+                        if(weaponParticles != null)
+                            weaponParticles.Play(true);
                         return true;
                     }
                 }
@@ -513,6 +536,7 @@ namespace GameContent.Entities.UnmanagedEntities
             
             Debug.Log($"{name} is stunned for {duration} seconds.");
             isStunned = true;
+            stunParticles.Play(true);
             StartCoroutine(HandleStun(duration));
         }
         

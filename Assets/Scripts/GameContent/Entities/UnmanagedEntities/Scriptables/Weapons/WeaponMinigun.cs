@@ -9,6 +9,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
         
         [Header("Effect Parameters")]
         public float MinigunSpeedMultiplier = 0.9f; // % speed multiplier per attack
+        public float MinigunMinimumAttackSpeed = 0.5f; // Minimum attack speed
         
         #region Unique Effects Handlers
         protected override void HandleUniqueEffect(Unit attacker, Unit target, List<Unit> allUnitsInRange)
@@ -42,7 +43,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             
             priorityTarget.ApplyDamage(attacker.damage);
             
-            attacker.attackSpeed = Mathf.Max(0.5f, attacker.attackSpeed * MinigunSpeedMultiplier); // Increase attack speed
+            attacker.attackSpeed = Mathf.Max(MinigunMinimumAttackSpeed, attacker.attackSpeed * MinigunSpeedMultiplier); // Increase attack speed
             
         }
         

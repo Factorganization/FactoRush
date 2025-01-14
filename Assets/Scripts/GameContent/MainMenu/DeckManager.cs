@@ -22,6 +22,8 @@ namespace GameContent.MainMenu
                     addCard(card);
                 }
             }
+            
+            UpdateDeckString();
         }
 
         public bool addCard(DeckCardScript card)

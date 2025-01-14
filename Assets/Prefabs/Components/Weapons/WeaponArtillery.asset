@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30a3fdfaf7e547518889b409721fb130, type: 3}
   m_Name: WeaponArtillery
   m_EditorClassIdentifier: 
-  Graph: {fileID: 919132149155446097, guid: c41174dcc8539124c90611fde3b545f0, type: 3}
+  Graph: {fileID: 950365834632968530, guid: 373479c2e0cc5c9478fe1841dd04bd78, type: 3}
   Damage: 7
   AttackSpeed: 0.33
   Range: 5

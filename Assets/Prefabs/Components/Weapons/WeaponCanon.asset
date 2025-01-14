@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c280bd1aedb47bf8f1f768ea3a84de7, type: 3}
   m_Name: WeaponCanon
   m_EditorClassIdentifier: 
-  Graph: {fileID: 919132149155446097, guid: b12624e51a6cd0e4d83b0c5eb3c397d5, type: 3}
+  Graph: {fileID: 4059719780874820942, guid: 16609d333b71f2a4d98998905755284b, type: 3}
   Damage: 13
   AttackSpeed: 2
   Range: 5

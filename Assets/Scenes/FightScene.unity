@@ -372,6 +372,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1535771559338506703, guid: a7c443844fc3bb245a00c4676c7ba49f,
         type: 3}
+    - target: {fileID: 7143794549436894171, guid: f1b44563d6b859941ab4083dd3c51dde,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7666442425497816412, guid: f1b44563d6b859941ab4083dd3c51dde,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8378154746547507874, guid: f1b44563d6b859941ab4083dd3c51dde,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6826,7 +6836,6 @@ MonoBehaviour:
     type: 3}
   dynamicGenericBuild: {fileID: 4155439601221061712, guid: 77c36428ed7128042a96e4a43759d983,
     type: 3}
-  dynamicBuildingGraphs: []
   staticGenericBuild: {fileID: 1592278743168102029, guid: f1b4d369670f61e409b895cb02e6709c,
     type: 3}
 --- !u!114 &1169929618
