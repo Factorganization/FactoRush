@@ -52,6 +52,7 @@ namespace GameContent.GridManagement
         [ContextMenu("Start")]
         private void Start()
         {
+            mapPath = GameManager.Instance.LevelToLoad;
             _currentPath = new List<Tile>();
             _currentCompletionPath = new List<Tile>();
             _pathAddonIndex = -1;

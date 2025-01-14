@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private EnemySpawner enemySpawner;
 
     public string deck = "0102030412";
+
+    public string LevelToLoad;
     
     public bool CanStart { get; set; }
     
@@ -58,6 +60,7 @@ public class GameManager : MonoBehaviour
     public void Play(int level)
     {
         enemySpawner.enemyDataId = level.ToString();
+        LevelToLoad = level.ToString();
         SceneManager.LoadScene("ClemScene");
     }
     

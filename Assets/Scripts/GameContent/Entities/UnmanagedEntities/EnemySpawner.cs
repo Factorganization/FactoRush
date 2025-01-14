@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +22,7 @@ public class EnemySpawner : MonoBehaviour
     private ComponentAtlas componentAtlas; // Référence à l'atlas des composants
     private Queue<string> linesQueue; // File d'attente pour stocker les lignes du fichier
     private System.Random random; // Générateur de nombres aléatoires
+    private bool started = false;
     
     #endregion
 
@@ -37,7 +39,15 @@ public class EnemySpawner : MonoBehaviour
         componentAtlas = ComponentAtlas.Instance;
         random = new System.Random(); // Initialiser le générateur de nombres aléatoires
         ReadFile(); // Charger les données du fichier
-        StartCoroutine(ProcessFile()); // Commencer à traiter les lignes
+    }
+
+    private void Update()
+    {
+        if (GameManager.Instance.CanStart && !started)
+        {
+            StartCoroutine(ProcessFile());
+            started = true;
+        }
     }
 
     #endregion
