@@ -59,6 +59,14 @@ public class GameManager : MonoBehaviour
     
     public void Play(int level)
     {
+        if (level == 1)
+        {
+            deck = "0404141414";
+        }
+        if (level == 2)
+        {
+            deck = "0414090714";
+        }
         enemySpawner.enemyDataId = level.ToString();
         LevelToLoad = level.ToString();
         SceneManager.LoadScene("ClemScene");
