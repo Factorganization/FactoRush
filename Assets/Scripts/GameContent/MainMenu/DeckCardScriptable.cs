@@ -5,7 +5,7 @@ namespace GameContent.MainMenu
     [CreateAssetMenu(fileName = "DeckCardScriptable", menuName = "DeckCardScriptable")]
     public class DeckCardScriptable : ScriptableObject
     {
-        [SerializeField] public int cardId;
+        [SerializeField] public string cardId;
         [SerializeField] public Sprite cardImage;
         public bool isInDeck;
     }

@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     
     private void Update()
     {
-        
+        DoInitStart();
     }
     
     #endregion
@@ -47,9 +47,17 @@ public class GameManager : MonoBehaviour
         // if CurrentScene is Game
         if (SceneManager.GetActiveScene().name == "Game")
         {
+            if (enemySpawner.enabled) return;
             enemySpawner.enabled = true;
         }
     }
+    
+    public void Play(int level)
+    {
+        enemySpawner.enemyDataId = level.ToString();
+        SceneManager.LoadScene("ClemScene");
+    }
+    
     
     #endregion
 }
