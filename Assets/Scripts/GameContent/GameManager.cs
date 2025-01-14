@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -7,7 +8,7 @@ public class GameManager : MonoBehaviour
     
     public static GameManager Instance;
     
-    [SerializeField] private GameObject unitPrefab;
+    [SerializeField] private EnemySpawner enemySpawner;
     
     #endregion
     
@@ -22,7 +23,8 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        
+        DontDestroyOnLoad(this);
+        DoInitStart();
     }
     
     private void Update()
@@ -31,6 +33,21 @@ public class GameManager : MonoBehaviour
     }
     
     #endregion
+    
+    private void DoInitStart()
+    {
+        // if CurrentScene is MainMenu
+        if (SceneManager.GetActiveScene().name == "MainMenu")
+        {
+            enemySpawner.enabled = false;
+        }
+        
+        // if CurrentScene is Game
+        if (SceneManager.GetActiveScene().name == "Game")
+        {
+            enemySpawner.enabled = true;
+        }
+    }
     
     #endregion
 }

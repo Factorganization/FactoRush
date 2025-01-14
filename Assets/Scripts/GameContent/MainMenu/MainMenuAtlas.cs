@@ -1,16 +1,21 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainMenuAtlas : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    #region Fields
+    
+    [Header("Main Menu Components")]
+    [SerializeField] public Button homeButton;
+    [SerializeField] public Button cardsButton;
+    [SerializeField] public Button shopButton;
+    
+    [Header("Deck Builder Components")]
+    [SerializeField] public Button deckPanelButton;
+    [SerializeField] public Button collectionPanelButton;
+    [Space] 
+    [SerializeField] public Button deckCard1;
+
+    #endregion
 }
