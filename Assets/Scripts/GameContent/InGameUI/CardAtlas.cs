@@ -7,7 +7,7 @@ namespace GameContent.InGameUI
     {
         #region properties
 
-        public Card[] Cards => cards;
+        public CardData[] Cards => cardDataAtlas;
 
         #endregion
         
@@ -22,6 +22,8 @@ namespace GameContent.InGameUI
                 var c = cards[i];
                 c.SetCardData(cardDataAtlas[_cardsIds[i]]);
             }
+            
+            EncyclopediaUI.Encyclopedia.InitPlayerEncyclopedia(this, _cardsIds);
         }
 
         private static int[] CardParser(string cards)
@@ -56,5 +58,7 @@ namespace GameContent.InGameUI
         public FactoryData factoryData;
         
         public Sprite cardSprite;
+        
+        public Sprite cardDescription;
     }
 }

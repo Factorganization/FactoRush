@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
 
     public string deck = "0102030412";
     
+    public bool CanStart { get; set; }
+    
     #endregion
     
     #region Methods
@@ -27,6 +29,7 @@ public class GameManager : MonoBehaviour
     {
         DontDestroyOnLoad(this);
         DoInitStart();
+        CanStart = false;
     }
     
     private void Update()
