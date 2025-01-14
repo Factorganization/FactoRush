@@ -1,5 +1,6 @@
+T=8.5
+
 #Niveau 5, Introduction Or + Shield
-8.5
 
 0308
 0806

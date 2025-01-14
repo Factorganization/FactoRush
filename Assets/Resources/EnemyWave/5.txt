@@ -1,5 +1,6 @@
+T=10
+
 #Niveau 4, Intro Stun + Ennemis en nombre
-10
 
 0604
 0311

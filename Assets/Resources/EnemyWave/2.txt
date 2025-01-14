@@ -1,6 +1,7 @@
+T=7.5
+
 #Niveau 1, Introduction Systèmes du Jeu
 
-8.5
 
 0109
 0109
