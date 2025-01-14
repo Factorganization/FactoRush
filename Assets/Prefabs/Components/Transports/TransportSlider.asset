@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TransportSlider
   m_EditorClassIdentifier: 
   Graph: {fileID: 919132149155446097, guid: fa47e9899c188d94aa38c40236f7cd20, type: 3}
-  SpeedMultiplier: 1.5
+  SpeedMultiplier: 3
   HealthMultiplier: 0.5
   IsFlying: 0
-  dashRange: 6
+  dashRange: 5

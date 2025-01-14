@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: TransportDrill
   m_EditorClassIdentifier: 
   Graph: {fileID: 919132149155446097, guid: 5a8309d6ef5af724cb990a8864260818, type: 3}
-  SpeedMultiplier: 1
+  SpeedMultiplier: 2
   HealthMultiplier: 1
   IsFlying: 0

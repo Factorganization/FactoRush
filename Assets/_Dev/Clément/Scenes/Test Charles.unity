@@ -967,7 +967,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: dd79aa3ec22f48441aedc99792de738a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cd3054be91c567549a1bd3f526967f2b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2166,7 +2166,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &498927355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2180,7 +2180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   graphTransform: {fileID: 263592927}
-  factoryData: {fileID: 11400000, guid: 89fd8f4889a0f4647a7abe26f849033f, type: 2}
+  factoryData: {fileID: 11400000, guid: 2c499f9887a5a08419b62b1ac9c64930, type: 2}
   posOffset: {x: 0.2, y: 0.4}
   spriteRenderer: {fileID: 0}
 --- !u!65 &498927356
@@ -4139,7 +4139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1124246035
 Transform:
   m_ObjectHideFlags: 0
@@ -4313,7 +4313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f556b8386ffa4b49be9dbd1d11813685, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapPath: MapNiveau/MapNiveau1
+  mapPath: MapNiveau/MapNiveau2
   dynamicBuildTile: {fileID: 8808495469298439780, guid: 4abd3402996d3ba41879254eb476218f,
     type: 3}
   centerStaticBuildTile: {fileID: 3598023137684623935, guid: 5e0168ff92d634f47aed8586488dd9e3,
@@ -4333,14 +4333,6 @@ MonoBehaviour:
     type: 3}
   dynamicGenericBuild: {fileID: 4155439601221061712, guid: 77c36428ed7128042a96e4a43759d983,
     type: 3}
-  dynamicBuildingGraphs:
-  - {fileID: -8679921383154817045, guid: 603b03f238c255948b6d7b560e535bd9, type: 3}
-  - {fileID: -8679921383154817045, guid: a31b21c0dd9851a4ba358e8e74148d14, type: 3}
-  - {fileID: -8679921383154817045, guid: 8cc4a2f1d5a4475469ad503ee4cf5a0b, type: 3}
-  - {fileID: -8679921383154817045, guid: 6aa5237a9fe9e98468e8d28099ce9e9b, type: 3}
-  - {fileID: -8679921383154817045, guid: dc2e79e7b84b73741af4258f0db8a951, type: 3}
-  - {fileID: -8679921383154817045, guid: 22389543d75e40447811097922909fe1, type: 3}
-  - {fileID: -8679921383154817045, guid: c39695da8a65a9d4881c7ec3199cb0bd, type: 3}
   staticGenericBuild: {fileID: 1592278743168102029, guid: f1b4d369670f61e409b895cb02e6709c,
     type: 3}
 --- !u!114 &1169929618
@@ -5324,7 +5316,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1501459534
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5338,7 +5330,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   graphTransform: {fileID: 2101076312}
-  factoryData: {fileID: 11400000, guid: a2a03c73d44e835499d5d5ca083ed063, type: 2}
+  factoryData: {fileID: 11400000, guid: eecff9f748335034bb584e080aee1bfb, type: 2}
   posOffset: {x: 0.2, y: 0.4}
   spriteRenderer: {fileID: 0}
 --- !u!65 &1501459535
@@ -7965,7 +7957,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: dbfb044fde74a8547a17d9846fcb332c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 12ee070efa2004b4eaac8873ece88ef6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
