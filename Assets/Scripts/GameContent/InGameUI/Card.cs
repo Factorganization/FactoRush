@@ -39,6 +39,12 @@ namespace GameContent.InGameUI
         {
             _selected = selected;
         }
+
+        public void SetCardData(CardData cardData)
+        {
+            factoryData = cardData.factoryData;
+            spriteRenderer.sprite = cardData.cardSprite;
+        }
         
         #endregion
         
@@ -48,6 +54,8 @@ namespace GameContent.InGameUI
         
         [SerializeField] private Vector2 posOffset;
 
+        [SerializeField] private SpriteRenderer spriteRenderer;
+        
         private Vector3 _originPos;
         
         private Vector3 _offsetPos;
@@ -57,3 +65,26 @@ namespace GameContent.InGameUI
         #endregion
     }
 }
+
+/*
+// Transport IDs
+00 - transportPropeller
+01 - transportThornmail
+02 - transportAccumulator
+03 - transportDrill
+04 - transportInsulatingWheels
+05 - transportSlider
+06 - transportTwinBoots
+
+// Weapon IDs
+07 - weaponArtillery
+08 - weaponC4
+09 - weaponCanon
+10 - weaponMinigun
+11 - weaponRailgun
+12 - weaponShield
+13 - weaponSpear
+14 - weaponSpinningBlade
+15 - weaponSymbioticRifle
+16 - weaponWarhammer
+*/

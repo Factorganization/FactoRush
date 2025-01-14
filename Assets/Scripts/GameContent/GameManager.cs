@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     
     [SerializeField] private EnemySpawner enemySpawner;
+
+    public string deck = "0102030412";
     
     #endregion
     
@@ -29,7 +31,7 @@ public class GameManager : MonoBehaviour
     
     private void Update()
     {
-        
+        DoInitStart();
     }
     
     #endregion
@@ -45,9 +47,17 @@ public class GameManager : MonoBehaviour
         // if CurrentScene is Game
         if (SceneManager.GetActiveScene().name == "Game")
         {
+            if (enemySpawner.enabled) return;
             enemySpawner.enabled = true;
         }
     }
+    
+    public void Play(int level)
+    {
+        enemySpawner.enemyDataId = level.ToString();
+        SceneManager.LoadScene("ClemScene");
+    }
+    
     
     #endregion
 }

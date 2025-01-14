@@ -69,6 +69,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   graphTransform: {fileID: 4961730579998471942}
+  debugIndex: {fileID: 8802977743450562000}
   preSelectionAvailable: {fileID: 8658731390260645921}
   preSelectionUnavailable: {fileID: 6159874635126261136}
 --- !u!1 &6159874635126261136
