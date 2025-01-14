@@ -1,3 +1,5 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,6 +15,8 @@ public class GameManager : MonoBehaviour
     public string deck = "0102030412";
 
     public string LevelToLoad;
+    
+    [SerializeField] private TMP_Text victoryText;
     
     public bool CanStart { get; set; }
     
@@ -41,6 +45,26 @@ public class GameManager : MonoBehaviour
     
     #endregion
     
+    public void AllyWin()
+    {
+        victoryText.text = "Victoire !";
+        victoryText.gameObject.SetActive(true);
+        StartCoroutine(LoadMainMenu());
+    }
+    
+    public void EnemyWin()
+    {
+        victoryText.text = "Défaite !";
+        victoryText.gameObject.SetActive(true);
+        StartCoroutine(LoadMainMenu());
+    }
+    
+    private IEnumerator LoadMainMenu()
+    {
+        yield return new WaitForSeconds(3);
+        victoryText.gameObject.SetActive(false);
+        SceneManager.LoadScene("MainMenu");
+    }
     private void DoInitStart()
     {
         // if CurrentScene is MainMenu

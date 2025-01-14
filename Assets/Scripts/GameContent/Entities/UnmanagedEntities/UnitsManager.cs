@@ -40,6 +40,13 @@ public class UnitsManager : MonoBehaviour
             Debug.LogError("Unit prefab is not assigned in the inspector");
             return;
         }
+        // if there is more than 20 units in total, don't spawn any more
+        if (allyUnits.Count + enemyUnits.Count >= 20)
+        {
+            Debug.LogWarning("There are already 20 units in total. Can't spawn more units");
+            return;
+        }
+        
         StartCoroutine(SpawnUnitCoroutine(isAlly, transportComponent, weaponComponent, cloneOf, delay));
     }
     

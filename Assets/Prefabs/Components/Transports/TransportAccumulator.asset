@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TransportAccumulator
   m_EditorClassIdentifier: 
   Graph: {fileID: 919132149155446097, guid: a05bc0bad78c39345bc979f1a46324fb, type: 3}
-  SpeedMultiplier: 1
+  SpeedMultiplier: 2
   HealthMultiplier: 1.1
   IsFlying: 1
   SpeedPerStack: 0.5

@@ -1,14 +1,23 @@
 T=7,5
 
-#Niveau 1, Introduction Systèmes du Jeu
+#Niveau 2, Introduction du Cuivre + Armes à Distances
 
-
-0109
-0109
-0109
-0109
-0109
-0109
-0109
-0109
-0109
+-
+-
+-
+-
+-
+-
+-
+-
+0609
+0104
+-
+0104
+0609
+0609
+0104
+0104
+0304
+0309
+0304

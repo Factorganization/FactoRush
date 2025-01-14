@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: TransportBase
   m_EditorClassIdentifier: 
   Graph: {fileID: 919132149155446097, guid: b522d6c385f33a84091ef5fc0695f18d, type: 3}
-  SpeedMultiplier: 1
+  SpeedMultiplier: 2
   HealthMultiplier: 0.5
   IsFlying: 0

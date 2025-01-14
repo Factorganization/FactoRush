@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameContent.InGameUI
 {
@@ -32,8 +33,10 @@ namespace GameContent.InGameUI
                 preselectUI.SetActive(false);
                 playerPanelUI.SetActive(false);
                 enemyPanelUI.SetActive(false);
-                weaponCardPanelUI.SetActive(false);
-                transportCardPanelUI.SetActive(false);
+                foreach (var c in cardDescPanelUI)
+                {
+                    c.SetActive(false);
+                }
             }
             else
             {
@@ -41,9 +44,24 @@ namespace GameContent.InGameUI
             }
         }
 
+        public void SetPlayerPanel(bool open)
+        {
+            playerPanelUI.SetActive(open);
+            preselectUI.SetActive(!open);
+        }
+
+        public void SetEnemyPanel(bool open)
+        {
+            enemyPanelUI.SetActive(open);
+            preselectUI.SetActive(!open);
+        }
+        
         public void InitPlayerEncyclopedia(CardAtlas atlas, int[] indexes)
         {
-            
+            for (var i = 0; i < indexes.Length; i++)
+            {
+                playerButtons[i].sprite = atlas.Cards[indexes[i]].cardSprite;
+            }
         }
         
         public void InitEnemyEncyclopedia(Queue<string> ids)
@@ -116,9 +134,9 @@ namespace GameContent.InGameUI
         
         [SerializeField] private GameObject buttonPrefab;
         
-        [SerializeField] private GameObject weaponCardPanelUI;
-        
-        [SerializeField] private GameObject transportCardPanelUI;
+        [SerializeField] private GameObject[] cardDescPanelUI;
+
+        [SerializeField] private Image[] playerButtons;
         
         private HashSet<int> _transportIds;
         

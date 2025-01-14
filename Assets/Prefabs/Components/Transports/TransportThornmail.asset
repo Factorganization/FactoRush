@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TransportThornmail
   m_EditorClassIdentifier: 
   Graph: {fileID: 919132149155446097, guid: e2cd5bce23ff050418379e6e1056f01a, type: 3}
-  SpeedMultiplier: 1
+  SpeedMultiplier: 2
   HealthMultiplier: 1.5
   IsFlying: 0
   range: 5

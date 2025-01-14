@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: TransportInsulatingWheels
   m_EditorClassIdentifier: 
   Graph: {fileID: 919132149155446097, guid: 5f641bbb16c10ef489ffea26b7ba3973, type: 3}
-  SpeedMultiplier: 1.25
+  SpeedMultiplier: 2.5
   HealthMultiplier: 1
   IsFlying: 0
