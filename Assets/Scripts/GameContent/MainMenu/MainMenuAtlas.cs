@@ -27,6 +27,10 @@ public class MainMenuAtlas : MonoBehaviour
     [Header("All Cards")]
     [SerializeField] public DeckCardScript[] allCards;
     
+    [Header("BeforeLevel Sprite")]
+    [SerializeField] public GameObject beforeLevelPanel;
+    [SerializeField] public Sprite[] beforeLevelSprite;
+    
     
 
     #endregion
