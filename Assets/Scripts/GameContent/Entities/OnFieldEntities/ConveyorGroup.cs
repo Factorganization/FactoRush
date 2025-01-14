@@ -230,8 +230,8 @@ namespace GameContent.Entities.OnFieldEntities
             
             
             
-            if (this[Count - 1].TileRef is not CenterStaticBuildingTile t)
-                return;
+            //if (this[Count - 1].TileRef is not CenterStaticBuildingTile t)
+            //    return;
 
             //var s = GridManager.Manager.StaticGroups[t.StaticGroup];
             //var r2 = DynamicBuilding.GetRotation(s[0].Index - this[Count - 1].TileRef.Index);
