@@ -43,15 +43,15 @@ namespace GameContent.Entities.OnFieldEntities
 
             FromStaticTile = this[0].TileRef;
             ToStaticTile = this[Count - 1].TileRef;
-
-            if (FromStaticTile is CenterStaticBuildingTile s)
+            
+            if (FromStaticTile is CenterStaticBuildingTile s && ToStaticTile is UnitAssemblyTile u)
             {
                 var c = GridManager.Manager.StaticGroups[s.StaticGroup].CenterRef;
-                if (c.GroupRef.Count >= 1)
+                
+                if (c.CurrentBuildingRef is FactoryBuilding f)
                 {
-                    var g = c.GroupRef[0];
-                    if ((g.ToStaticTile is WeaponTargetTile && ToStaticTile is TransTargetTile) ||
-                        (g.ToStaticTile is TransTargetTile && ToStaticTile is WeaponTargetTile))
+                    var t = f.UnitResourceType;
+                    if (u.BinTileGroupRef.TargetType != -1 && u.BinTileGroupRef.TargetType == t)
                     {
                         foreach (var b in this)
                         {
@@ -64,23 +64,30 @@ namespace GameContent.Entities.OnFieldEntities
                         GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
                         return;
                     }
+                
+                    u.TargetType = f.UnitResourceType;
+                    if (u.TargetType != -1)
+                        u.BinTileGroupRef.TargetType = f.UnitResourceType == 0 ? 1 : 0;
                 }
-
-                if (c.CurrentBuildingRef is FactoryBuilding f)
+                
+                if (c.GroupRef.Count >= 1)
                 {
-                    if ((f.UnitResourceType == 0 && ToStaticTile is WeaponTargetTile) ||
-                        (f.UnitResourceType == 1 && ToStaticTile is TransTargetTile))
+                    var g = c.GroupRef;
+                    foreach (var cg in g)
                     {
-                        foreach (var b in this)
+                        if (cg.ToStaticTile is UnitAssemblyTile u2 && u2.TargetType != -1 && u2.TargetType != u.TargetType)
                         {
-                            if (b.TileRef is CenterStaticBuildingTile c2)
-                                c2.SecondaryBuildRefs.Remove(b);
-                            else
-                                b.TileRef.CurrentBuildingRef = null;
-                            Object.Destroy(b.gameObject);
+                            foreach (var b in this)
+                            {
+                                if (b.TileRef is CenterStaticBuildingTile c2)
+                                    c2.SecondaryBuildRefs.Remove(b);
+                                else
+                                    b.TileRef.CurrentBuildingRef = null;
+                                Object.Destroy(b.gameObject);
+                            }
+                            GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
+                            return;
                         }
-                        GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
-                        return;
                     }
                 }
             }
@@ -128,28 +135,41 @@ namespace GameContent.Entities.OnFieldEntities
                 }
                 return;
             }
-
-            if ((this[Count - 1].TileRef is WeaponTargetTile && c.ToStaticTile is TransTargetTile) ||
-                (this[Count - 1].TileRef is TransTargetTile && c.ToStaticTile is WeaponTargetTile))
+            
+            if (this[Count - 1].TileRef is UnitAssemblyTile u)
             {
-                this[0].RemoveConveyorGroupId(ConveyorGroupId);
+                var ct = c.FromStaticTile as CenterStaticBuildingTile;
                 
-                for (var j = 1; j < Count; j++)
+                foreach (var cg in ct!.GroupRef)
                 {
-                    var b = this[j];
-                    if (b.TileRef is CenterStaticBuildingTile c2)
-                        c2.SecondaryBuildRefs.Remove(b);
-                    else
-                        b.TileRef.CurrentBuildingRef = null;
-                    Object.Destroy(b.gameObject);
+                    var u2 = cg.ToStaticTile as UnitAssemblyTile;
+                    
+                    if ((u2!.TargetType != -1 && u.TargetType != -1 && u2.TargetType != u.TargetType) || u2.AssemblyId == u.AssemblyId)
+                    {
+                        this[0].RemoveConveyorGroupId(ConveyorGroupId);
+                                    
+                        for (var j = 1; j < Count; j++)
+                        {
+                            var b = this[j];
+                            if (b.TileRef is CenterStaticBuildingTile c2)
+                                c2.SecondaryBuildRefs.Remove(b);
+                            else
+                                b.TileRef.CurrentBuildingRef = null;
+                            Object.Destroy(b.gameObject);
+                        }
+                    
+                        GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
+                        foreach (var d in f)
+                        {
+                            GridManager.Manager.ConveyorGroups[d].UpdateGroup();
+                        }
+                        return;
+                    }
+                    
+                    u.TargetType = u2.TargetType;
+                    if (u.TargetType != -1)
+                        u.BinTileGroupRef.TargetType = u2.TargetType == 0 ? 1 : 0;
                 }
-
-                GridManager.Manager.ConveyorGroups.Remove(ConveyorGroupId);
-                foreach (var d in f)
-                {
-                    GridManager.Manager.ConveyorGroups[d].UpdateGroup();
-                }
-                return;
             }
             
             foreach (var t in c)
@@ -186,21 +206,36 @@ namespace GameContent.Entities.OnFieldEntities
         
         private void GraphInit()
         {
-            for (var i = 0; i < Count - 1; i++)
+            for (var i = 1; i < Count - 1; i++)
             {
+                var incident = this[i].TileRef.Index - this[i - 1].TileRef.Index;
+                var next = this[i + 1].TileRef.Index - this[i].TileRef.Index;
+
+                if (Mathf.Approximately(Vector2.SignedAngle(incident, next), 90))
+                    this[i].SetGraphId(1);
+                
+                else if(Mathf.Approximately(Vector2.SignedAngle(incident, next), 0))
+                    this[i].SetGraphId(0);
+                
+                else if(Mathf.Approximately(Vector2.SignedAngle(incident, next), -90))
+                    this[i].SetGraphId(2);
+                
                 var r = DynamicBuilding.GetRotation(this[i + 1].TileRef.Index - this[i].TileRef.Index);
                 this[i].SetGraph(this[i].Position, Quaternion.Euler(0, r, 0));
             }
             
-            this[0].gameObject.SetActive(false);
             this[Count - 1].gameObject.SetActive(false);
+            if (this[0].TileRef is not DynamicBuildingTile)
+                this[0].gameObject.SetActive(false);
             
-            if (this[Count - 1].TileRef is not CenterStaticBuildingTile t)
-                return;
+            
+            
+            //if (this[Count - 1].TileRef is not CenterStaticBuildingTile t)
+            //    return;
 
-            var s = GridManager.Manager.StaticGroups[t.StaticGroup];
-            var r2 = DynamicBuilding.GetRotation(s[0].Index - this[Count - 1].TileRef.Index);
-            this[Count - 1].SetGraph(this[Count - 1].Position, Quaternion.Euler(0, r2, 0), false);
+            //var s = GridManager.Manager.StaticGroups[t.StaticGroup];
+            //var r2 = DynamicBuilding.GetRotation(s[0].Index - this[Count - 1].TileRef.Index);
+            //this[Count - 1].SetGraph(this[Count - 1].Position, Quaternion.Euler(0, r2, 0), false);
         }
         
         private bool CheckPathJump()
@@ -280,6 +315,11 @@ namespace GameContent.Entities.OnFieldEntities
                 var g = s.StaticGroup;
                 GridManager.Manager.StaticGroups[g].CenterRef.RemoveConveyorGroup(this);
                 GridManager.Manager.StaticGroups[g].CenterRef.SecondaryBuildRefs.Remove(this[0]);
+                if (ToStaticTile is UnitAssemblyTile u && u.BinTileGroupRef.GroupRef.Count <= 0)
+                {
+                    u.TargetType = -1;
+                    u.BinTileGroupRef.TargetType = -1;
+                }
             }
             
             if (ToStaticTile is CenterStaticBuildingTile s2)
@@ -303,17 +343,19 @@ namespace GameContent.Entities.OnFieldEntities
             }
         }
 
-        public bool CheckPathTarget(int type)
+        public bool CheckPathTarget(CenterStaticBuildingTile c, FactoryBuilding f)
         {
-            switch (type)
+            if (c.GroupRef.Count <= 0)
+                return true;
+            
+            foreach (var g in c.GroupRef)
             {
-                case 0 when ToStaticTile is WeaponTargetTile:
-                case 1 when ToStaticTile is TransTargetTile:
+                var u = g.ToStaticTile as UnitAssemblyTile;
+                if (u!.TargetType != -1 && u.TargetType != f.UnitResourceType)
                     return false;
-
-                default:
-                    return true;
             }
+
+            return true;
         }
         
         public void MarkActive(bool active)

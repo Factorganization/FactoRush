@@ -128,6 +128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 49355017}
+  - component: {fileID: 49355018}
   m_Layer: 0
   m_Name: Cards
   m_TagString: Untagged
@@ -155,6 +156,60 @@ Transform:
   - {fileID: 1124246035}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &49355018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 49355016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20f1150d0ceb485ab27c172c7f37515b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cards:
+  - {fileID: 1809078046}
+  - {fileID: 1912949040}
+  - {fileID: 1501459534}
+  - {fileID: 498927355}
+  - {fileID: 1124246036}
+  cardDataAtlas:
+  - factoryData: {fileID: 11400000, guid: daa5d576e451d53468eb3405f7806a85, type: 2}
+    cardSprite: {fileID: 21300000, guid: e5eaf49e3825d154e9ddd0f033f889d7, type: 3}
+  - factoryData: {fileID: 11400000, guid: eecff9f748335034bb584e080aee1bfb, type: 2}
+    cardSprite: {fileID: 21300000, guid: 12ee070efa2004b4eaac8873ece88ef6, type: 3}
+  - factoryData: {fileID: 11400000, guid: cd897a2b8851b994b902e27835ea7557, type: 2}
+    cardSprite: {fileID: 21300000, guid: b541d39534340d84284c50f2f091f695, type: 3}
+  - factoryData: {fileID: 11400000, guid: 96357805b483a994d9051b9b82196ae1, type: 2}
+    cardSprite: {fileID: 21300000, guid: 6234d64b4d3ebac4eab725fc1130e957, type: 3}
+  - factoryData: {fileID: 11400000, guid: 65f58998d49cba648b5bcb0c63707b11, type: 2}
+    cardSprite: {fileID: 21300000, guid: dbfb044fde74a8547a17d9846fcb332c, type: 3}
+  - factoryData: {fileID: 11400000, guid: c1b07e7a6dcb6594a89680163726879e, type: 2}
+    cardSprite: {fileID: 21300000, guid: 75e218f1f6e4c8f4ca29b120e8e6f426, type: 3}
+  - factoryData: {fileID: 11400000, guid: 3ce743d888c02e64891d905ab9cacc55, type: 2}
+    cardSprite: {fileID: 21300000, guid: 31f3532fbb48bc644be68ae5cc1d2ee2, type: 3}
+  - factoryData: {fileID: 11400000, guid: 6392d6f91b23407459401a91e27f7159, type: 2}
+    cardSprite: {fileID: 21300000, guid: faba8fabf02947f4b8043dfb0e79563d, type: 3}
+  - factoryData: {fileID: 11400000, guid: 01a0322f666c5164bbddf81226dfe720, type: 2}
+    cardSprite: {fileID: 21300000, guid: 356d5fb0da79e87458e3e53f0d26af78, type: 3}
+  - factoryData: {fileID: 11400000, guid: 2c499f9887a5a08419b62b1ac9c64930, type: 2}
+    cardSprite: {fileID: 21300000, guid: cd3054be91c567549a1bd3f526967f2b, type: 3}
+  - factoryData: {fileID: 11400000, guid: f2fb21856d506c8459d61e2dab559d56, type: 2}
+    cardSprite: {fileID: 21300000, guid: 87e4115d9ba63524bb907e73005d23a1, type: 3}
+  - factoryData: {fileID: 11400000, guid: 6648819e9af4faa4aa11c8b515828be9, type: 2}
+    cardSprite: {fileID: 21300000, guid: 270f1ab6bb4486b4389197351cf51b97, type: 3}
+  - factoryData: {fileID: 11400000, guid: 4654cd5cc7c264a479267e0f04fef32b, type: 2}
+    cardSprite: {fileID: 21300000, guid: 4637f71a8d8348c4188baa3091d58687, type: 3}
+  - factoryData: {fileID: 11400000, guid: 7947fe88762f9f646a489d42fcaa8949, type: 2}
+    cardSprite: {fileID: 21300000, guid: dd79aa3ec22f48441aedc99792de738a, type: 3}
+  - factoryData: {fileID: 11400000, guid: a89c503de8e1a584b96668ba1c57525d, type: 2}
+    cardSprite: {fileID: 21300000, guid: b0c5fe76d5491de46a0872deb2d95dc3, type: 3}
+  - factoryData: {fileID: 11400000, guid: 628e4f7e3aa6bc8488b824e7283b9513, type: 2}
+    cardSprite: {fileID: 21300000, guid: c81b9ae1b239d504b9847ce3853c7d2b, type: 3}
+  - factoryData: {fileID: 11400000, guid: aeae6fee33ae154428eb177bd27268ff, type: 2}
+    cardSprite: {fileID: 0}
+  test: 0102040514
 --- !u!4 &49517569 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9140347678970773159, guid: 1b7c05ed9e9d14340a340ad5f93921db,
@@ -2161,6 +2216,7 @@ MonoBehaviour:
   graphTransform: {fileID: 263592927}
   factoryData: {fileID: 11400000, guid: 89fd8f4889a0f4647a7abe26f849033f, type: 2}
   posOffset: {x: 0.2, y: 0.4}
+  spriteRenderer: {fileID: 263592928}
 --- !u!65 &498927356
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4149,6 +4205,7 @@ MonoBehaviour:
   graphTransform: {fileID: 1397806469}
   factoryData: {fileID: 11400000, guid: 89fd8f4889a0f4647a7abe26f849033f, type: 2}
   posOffset: {x: 0.2, y: 0.4}
+  spriteRenderer: {fileID: 1397806470}
 --- !u!65 &1124246037
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4310,14 +4367,6 @@ MonoBehaviour:
     type: 3}
   dynamicGenericBuild: {fileID: 4155439601221061712, guid: 77c36428ed7128042a96e4a43759d983,
     type: 3}
-  dynamicBuildingGraphs:
-  - {fileID: -8679921383154817045, guid: 603b03f238c255948b6d7b560e535bd9, type: 3}
-  - {fileID: -8679921383154817045, guid: a31b21c0dd9851a4ba358e8e74148d14, type: 3}
-  - {fileID: -8679921383154817045, guid: 8cc4a2f1d5a4475469ad503ee4cf5a0b, type: 3}
-  - {fileID: -8679921383154817045, guid: 6aa5237a9fe9e98468e8d28099ce9e9b, type: 3}
-  - {fileID: -8679921383154817045, guid: dc2e79e7b84b73741af4258f0db8a951, type: 3}
-  - {fileID: -8679921383154817045, guid: 22389543d75e40447811097922909fe1, type: 3}
-  - {fileID: -8679921383154817045, guid: c39695da8a65a9d4881c7ec3199cb0bd, type: 3}
   staticGenericBuild: {fileID: 1592278743168102029, guid: f1b4d369670f61e409b895cb02e6709c,
     type: 3}
 --- !u!114 &1169929618
@@ -5317,6 +5366,7 @@ MonoBehaviour:
   graphTransform: {fileID: 2101076312}
   factoryData: {fileID: 11400000, guid: a2a03c73d44e835499d5d5ca083ed063, type: 2}
   posOffset: {x: 0.2, y: 0.4}
+  spriteRenderer: {fileID: 2101076313}
 --- !u!65 &1501459535
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6495,6 +6545,7 @@ MonoBehaviour:
   graphTransform: {fileID: 557862336}
   factoryData: {fileID: 11400000, guid: 8324faa67579c9e4683a48d2a7f319ee, type: 2}
   posOffset: {x: 0.2, y: 0.4}
+  spriteRenderer: {fileID: 557862337}
 --- !u!65 &1809078047
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7462,6 +7513,7 @@ MonoBehaviour:
   graphTransform: {fileID: 1507182607}
   factoryData: {fileID: 11400000, guid: a35ac3f0f7479284594d81b4d9c324db, type: 2}
   posOffset: {x: 0.2, y: 0.4}
+  spriteRenderer: {fileID: 1507182608}
 --- !u!65 &1912949041
 BoxCollider:
   m_ObjectHideFlags: 0

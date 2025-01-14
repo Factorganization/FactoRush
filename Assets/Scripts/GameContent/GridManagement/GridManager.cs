@@ -34,8 +34,6 @@ namespace GameContent.GridManagement
         public Dictionary<Vector2Int, Tile> Grid { get; private set; }
         
         public Dictionary<byte, StaticTileGroup> StaticGroups { get; private set; }
-
-        public Transform[] DynamicBuildingsGraphs => dynamicBuildingGraphs;
         
         #endregion
         
@@ -155,6 +153,7 @@ namespace GameContent.GridManagement
                                 tTt.Added(this, tId, tPos, TileType.TransTarget);
                                 tTt.InitAssemblyTile(k);
                                 tTt.SetWeaponRef(AssemblyTileGroups[k].WeaponTile);
+                                tTt.SetBinTileRef(AssemblyTileGroups[k].WeaponTile);
                             }
                             break;
                         
@@ -621,8 +620,6 @@ namespace GameContent.GridManagement
         [SerializeField] private TransTargetTile transTargetTile;
 
         [SerializeField] private DynamicBuilding dynamicGenericBuild;
-        
-        [SerializeField] private Transform[] dynamicBuildingGraphs;
         
         [SerializeField] private StaticBuilding staticGenericBuild;
         

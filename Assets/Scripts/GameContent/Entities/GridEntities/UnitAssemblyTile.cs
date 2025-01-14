@@ -19,9 +19,18 @@ namespace GameContent.Entities.GridEntities
 
         public Queue<UnitComponent> RefinedResources { get; } = new();
 
+        public UnitAssemblyTile BinTileGroupRef { get; protected set; }
+        
+        public int TargetType { get; set; }
+        
         #endregion
         
         #region methodes
+
+        protected override void OnStart()
+        {
+            TargetType = -1;
+        }
 
         public void InitAssemblyTile(sbyte assemblyId) => AssemblyId = assemblyId;
         
@@ -29,6 +38,13 @@ namespace GameContent.Entities.GridEntities
         
         public UnitComponent RemoveResource() => RefinedResources.Dequeue();
         
+        public abstract void SetBinTileRef(UnitAssemblyTile unitAssemblyTile);
+
+        public void SetGraph()
+        {
+            
+        }
+            
         #endregion
     }
 }

@@ -5,6 +5,13 @@
     /// </summary>
     public sealed class WeaponTargetTile : UnitAssemblyTile
     {
-        
+        #region methodes
+
+        public override void SetBinTileRef(UnitAssemblyTile unitAssemblyTile)
+        {
+            BinTileGroupRef = unitAssemblyTile;
+        }
+
+        #endregion
     }
 }
