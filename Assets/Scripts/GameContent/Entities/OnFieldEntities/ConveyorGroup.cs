@@ -227,8 +227,60 @@ namespace GameContent.Entities.OnFieldEntities
             this[Count - 1].gameObject.SetActive(false);
             if (this[0].TileRef is not DynamicBuildingTile)
                 this[0].gameObject.SetActive(false);
+
+            if (this[0].TileRef is not DynamicBuildingTile d || d.CurrentBuildingRef is null)
+                return;
             
+            var t = d.CurrentBuildingRef as DynamicBuilding;
+            var t2 = GridManager.Manager.ConveyorGroups[t!.ConveyorGroupIds[0]].FromStaticTile;
             
+            var index = d.Index;
+            var l = new HashSet<float>();
+            var incident2 = Vector2Int.zero;
+            var next2 = Vector2Int.zero;
+            var angle = 0f;
+            
+            for (var j = 1; j < t2.GroupRef[0].Count; j++)
+            {
+                if (t2.GroupRef[0][j].TileRef.Index == index)
+                {
+                    incident2 = index - t2.GroupRef[0][j - 1].TileRef.Index;
+                    next2 = this[1].TileRef.Index - index;
+                    l.Add(Vector2.SignedAngle(incident2, next2));
+                    angle = DynamicBuilding.GetRotation(index - t2.GroupRef[0][j - 1].TileRef.Index);
+                    break;
+                }
+            }
+            
+            l.Add(Vector2.SignedAngle(incident2, next2));
+            
+            foreach (var c in t2.GroupRef)
+            {
+                for (var j = 1; j < c.Count; j++)
+                {
+                    if (c[j].TileRef.Index == index)
+                    {
+                        incident2 = c[j].TileRef.Index - c[j - 1].TileRef.Index;
+                        next2 = c[j + 1].TileRef.Index - c[j].TileRef.Index;
+                        l.Add(Vector2.SignedAngle(incident2, next2));
+                        break;
+                    }
+                }
+            }
+
+            if (l.Count == 3)
+                this[0].SetGraphId(6);
+            
+            else if (l.Contains(-90) && l.Contains(90))
+                this[0].SetGraphId(5);
+            
+            else if (l.Contains(0) && l.Contains(90))
+                this[0].SetGraphId(3);
+            
+            else if (l.Contains(-90) && l.Contains(0))
+                this[0].SetGraphId(4);
+
+            this[0].SetGraph(this[0].Position, Quaternion.Euler(0, angle, 0));
             
             //if (this[Count - 1].TileRef is not CenterStaticBuildingTile t)
             //    return;
