@@ -72,7 +72,11 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         
         public void SetTargetIndex(int target) => _targetIndex = target;
         
-        public void SetFactoryData(FactoryData fd) => data = fd;
+        public void SetFactoryData(FactoryData fd)
+        { 
+            data = fd;
+            unitSprite.sprite = data.sprite;
+        }
         
         #endregion
         
@@ -81,6 +85,8 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         [SerializeField] private FactoryData data;
 
         [SerializeField] private RefinedResource unitComponent; // j'ai chié sur les noms là ...
+        
+        [SerializeField] private SpriteRenderer unitSprite;
         
         private Dictionary<MiningResourceType, int> _miningResources;
 

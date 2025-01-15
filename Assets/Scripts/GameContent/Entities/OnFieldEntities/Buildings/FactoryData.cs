@@ -13,6 +13,8 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         public UnitComponent component;
         
         public Recipe recipe;
+
+        public Sprite sprite;
     }
 
     [System.Serializable]
