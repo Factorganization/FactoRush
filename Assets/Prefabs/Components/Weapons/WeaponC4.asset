@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WeaponC4
   m_EditorClassIdentifier: 
   Graph: {fileID: 3204802091719458959, guid: 568c93149313a8241922042f4532158c, type: 3}
-  Damage: 40
+  Damage: 50
   AttackSpeed: 2
   Range: 1
   targetType: 3
