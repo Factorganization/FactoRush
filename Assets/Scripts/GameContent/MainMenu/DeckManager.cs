@@ -25,11 +25,7 @@ namespace GameContent.MainMenu
             }
             UpdateDeckString();
         }
-
-        private void Update()
-        {
-            UpdateDeckString();
-        }
+        
 
         public void setAllCardsToNull()
         {
@@ -78,7 +74,7 @@ namespace GameContent.MainMenu
             
         }
 
-        private void UpdateDeckString()
+        public void UpdateDeckString()
         {
             // Update the deck string on GameManager by concatenating the cardId of each card in the deck 
             if (MainMenuAtlas.Instance.deckCard1.card != null && MainMenuAtlas.Instance.deckCard2.card != null && MainMenuAtlas.Instance.deckCard3.card != null && MainMenuAtlas.Instance.deckCard4.card != null && MainMenuAtlas.Instance.deckCard5.card != null)
