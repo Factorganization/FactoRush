@@ -57,9 +57,11 @@ public class EnemySpawner : MonoBehaviour
     private void ReadFile()
     {
         string filePath = Path.Combine(Application.dataPath, "Resources/EnemyWave", $"{enemyDataId}.txt");
-        if (File.Exists(filePath))
+        var f = (TextAsset)Resources.Load($"EnemyWave/{enemyDataId}");
+        if (f != null)
         {
-            string[] lines = File.ReadAllLines(filePath);
+            string[] lines = f.text.Split('\n');
+
             foreach (string line in lines)
             {
                 // Ignorer les lignes vides ou commençant par un commentaire

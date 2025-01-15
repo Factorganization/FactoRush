@@ -115,7 +115,7 @@
 				}
 			],
 			"type" : "STRING",
-			"value" : "RelWithDebInfo"
+			"value" : "Debug"
 		},
 		{
 			"name" : "CMAKE_CACHEFILE_DIR",
@@ -127,7 +127,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/cleme/Documents/Projects/FactoRush/.utmp/RelWithDebInfo/1t415s1s/arm64-v8a"
+			"value" : "c:/Users/cleme/Documents/Projects/FactoRush/.utmp/Debug/6e1k86xh/arm64-v8a"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -599,7 +599,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "C:\\Users\\cleme\\Documents\\Projects\\FactoRush\\.utmp\\RelWithDebInfo\\1t415s1s\\prefab\\arm64-v8a\\prefab"
+			"value" : "C:\\Users\\cleme\\Documents\\Projects\\FactoRush\\.utmp\\Debug\\6e1k86xh\\prefab\\arm64-v8a\\prefab"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -695,7 +695,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "C:\\Users\\cleme\\Documents\\Projects\\FactoRush\\Library\\Bee\\Android\\Prj\\IL2CPP\\Gradle\\unityLibrary\\build\\intermediates\\cxx\\RelWithDebInfo\\1t415s1s\\obj\\arm64-v8a"
+			"value" : "C:\\Users\\cleme\\Documents\\Projects\\FactoRush\\Library\\Bee\\Android\\Prj\\IL2CPP\\Gradle\\unityLibrary\\build\\intermediates\\cxx\\Debug\\6e1k86xh\\obj\\arm64-v8a"
 		},
 		{
 			"name" : "CMAKE_LINKER",
@@ -967,7 +967,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "C:\\Users\\cleme\\Documents\\Projects\\FactoRush\\Library\\Bee\\Android\\Prj\\IL2CPP\\Gradle\\unityLibrary\\build\\intermediates\\cxx\\RelWithDebInfo\\1t415s1s\\obj\\arm64-v8a"
+			"value" : "C:\\Users\\cleme\\Documents\\Projects\\FactoRush\\Library\\Bee\\Android\\Prj\\IL2CPP\\Gradle\\unityLibrary\\build\\intermediates\\cxx\\Debug\\6e1k86xh\\obj\\arm64-v8a"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",
@@ -1239,7 +1239,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/cleme/Documents/Projects/FactoRush/.utmp/RelWithDebInfo/1t415s1s/arm64-v8a"
+			"value" : "C:/Users/cleme/Documents/Projects/FactoRush/.utmp/Debug/6e1k86xh/arm64-v8a"
 		},
 		{
 			"name" : "Unity_IS_TOP_LEVEL",
@@ -1275,7 +1275,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Users/cleme/Documents/Projects/FactoRush/.utmp/RelWithDebInfo/1t415s1s/prefab/arm64-v8a/prefab/lib/aarch64-linux-android/cmake/game-activity"
+			"value" : "C:/Users/cleme/Documents/Projects/FactoRush/.utmp/Debug/6e1k86xh/prefab/arm64-v8a/prefab/lib/aarch64-linux-android/cmake/game-activity"
 		},
 		{
 			"name" : "game_BINARY_DIR",
@@ -1287,7 +1287,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/cleme/Documents/Projects/FactoRush/.utmp/RelWithDebInfo/1t415s1s/arm64-v8a/GameActivity"
+			"value" : "C:/Users/cleme/Documents/Projects/FactoRush/.utmp/Debug/6e1k86xh/arm64-v8a/GameActivity"
 		},
 		{
 			"name" : "game_IS_TOP_LEVEL",
@@ -1335,7 +1335,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Users/cleme/Documents/Projects/FactoRush/.utmp/RelWithDebInfo/1t415s1s/prefab/arm64-v8a/prefab/lib/aarch64-linux-android/cmake/games-frame-pacing"
+			"value" : "C:/Users/cleme/Documents/Projects/FactoRush/.utmp/Debug/6e1k86xh/prefab/arm64-v8a/prefab/lib/aarch64-linux-android/cmake/games-frame-pacing"
 		},
 		{
 			"name" : "swappywrapper_BINARY_DIR",
@@ -1347,7 +1347,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/cleme/Documents/Projects/FactoRush/.utmp/RelWithDebInfo/1t415s1s/arm64-v8a/FramePacing"
+			"value" : "C:/Users/cleme/Documents/Projects/FactoRush/.utmp/Debug/6e1k86xh/arm64-v8a/FramePacing"
 		},
 		{
 			"name" : "swappywrapper_IS_TOP_LEVEL",

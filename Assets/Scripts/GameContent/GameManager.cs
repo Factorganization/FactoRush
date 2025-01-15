@@ -19,6 +19,10 @@ public class GameManager : MonoBehaviour
     
     [SerializeField] private TMP_Text victoryText;
     
+    [SerializeField] private GameObject victoryScreen;
+    
+    [SerializeField] private GameObject defeatScreen;
+    
     public bool CanStart { get; set; }
     
     #endregion
@@ -56,14 +60,16 @@ public class GameManager : MonoBehaviour
     public void AllyWin()
     {
         victoryText.text = "Victoire !";
-        victoryText.gameObject.SetActive(true);
+        //victoryText.gameObject.SetActive(true);
+        victoryScreen.SetActive(true);
         StartCoroutine(LoadMainMenu());
     }
     
     public void EnemyWin()
     {
         victoryText.text = "Défaite !";
-        victoryText.gameObject.SetActive(true);
+        //victoryText.gameObject.SetActive(true);
+        defeatScreen.SetActive(true);
         StartCoroutine(LoadMainMenu());
     }
     
@@ -71,6 +77,8 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(3);
         victoryText.gameObject.SetActive(false);
+        victoryScreen.SetActive(false);
+        defeatScreen.SetActive(false);
         SceneManager.LoadScene("MainScene");
     }
     private void DoInitStart()
