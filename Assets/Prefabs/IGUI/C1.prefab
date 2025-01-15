@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 899646302019115341}
   - component: {fileID: 5312752604000783719}
   - component: {fileID: 3536153659081411546}
+  - component: {fileID: 5749400761595285828}
   m_Layer: 5
   m_Name: C1
   m_TagString: Untagged
@@ -119,4 +120,28 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5312752604000783719}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5749400761595285828}
+        m_TargetAssemblyTypeName: GameContent.InGameUI.CardClicker, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &5749400761595285828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5433976667176496918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2de93d4c35eb43b2923f4f146beabbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

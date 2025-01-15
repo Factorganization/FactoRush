@@ -7,12 +7,19 @@ namespace GameContent.InGameUI
     {
         #region properties
 
+        public static CardAtlas Instance { get; private set; }
+        
         public CardData[] Cards => cardDataAtlas;
 
         #endregion
         
         #region methodes
 
+        private void Awake()
+        {
+            Instance = this;
+        }
+        
         private void Start()
         {
             _cardsIds = CardParser(GameManager.Instance.deck);

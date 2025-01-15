@@ -9,6 +9,7 @@ namespace GameContent.InGameUI
         public void SetStartButton()
         {
             GameManager.Instance.CanStart = true;
+            gameObject.SetActive(false);
         }
 
         #endregion

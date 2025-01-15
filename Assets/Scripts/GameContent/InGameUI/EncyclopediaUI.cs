@@ -12,6 +12,8 @@ namespace GameContent.InGameUI
         
         public bool IsOpen { get; private set; }
 
+        public GameObject[] CardDesc => cardDescPanelUI;
+            
         #endregion
         
         #region methodes
@@ -55,12 +57,25 @@ namespace GameContent.InGameUI
             enemyPanelUI.SetActive(open);
             preselectUI.SetActive(!open);
         }
+
+        public void CardBack()
+        {
+            foreach (var c in cardDescPanelUI)
+            {
+                c.SetActive(false);
+            }
+        }
         
         public void InitPlayerEncyclopedia(CardAtlas atlas, int[] indexes)
         {
             for (var i = 0; i < indexes.Length; i++)
             {
                 playerButtons[i].sprite = atlas.Cards[indexes[i]].cardSprite;
+                if (playerButtons[i].TryGetComponent(out CardClicker c))
+                {
+                    c.DescIndex = indexes[i];
+                    c.Encyclopedia = this;
+                }
             }
         }
         
@@ -96,7 +111,15 @@ namespace GameContent.InGameUI
                             _currentEPanel = c.transform;
                         }
                         var b = Instantiate(buttonPrefab, _currentEPanel.transform);
-                        //TODO init button
+                        if (b.TryGetComponent(out Image img))
+                        {
+                            img.sprite = CardAtlas.Instance.Cards[GetTransportId(t)].cardSprite;
+                        }
+                        if (b.TryGetComponent(out CardClicker cc))
+                        {
+                            cc.DescIndex = GetTransportId(t);
+                            cc.Encyclopedia = this;
+                        }
                         
                         _ePartCount++;
                     }
@@ -110,13 +133,48 @@ namespace GameContent.InGameUI
                             _currentEPanel = c.transform;
                         }
                         var b = Instantiate(buttonPrefab, _currentEPanel.transform);
-                        //TODO init button
+                        if (b.TryGetComponent(out Image img))
+                        {
+                            img.sprite = CardAtlas.Instance.Cards[GetWeaponId(w)].cardSprite;
+                        }
+                        if (b.TryGetComponent(out CardClicker cc))
+                        {
+                            cc.DescIndex = GetWeaponId(w);
+                            cc.Encyclopedia = this;
+                        }
                         
                         _ePartCount++;
                     }
                 }
             }
         }
+
+        private int GetTransportId(int i) => i switch
+        {
+            2 => 0,
+            3 => 1,
+            4 => 2,
+            5 => 3,
+            6 => 4,
+            7 => 5,
+            8 => 6,
+            _ => 0
+        };
+        
+        private int GetWeaponId(int i) => i switch
+        {
+            2 => 7,
+            3 => 8,
+            4 => 9,
+            5 => 10,
+            6 => 11,
+            7 => 12,
+            8 => 13,
+            9 => 14,
+            10 => 15,
+            11 => 16,
+            _ => 0
+        };
         
         #endregion
         
