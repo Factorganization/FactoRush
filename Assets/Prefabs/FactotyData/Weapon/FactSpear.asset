@@ -18,3 +18,4 @@ MonoBehaviour:
     iron: 2
     copper: 0
     gold: 1
+  sprite: {fileID: 21300000, guid: af7a64e1bd310294997401c4134733a0, type: 3}
