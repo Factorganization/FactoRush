@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using GameContent.Entities.UnmanagedEntities;
 using GameContent.InGameUI;
+using UnityEngine.SceneManagement;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -19,7 +21,7 @@ public class EnemySpawner : MonoBehaviour
     public float delayBetweenUnits = 0.5f; // Délai entre chaque unité sur la même ligne
 
     private ComponentAtlas componentAtlas; // Référence à l'atlas des composants
-    private Queue<string> linesQueue; // File d'attente pour stocker les lignes du fichier
+    public Queue<string> linesQueue = new Queue<string>(); // File d'attente pour stocker les lignes du fichier
     private System.Random random; // Générateur de nombres aléatoires
     private bool started = false;
     
@@ -32,13 +34,17 @@ public class EnemySpawner : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        linesQueue = new Queue<string>();
+        StopAllCoroutines();
+        started = false;
+        GameManager.Instance.CanStart = false;
+        linesQueue.Clear();
         componentAtlas = ComponentAtlas.Instance;
         random = new System.Random(); // Initialiser le générateur de nombres aléatoires
         ReadFile(); // Charger les données du fichier
     }
+    
 
     private void Update()
     {
@@ -102,6 +108,7 @@ public class EnemySpawner : MonoBehaviour
     // Traitement des lignes avec un intervalle configurable
     private IEnumerator ProcessFile()
     {
+        Debug.Log("Je process ta mere");
         while (linesQueue.Count > 0)
         {
             string line = linesQueue.Dequeue();

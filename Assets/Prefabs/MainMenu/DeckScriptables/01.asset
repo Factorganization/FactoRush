@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: 01
   m_EditorClassIdentifier: 
   cardId: 01
-  cardImage: {fileID: 21300000, guid: 12ee070efa2004b4eaac8873ece88ef6, type: 3}
+  cardImage: {fileID: 21300000, guid: 94a321e56b966e241abad82013632943, type: 3}
   isInDeck: 0

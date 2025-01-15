@@ -75,19 +75,25 @@ public class GameManager : MonoBehaviour
     
     private IEnumerator LoadMainMenu()
     {
-        yield return new WaitForSeconds(3);
-        victoryText.gameObject.SetActive(false);
-        victoryScreen.SetActive(false);
-        defeatScreen.SetActive(false);
-        SceneManager.LoadScene("MainScene");
+        if (SceneManager.GetActiveScene().name == "ClemScene")
+        {
+            yield return new WaitForSeconds(3);
+            victoryText.gameObject.SetActive(false);
+            victoryScreen.SetActive(false);
+            defeatScreen.SetActive(false);
+            //enemySpawner.linesQueue.Clear();
+            SceneManager.LoadScene("MainScene");
+        }
     }
     private void DoInitStart()
     {
         // if CurrentScene is MainMenu
         if (SceneManager.GetActiveScene().name == "MainScene")
         {
-            enemySpawner.enabled = false;
             CanStart = false;
+            if (!enemySpawner.enabled) return;
+            enemySpawner.enabled = false;
+            
         }
         
         // if CurrentScene is Game

@@ -23,6 +23,7 @@ namespace GameContent.Entities.UnmanagedEntities
         {
             Debug.Log("Enemy is dead");
             GameManager.Instance.AllyWin();
+            health = 9999999999;
         }
 
         public override void TakeDamage(float damage)
