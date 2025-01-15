@@ -1,4 +1,5 @@
 using System.Collections;
+using GameContent.MainMenu;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -28,7 +29,14 @@ public class GameManager : MonoBehaviour
     
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     
     private void Start()
@@ -71,6 +79,7 @@ public class GameManager : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "MainScene")
         {
             enemySpawner.enabled = false;
+            CanStart = false;
         }
         
         // if CurrentScene is Game
@@ -83,6 +92,8 @@ public class GameManager : MonoBehaviour
     
     public void Play(int level)
     {
+        DeckManager.Instance.UpdateDeckString();
+        
         if (level == 1)
         {
             deck = "0404141414";
@@ -91,6 +102,7 @@ public class GameManager : MonoBehaviour
         {
             deck = "0414090700";
         }
+        
         enemySpawner.enemyDataId = level.ToString();
         LevelToLoad = level.ToString();
         SceneManager.LoadScene("ClemScene");
