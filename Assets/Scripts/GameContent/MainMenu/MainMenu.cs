@@ -26,7 +26,7 @@ public class MainMenu : MonoBehaviour
         
         preLvlSprite.GetComponentInChildren<Button>().onClick.AddListener(Back);
 
-
+        Application.targetFrameRate = 120;
     }
 
     public void CallPlayForReal(int Level)
