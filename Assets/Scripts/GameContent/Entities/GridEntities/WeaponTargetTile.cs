@@ -1,25 +1,16 @@
 ﻿namespace GameContent.Entities.GridEntities
 {
     /// <summary>
-    /// Odd id key
+    /// used to type comparison
     /// </summary>
-    public sealed class WeaponTargetTile : Tile
+    public sealed class WeaponTargetTile : UnitAssemblyTile
     {
-        #region properties
+        #region methodes
 
-        public override bool IsBlocked => CurrentBuildingRef is not null;
-
-        public override bool IsSelected
+        public override void SetBinTileRef(UnitAssemblyTile unitAssemblyTile)
         {
-            get;
-            set;
+            BinTileGroupRef = unitAssemblyTile;
         }
-
-        #endregion
-
-        #region fields
-
-        //TODO queue
 
         #endregion
     }

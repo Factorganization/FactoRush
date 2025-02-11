@@ -14,7 +14,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
             // Damage all units in range
             foreach (var unit in allUnitsInRange)
             {
-                unit.ApplyDamage(Damage);
+                unit.ApplyDamage(attacker.damage);
             }
         }
         

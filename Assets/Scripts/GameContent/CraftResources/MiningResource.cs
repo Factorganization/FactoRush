@@ -8,7 +8,7 @@ namespace GameContent.CraftResources
     {
         #region properties
 
-        private SideStaticBuildingTile SideTileRef { get; set; }
+        private CenterStaticBuildingTile SideTileRef { get; set; }
 
         #endregion
         
@@ -18,7 +18,7 @@ namespace GameContent.CraftResources
         {
             base.Created(conveyorRef);
             
-            SideTileRef = conveyorRef.ToStaticTile as SideStaticBuildingTile;
+            SideTileRef = conveyorRef.ToStaticTile as CenterStaticBuildingTile;
         }
 
         protected override void RemoveSelf()

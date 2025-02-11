@@ -37,6 +37,7 @@ namespace GameContent.Entities.OnFieldEntities
             {
                 ConveyorGroupIds.Remove(i);
             }
+            _removing.Clear();
         }
         
         public void AddConveyorGroupId(sbyte conveyorId) => ConveyorGroupIds.Add(conveyorId);
@@ -46,6 +47,15 @@ namespace GameContent.Entities.OnFieldEntities
         public void SetDebugId(sbyte i) => conveyorGroupId.text += i.ToString();
         
         public void SetDebugId() => conveyorGroupId.text = "";
+
+        public void SetGraphId(int i)
+        {
+            foreach (var g in graphs)
+            {
+                g.SetActive(false);
+            }
+            graphs[i].SetActive(true);
+        }
         
         public IEnumerator<sbyte> GetEnumerator() => ConveyorGroupIds.GetEnumerator();
 
@@ -57,7 +67,9 @@ namespace GameContent.Entities.OnFieldEntities
         
         [SerializeField] private TMP_Text conveyorGroupId;
 
-        private HashSet<sbyte> _removing;
+        [SerializeField] private GameObject[] graphs;
+        
+        private HashSet<sbyte> _removing = new();
 
         #endregion
     }

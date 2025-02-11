@@ -24,33 +24,36 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
                     break; // Trouve la première cible prioritaire dans la portée
                 }
             }
+            
+            
 
-            // Si aucune cible prioritaire n'est trouvée, chercher une cible 
-            if (priorityTarget == null)
+            // Si aucune cible prioritaire n'est trouvée, default à la target
+            if (priorityTarget is null) // if no priority target is found, target the last target
             {
                 foreach (var unit in allUnitsInRange)
                 {
-                    if (unit.isAirUnit && Vector3.Distance(target.transform.position, unit.transform.position) <= Range)
+                    if (unit == attacker.lastTarget)
                     {
                         priorityTarget = unit;
-                        break; // Trouve la première cible dans la portée
+                        break;
                     }
                 }
             }
+            
+            priorityTarget ??= target; // if no priority target is found, target the default target
 
             // Appliquer les dégâts à la cible préférée et aux stun les autres unités du même type dans la portée
-            if (priorityTarget != null)
+            
+            priorityTarget.ApplyDamage(attacker.damage);
+            foreach (var unit in allUnitsInRange)
             {
-                priorityTarget.ApplyDamage(Damage);
-                foreach (var unit in allUnitsInRange)
+                if (unit.isAirUnit == priorityTarget.isAirUnit)
                 {
-                    if (unit.GetType() == priorityTarget.GetType())
-                    {
-                        //if (unit != priorityTarget) divide stun duration by 2
-                        unit.Stun(unit == priorityTarget ? StunDuration : StunDuration / 2);
-                    }
+                    //if (unit != priorityTarget) divide stun duration by 2
+                    unit.Stun(unit == priorityTarget ? StunDuration : StunDuration / 2);
                 }
             }
+            
         }
         
         #endregion

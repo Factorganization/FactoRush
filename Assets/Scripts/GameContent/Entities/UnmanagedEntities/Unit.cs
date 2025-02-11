@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameContent.Entities.UnmanagedEntities.Bases;
 using GameContent.Entities.UnmanagedEntities.Scriptables.Transport;
 using GameContent.Entities.UnmanagedEntities.Scriptables.Weapons;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameContent.Entities.UnmanagedEntities
 {
@@ -15,6 +16,7 @@ namespace GameContent.Entities.UnmanagedEntities
         [SerializeField] public WeaponComponent weaponComponent;       // Reference to weapon stats
         [SerializeField] public TransportComponent transportComponent; // Reference to transport stats
         
+        
         [Header("Vision Cone")]
         [SerializeField] public Material VisionConeMaterial;          // Material for the vision cone
         [SerializeField] public float ConeAngle = 60;                 // Field of view angle
@@ -22,10 +24,14 @@ namespace GameContent.Entities.UnmanagedEntities
         [SerializeField] public float offsetX = 0;                    // Horizontal offset for the cone origin
         [SerializeField] public float offsetY = 0;                    // Vertical offset for the cone origin
         [SerializeField] public float offsetZ = 0;                    // Forward offset for the cone origin
+        
+        [Header("Hp Bar")]
+        [SerializeField] public Slider hpBar;
 
         private Mesh visionConeMesh;
         private MeshFilter meshFilter;
         public float currentHealth;
+        private float maxHealth;
 
         public AllyBase allyBase;
         public EnemyBase enemyBase;
@@ -50,12 +56,22 @@ namespace GameContent.Entities.UnmanagedEntities
         
         private bool isStunned = false;
         private float attackCooldown = 0;
-        private float Range;
+        public float Range;
+        public TargetType targetType;
         public bool isExplosive = false;
         public float attackSpeed;
         public float moveSpeed;
+        public float damage;
         public float ExplosiveRange;
-
+        public bool alreadyCloned = false;
+        public bool canDash = false;
+        private bool hasDash = false;
+        public float thornmailRange = 3f;
+        public Unit lastTarget;
+        
+        public ParticleSystem stunParticles;
+        public ParticleSystem weaponParticles;
+        
         #endregion
 
         #region Unity Lifecycle
@@ -68,15 +84,29 @@ namespace GameContent.Entities.UnmanagedEntities
         private void Start()
         {
             InitializeUnit();
-            //InitializeVisionCone();
+            InitializeVisionCone();
         }
 
         private void Update()
         {
             if (!IsAlive) return;
+            
+            UpdateHpBar(); // Update the health bar every frame
+            
             if (isStunned) return;
             
-            //DrawVisionCone(); // Update the vision cone every frame
+            if (canDash && !hasDash && Range <= 1)
+            {
+                var transportComponent = this.transportComponent as TransportSlider;
+                var target = GetAllUnitsInRange(transportComponent.dashRange);
+                if (target.Count > 0)
+                {
+                    transportComponent.UniqueBehavior(this, target[0]);
+                    hasDash = true;
+                }
+            }
+            
+            DrawVisionCone(); // Update the vision cone every frame
             UpdateCooldown(); 
             
             if (!HandleCombat())
@@ -93,20 +123,58 @@ namespace GameContent.Entities.UnmanagedEntities
         private void InitializeUnit()
         {
             float baseHealth = 100;
+            damage = weaponComponent != null ? weaponComponent.Damage : 0;
             attackSpeed = weaponComponent != null ? weaponComponent.AttackSpeed : 9999;
             Range = weaponComponent != null ? weaponComponent.Range : 0;
             moveSpeed = transportComponent != null ? transportComponent.SpeedMultiplier : 0;
+            
+            if (transportComponent != null && transportComponent is TransportTwinBoots)
+            {
+                baseHealth = 50;
+                damage /= 2;
+                
+                // Clone if no Parent and make as a child so its not recursive
+                if (alreadyCloned is false)
+                {
+                    transportComponent.UniqueBehavior(this);
+                }
+            }
+            
+            
             currentHealth = transportComponent != null ? baseHealth * transportComponent.HealthMultiplier : baseHealth;
+            maxHealth = currentHealth;
+            
             if (isAirUnit)
             {
                 transform.position += Vector3.up * 3f; // Lift the unit off the ground
             }
             
+            // Get Stun Particles
+            if (ETransform.Find("FX") != null)
+            {
+                stunParticles = ETransform.Find("FX").GetComponent<ParticleSystem>();
+            }
+            // Get Weapon particles in the children of the children of graphTransform
+            
             if (weaponComponent != null)
             {
                 var weaponGraph = Instantiate(weaponComponent.Graph, transform);
                 weaponGraph.transform.parent = graphTransform;
+                
+                // Initialize the weapon particles if they exist
+                if (weaponGraph.transform.Find("FX") != null)
+                {
+                    weaponParticles = weaponGraph.transform.Find("FX").GetComponent<ParticleSystem>();
+                }
                 weaponComponent.Initialize(this);
+                if (weaponComponent.targetType == TargetType.TransportDependent)
+                {
+                    targetType = transportComponent is null ? TargetType.Ground : transportComponent.IsFlying ? TargetType.Air : TargetType.Ground;
+                }
+                else
+                {
+                    targetType = weaponComponent.targetType;
+                }
             }
             if (transportComponent != null)
             {
@@ -115,6 +183,14 @@ namespace GameContent.Entities.UnmanagedEntities
                 if (transportComponent is TransportDrill)
                 {
                     transportComponent.UniqueBehavior(this);
+                }
+                if (transportComponent is TransportSlider)
+                {
+                    canDash = true;
+                }
+                if (transportComponent is TransportThornmail thornmail)
+                {
+                    thornmailRange = thornmail.range;
                 }
             }
         }
@@ -201,6 +277,9 @@ namespace GameContent.Entities.UnmanagedEntities
             {
                 // Attack the first valid unit target, if any
                 AttackTarget(unitsInRange);
+                // if weaponparticles is not null, play the particles
+                if(weaponParticles != null)
+                    weaponParticles.Play(true);
                 return true;
             }
 
@@ -216,18 +295,22 @@ namespace GameContent.Entities.UnmanagedEntities
                 if (isAlly)
                 {
                     EnemyBase enemyBase = hitCollider.GetComponent<EnemyBase>();
-                    if (enemyBase != null && IsInCone(enemyBase.transform.position, coneOrigin))
+                    if (enemyBase != null)
                     {
                         AttackEnemyBase(enemyBase);
+                        if(weaponParticles != null)
+                            weaponParticles.Play(true);
                         return true;
                     }
                 }
                 else
                 {
                     AllyBase allyBase = hitCollider.GetComponent<AllyBase>();
-                    if (allyBase != null && IsInCone(allyBase.transform.position, coneOrigin))
+                    if (allyBase != null)
                     {
                         AttackAllyBase(allyBase);
+                        if(weaponParticles != null)
+                            weaponParticles.Play(true);
                         return true;
                     }
                 }
@@ -249,21 +332,14 @@ namespace GameContent.Entities.UnmanagedEntities
             foreach (var hitCollider in hitColliders)
             {
                 Unit target = hitCollider.GetComponent<Unit>();
-                if (target != null && target.IsAlive && IsValidTarget(target) && IsInCone(target.transform.position, coneOrigin))
+                if (target != null && target.IsAlive && IsValidTarget(target))
                 {
                     unitsInRange.Add(target);
                 }
             }
             return unitsInRange;
         }
-
-
-        private bool IsInCone(Vector3 targetPosition, Vector3 coneOrigin)
-        {
-            Vector3 directionToTarget = (targetPosition - coneOrigin).normalized;
-            float angle = Vector3.Angle(transform.forward, directionToTarget);
-            return angle <= ConeAngle / 2;
-        }
+        
 
         private void AttackTarget(List<Unit> unitsInRange)
         {
@@ -277,11 +353,16 @@ namespace GameContent.Entities.UnmanagedEntities
                 }
             }
 
+            if (weaponComponent is not null && weaponComponent is WeaponRailgun railgunComponent)
+            {
+                var TargetForRailgun = GetAllUnitsInRange(railgunComponent.EffectRange);
+                Debug.Log("TargetForRailgun.Count: " + TargetForRailgun.Count);
+                weaponComponent.Attack(this, unitsInRange[0], TargetForRailgun);
+            }
+
             weaponComponent.Attack(this, unitsInRange[0], unitsInRange );
             ResetCooldown();
             ResetRange();
-
-            Debug.Log($"{name} attacked {unitsInRange[0].name} for {weaponComponent.Damage} damage.");
         }
         
         private void AttackEnemyBase(EnemyBase enemyBase)
@@ -318,7 +399,7 @@ namespace GameContent.Entities.UnmanagedEntities
             }
             
 
-            return weaponComponent.targetType switch
+            return targetType switch
             {
                 TargetType.Ground => !target.isAirUnit,
                 TargetType.Air => target.isAirUnit,
@@ -364,26 +445,53 @@ namespace GameContent.Entities.UnmanagedEntities
             transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
             velocity = transform.forward * moveSpeed;
         }
+        
+        public void Dash(Vector3 direction, float distance)
+        {
+            if (!canDash) return;
+            if (isStunned) return;
+            
+            transform.position += direction * distance;
+        }
 
         #endregion
 
         #region Health Management
+        
+        private void UpdateHpBar()
+        {
+            if (hpBar != null)
+            {
+                //Fill it with a ratio of the current health over the max health
+                hpBar.value = currentHealth / maxHealth;
+            }
+        }
 
         public void ApplyDamage(float damage)
         {
-            currentHealth -= damage;
             //if TransportComponent is a TransportThornmail, it will reflect damage
-            if (transportComponent != null && transportComponent is TransportThornmail)
+            if (transportComponent is TransportThornmail)
             {
-                transportComponent.UniqueBehavior(this, GetAllUnitsInRange(3)[0]);
+                var target = GetAllUnitsInRange(thornmailRange);
+                if (target.Count > 0)
+                {
+                    transportComponent.UniqueBehavior(this, target[0]);
+                }
+                
             }
-            if (transportComponent != null && transportComponent is TransportAccumulator)
+            if (transportComponent is TransportAccumulator)
             {
                 transportComponent.UniqueBehavior(this);
             }
             
-            if (currentHealth <= 0)
-                DestroyUnit();
+            if (transportComponent is TransportSlider && !hasDash)
+            {
+                transportComponent.UniqueBehavior(this);
+                hasDash = true;
+            }
+            
+            ApplyDamageRaw(damage);
+
         }
         
         public void ApplyDamageRaw(float damage)
@@ -422,10 +530,13 @@ namespace GameContent.Entities.UnmanagedEntities
         
         public void Stun(float duration)
         {
+            // Stop all HandleStun coroutines
+            StopAllCoroutines();
             if (transportComponent != null && transportComponent is TransportInsulatingWheels) return; //Boots Imune to stun
             
             Debug.Log($"{name} is stunned for {duration} seconds.");
             isStunned = true;
+            stunParticles.Play(true);
             StartCoroutine(HandleStun(duration));
         }
         

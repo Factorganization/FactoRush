@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GameContent.Entities.UnmanagedEntities
 {
@@ -9,6 +8,7 @@ namespace GameContent.Entities.UnmanagedEntities
     {
         
         [Header("Effect Parameters")]
+        public float range = 5f; // Range of the effect
         public float damagePerLightning = 10f; // Damage to deal
         
         public override void UniqueBehavior(Unit unit, Unit target = null, List<Unit> allUnitsInRange = null)

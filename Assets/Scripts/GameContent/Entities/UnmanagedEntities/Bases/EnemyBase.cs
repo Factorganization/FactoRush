@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace GameContent.Entities.UnmanagedEntities
+namespace GameContent.Entities.UnmanagedEntities.Bases
 {
     public class EnemyBase : Base
     {
@@ -22,6 +22,8 @@ namespace GameContent.Entities.UnmanagedEntities
         protected override void Die()
         {
             Debug.Log("Enemy is dead");
+            GameManager.Instance.AllyWin();
+            health = 9999999999;
         }
 
         public override void TakeDamage(float damage)

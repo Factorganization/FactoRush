@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using GameContent.CraftResources;
 using GameContent.Entities.OnFieldEntities;
+using GameContent.Entities.OnFieldEntities.Buildings;
+using GameContent.GridManagement;
+using UnityEngine;
 
 namespace GameContent.Entities.GridEntities
 {
@@ -9,31 +11,87 @@ namespace GameContent.Entities.GridEntities
     {
         #region properties
 
-        public override bool IsBlocked => true;
+        public override bool IsBlocked => CurrentBuildingRef is not null;
 
+        public bool IsFull => SecondaryBuildRefs.Count >= 4;
+        
         public override bool IsSelected
         {
-            get;
-            set;
+            get => _isSelected;
+            set
+            {
+                _isSelected = value;
+                preSelectionAvailable.SetActive(value);
+            }
         }
 
-        public override List<ConveyorGroup> GroupRef
+        public override Building CurrentBuildingRef
         {
-            get => null;
-            set { }
+            get => _currentBuildingRef;
+            set
+            {
+                switch (value)
+                {
+                    case null:
+                        _currentBuildingRef = null;
+                        break;
+                    case DynamicBuilding d:
+                        SecondaryBuildRefs.Add(d);
+                        break;
+                    default:
+                        _currentBuildingRef = value;
+                        CheckSelfSendingType();
+                        break;
+                }
+            }
         }
-
+        
+        public List<Building> SecondaryBuildRefs { get; } = new();
+        
         #endregion
         
         #region methodes
-        
-        public override void AddConveyorGroup(ConveyorGroup conveyorGroup) {}
-
-        public override void RemoveConveyorGroup(ConveyorGroup conveyorGroup) {}
-        
-        protected override void InstantiateResourceAt(int conveyorIndex, BaseResource resource, Vector3 pos, int pathIndex) {}
-        
         protected override void DestroyResource(int conveyorIndex, BaseResource resource) {}
+
+        private void CheckSelfSendingType()
+        {
+            if (_currentBuildingRef is not FactoryBuilding f)
+                return;
+
+            if (GroupRef.Count <= 0)
+                return;
+
+            if (!GroupRef[0].CheckPathTarget(this, f))
+            {
+                GridManager.Manager.TryRemoveDynamicBuildingAt(GroupRef[0][1].TileRef.Index);
+                return;
+            }
+
+            foreach (var group in GroupRef)
+            {
+                var u = group.ToStaticTile as UnitAssemblyTile;
+                u!.TargetType = f.UnitResourceType;
+                u.BinTileGroupRef.TargetType = f.UnitResourceType == 0 ? 1 : 0;
+            }
+        }
+
+        public override void RemoveConveyorGroup(ConveyorGroup conveyorGroup)
+        {
+            base.RemoveConveyorGroup(conveyorGroup);
+
+            if (_currentBuildingRef is FactoryBuilding f)
+                f.SetTargetIndex(0);
+        }
+        
+        #endregion
+        
+        #region fields
+        
+        [SerializeField] private GameObject preSelectionAvailable;
+
+        private bool _isSelected;
+        
+        private Building _currentBuildingRef;
         
         #endregion
     }

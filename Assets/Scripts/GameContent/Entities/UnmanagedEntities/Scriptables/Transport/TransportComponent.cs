@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using NUnit.Framework;
+using GameContent.Entities.UnmanagedEntities.Scriptables;
 using UnityEngine;
 
 namespace GameContent.Entities.UnmanagedEntities
 {
-    public abstract class TransportComponent : ScriptableObject
+    public abstract class TransportComponent : UnitComponent
     {
         [Header("Graph")]
         public GameObject Graph; // Graphical representation of the unit

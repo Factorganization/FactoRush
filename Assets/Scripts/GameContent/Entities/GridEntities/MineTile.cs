@@ -1,5 +1,6 @@
 ﻿using GameContent.CraftResources;
 using GameContent.Entities.OnFieldEntities;
+using GameContent.GridManagement;
 using UnityEngine;
 
 namespace GameContent.Entities.GridEntities
@@ -20,6 +21,20 @@ namespace GameContent.Entities.GridEntities
 
         #region methodes
 
+        public override void Added(GridManager grid, Vector2Int index, Vector3 pos = new Vector3(), TileType type = TileType.Default)
+        {
+            base.Added(grid, index, pos, type);
+
+            ETransform.rotation = (index.x, index.y) switch
+            {
+                (0, 0) => Quaternion.Euler(0, 90, 0),
+                (0, > 0) => Quaternion.Euler(0, 180, 0),
+                (> 0, 0) => Quaternion.Euler(0, 0, 0),
+                (> 0, > 0) => Quaternion.Euler(0, -90, 0),
+                _ => ETransform.rotation
+            };
+        }
+
         protected override void OnStart()
         {
             base.OnStart();
@@ -31,7 +46,7 @@ namespace GameContent.Entities.GridEntities
         {
             base.OnUpdate();
             
-            if (!Active)
+            if (!Active || !GameManager.Instance.CanStart)
                 return;
 
             if (_spawnCounter <= Constants.SpawnInterval)
@@ -48,11 +63,32 @@ namespace GameContent.Entities.GridEntities
                 if (c is null)
                     return;
             }
-            InstantiateResourceAt(_targetIndex, miningResource, Position + Vector3.up * 0.25f, _targetIndex);
+            InstantiateResourceAt(_targetIndex, _miningResource, Position + Vector3.up * 0.25f);
             _spawnCounter = 0;
             _targetIndex = (_targetIndex + 1) % GroupRef.Count;
         }
-
+        
+        public void SetResource(MiningResource resource)
+        { 
+            _miningResource = resource;
+            switch (_miningResource.resourceType)
+            {
+                case MiningResourceType.Iron:
+                    graphs[0].SetActive(true);
+                    break;
+                
+                case MiningResourceType.Copper:
+                    graphs[1].SetActive(true);
+                    break;
+                
+                case MiningResourceType.Gold:
+                    graphs[2].SetActive(true);
+                    break;
+                case MiningResourceType.Diamond:
+                    break;
+            }
+        }
+        
         public override void RemoveConveyorGroup(ConveyorGroup conveyorGroup)
         {
             _targetIndex = 0;
@@ -70,7 +106,9 @@ namespace GameContent.Entities.GridEntities
         
         #region fields
 
-        [SerializeField] private MiningResource miningResource;
+        [SerializeField] private GameObject[] graphs;
+        
+        private MiningResource _miningResource;
 
         private float _spawnCounter;
 
