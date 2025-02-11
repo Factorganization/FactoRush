@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace GameContent.Entities.UnmanagedEntities
+namespace GameContent.Entities.UnmanagedEntities.Bases
 {
     public class EnemyBase : Base
     {

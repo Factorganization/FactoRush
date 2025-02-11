@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using GameContent.Entities.UnmanagedEntities;
+using GameContent.Entities.UnmanagedEntities.Bases;
 using UnityEngine;
 
 public class UnitsManager : MonoBehaviour
