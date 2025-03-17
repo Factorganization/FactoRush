@@ -1,44 +1,45 @@
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainMenu : MonoBehaviour
+namespace GameContent.MainMenu
 {
-
-    [SerializeField] public Sprite[] preLVlSprite;
-    [SerializeField] public GameObject preLvlSprite;
-
-    private int pressedLvl;
-    public void CallPlay(int Level)
+    public class MainMenu : MonoBehaviour
     {
-        preLvlSprite.SetActive(true);
-        preLvlSprite.GetComponent<Image>().sprite = preLVlSprite[Level - 3];
-        pressedLvl = Level; 
-    }
 
-    private void Awake()
-    {
-        preLvlSprite.GetComponent<Button>().onClick.AddListener(() =>
+        [SerializeField] public Sprite[] preLVlSprite;
+        [SerializeField] public GameObject preLvlSprite;
+
+        private int pressedLvl;
+        public void CallPlay(int Level)
         {
-            CallPlayForReal(pressedLvl);
-        });
+            preLvlSprite.SetActive(true);
+            preLvlSprite.GetComponent<Image>().sprite = preLVlSprite[Level - 3];
+            pressedLvl = Level; 
+        }
+
+        private void Awake()
+        {
+            preLvlSprite.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                CallPlayForReal(pressedLvl);
+            });
         
-        preLvlSprite.GetComponentInChildren<Button>().onClick.AddListener(Back);
+            preLvlSprite.GetComponentInChildren<Button>().onClick.AddListener(Back);
 
-        Application.targetFrameRate = 120;
-    }
+            Application.targetFrameRate = 120;
+        }
 
-    public void CallPlayForReal(int Level)
-    {
-        GameManager.Instance.Play(Level);
-    }
+        public void CallPlayForReal(int Level)
+        {
+            GameManager.Instance.Play(Level);
+        }
 
-    public void Back()
-    {
-        preLvlSprite.SetActive(false);
-    }
+        public void Back()
+        {
+            preLvlSprite.SetActive(false);
+        }
     
     
     
+    }
 }

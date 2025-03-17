@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace GameContent.Entities.UnmanagedEntities
+namespace GameContent.Entities.UnmanagedEntities.Scriptables.Transport
 {
     [CreateAssetMenu(fileName = "TransportThornmail", menuName = "Components/TransportsComponent/TransportThornmail")]
     public class TransportThornmail : TransportComponent
@@ -11,7 +10,7 @@ namespace GameContent.Entities.UnmanagedEntities
         public float range = 5f; // Range of the effect
         public float damagePerLightning = 10f; // Damage to deal
         
-        public override void UniqueBehavior(Unit unit, Unit target = null, List<Unit> allUnitsInRange = null)
+        public override void UniqueBehavior(Unit unit, Unit target = null)
         {
             if (target != null) target.ApplyDamageRaw(damagePerLightning);
         }

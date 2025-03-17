@@ -1,4 +1,6 @@
 ﻿using GameContent.Entities.UnmanagedEntities;
+using GameContent.Entities.UnmanagedEntities.Scriptables.Transport;
+using GameContent.Entities.UnmanagedEntities.Scriptables.Weapons;
 using UnityEngine;
 
 namespace GameContent.Entities.GridEntities

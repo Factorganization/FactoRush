@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using Others.External_Tools.Verpha.Hierarchy_Designer.Runtime.Scripts;
 
 namespace Verpha.HierarchyDesigner
 {

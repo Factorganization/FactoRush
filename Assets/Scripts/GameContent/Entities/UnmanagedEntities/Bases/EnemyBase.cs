@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace GameContent.Entities.UnmanagedEntities.Bases
+﻿namespace GameContent.Entities.UnmanagedEntities.Bases
 {
     public class EnemyBase : Base
     {
@@ -9,7 +7,7 @@ namespace GameContent.Entities.UnmanagedEntities.Bases
         protected override void OnAwake()
         {
             base.OnAwake();
-            if (Instance == null)
+            if (Instance is null)
             {
                 Instance = this;
             }
@@ -21,16 +19,15 @@ namespace GameContent.Entities.UnmanagedEntities.Bases
         
         protected override void Die()
         {
-            Debug.Log("Enemy is dead");
+            //Debug.Log("Enemy is dead");
             GameManager.Instance.AllyWin();
-            health = 9999999999;
         }
 
-        public override void TakeDamage(float damage)
+        public override void TakeDamage(float dmg)
         {
-            Debug.Log("Enemy took " + damage + " damage");
-            base.TakeDamage(damage);
-            Debug.Log("Enemy has " + health + " health left");
+            //Debug.Log("Enemy took " + dmg + " damage");
+            base.TakeDamage(dmg);
+            //Debug.Log("Enemy has " + health + " health left");
         }
     }
 }

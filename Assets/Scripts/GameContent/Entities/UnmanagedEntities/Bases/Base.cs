@@ -2,10 +2,9 @@
 
 namespace GameContent.Entities.UnmanagedEntities.Bases
 {
-    public class Base : MonoBehaviour
+    public abstract class Base : MonoBehaviour
     {
         public float health;
-        public float damage;
         public bool isDead;
         
         [SerializeField] public Transform spawnPoint;
@@ -18,14 +17,13 @@ namespace GameContent.Entities.UnmanagedEntities.Bases
         protected virtual void OnAwake()
         {
             health = 100;
-            damage = 10;
             isDead = false;
         }
         
         public virtual void TakeDamage(float damage)
         {
             health -= damage;
-            if (health <= 0)
+            if (health <= 0 && !isDead)
             {
                 Die();
             }

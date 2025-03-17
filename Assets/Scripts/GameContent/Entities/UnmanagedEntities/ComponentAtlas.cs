@@ -1,5 +1,7 @@
 ﻿    using System.Collections.Generic;
-using UnityEngine;
+    using GameContent.Entities.UnmanagedEntities.Scriptables.Transport;
+    using GameContent.Entities.UnmanagedEntities.Scriptables.Weapons;
+    using UnityEngine;
 
 namespace GameContent.Entities.UnmanagedEntities
 {

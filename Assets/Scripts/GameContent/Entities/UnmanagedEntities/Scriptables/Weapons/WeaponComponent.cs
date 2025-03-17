@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using GameContent.Entities.UnmanagedEntities.Scriptables;
 using UnityEngine;
 
-namespace GameContent.Entities.UnmanagedEntities
+namespace GameContent.Entities.UnmanagedEntities.Scriptables.Weapons
 {
     public abstract class WeaponComponent : UnitComponent
     {

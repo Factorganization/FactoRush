@@ -1,7 +1,10 @@
 using UnityEngine;
 
-public class CameraManager : MonoBehaviour
+namespace GameContent.Cameras
 {
+    public class CameraManager : MonoBehaviour
+    {
 
     
+    }
 }

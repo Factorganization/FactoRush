@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Others.External_Tools.Verpha.Hierarchy_Designer.Runtime.Scripts;
 using UnityEditor;
 using UnityEditor.ShortcutManagement;
 using UnityEngine;

@@ -5,6 +5,8 @@ namespace DebugManagement
 {
     public class FPSCounter : MonoBehaviour
     {
+        #region methodes
+        
         private void Update()
         {
             _timeLeft -= Time.deltaTime;
@@ -28,6 +30,8 @@ namespace DebugManagement
             _accum     = 0;
             _frames    = 0;
         }
+        
+        #endregion
         
         #region fields
         

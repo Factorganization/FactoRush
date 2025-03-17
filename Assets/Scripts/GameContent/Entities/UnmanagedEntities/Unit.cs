@@ -50,7 +50,7 @@ namespace GameContent.Entities.UnmanagedEntities
 
         public Vector3 velocity;
 
-        public bool isAirUnit => transportComponent != null && transportComponent.IsFlying;
+        public bool isAirUnit => transportComponent != null && transportComponent.isFlying;
         
         [Header("Special Weapon Effects")]
         
@@ -126,7 +126,7 @@ namespace GameContent.Entities.UnmanagedEntities
             damage = weaponComponent != null ? weaponComponent.Damage : 0;
             attackSpeed = weaponComponent != null ? weaponComponent.AttackSpeed : 9999;
             Range = weaponComponent != null ? weaponComponent.Range : 0;
-            moveSpeed = transportComponent != null ? transportComponent.SpeedMultiplier : 0;
+            moveSpeed = transportComponent != null ? transportComponent.speedMultiplier : 0;
             
             if (transportComponent != null && transportComponent is TransportTwinBoots)
             {
@@ -141,7 +141,7 @@ namespace GameContent.Entities.UnmanagedEntities
             }
             
             
-            currentHealth = transportComponent != null ? baseHealth * transportComponent.HealthMultiplier : baseHealth;
+            currentHealth = transportComponent != null ? baseHealth * transportComponent.healthMultiplier : baseHealth;
             maxHealth = currentHealth;
             
             if (isAirUnit)
@@ -169,7 +169,7 @@ namespace GameContent.Entities.UnmanagedEntities
                 weaponComponent.Initialize(this);
                 if (weaponComponent.targetType == TargetType.TransportDependent)
                 {
-                    targetType = transportComponent is null ? TargetType.Ground : transportComponent.IsFlying ? TargetType.Air : TargetType.Ground;
+                    targetType = transportComponent is null ? TargetType.Ground : transportComponent.isFlying ? TargetType.Air : TargetType.Ground;
                 }
                 else
                 {
@@ -178,7 +178,7 @@ namespace GameContent.Entities.UnmanagedEntities
             }
             if (transportComponent != null)
             {
-                var transportGraph = Instantiate(transportComponent.Graph, transform);
+                var transportGraph = Instantiate(transportComponent.graph, transform);
                 transportGraph.transform.parent = graphTransform;
                 if (transportComponent is TransportDrill)
                 {

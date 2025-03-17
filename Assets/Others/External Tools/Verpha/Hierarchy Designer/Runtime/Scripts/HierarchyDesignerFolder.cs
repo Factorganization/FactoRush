@@ -1,8 +1,8 @@
-namespace Verpha.HierarchyDesigner
-{
-    using UnityEngine;
-    using UnityEngine.Events;
+using UnityEngine;
+using UnityEngine.Events;
 
+namespace Others.External_Tools.Verpha.Hierarchy_Designer.Runtime.Scripts
+{
     public class HierarchyDesignerFolder : MonoBehaviour
     {
         #region Properties
