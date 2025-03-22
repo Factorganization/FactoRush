@@ -32,6 +32,9 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Transport
                     closestDistance = distance;
                     closestEnemyUnit = enemyUnit;
                 }
+
+                if (closestEnemyUnit is not null)
+                    unit.transform.position = closestEnemyUnit.transform.position - closestEnemyUnit.transform.forward;
             }
             else
             {
@@ -55,10 +58,10 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Transport
                     closestDistance = distance;
                     closestAllyUnit = allyUnit;
                 }
+                
+                if (closestAllyUnit is not null)
+                    unit.transform.position = closestAllyUnit.transform.position - closestAllyUnit.transform.forward;
             }
-            
-            // Teleport the unit right behind the closest unit
-            unit.transform.position = unit.isAlly ? closestEnemyUnit.transform.position - closestEnemyUnit.transform.forward : closestAllyUnit.transform.position - closestAllyUnit.transform.forward;
         }
     }
 }

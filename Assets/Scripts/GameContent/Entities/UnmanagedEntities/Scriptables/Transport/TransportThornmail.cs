@@ -12,7 +12,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Transport
         
         public override void UniqueBehavior(Unit unit, Unit target = null)
         {
-            if (target != null) target.ApplyDamageRaw(damagePerLightning);
+            target?.ApplyDamageRaw(damagePerLightning);
         }
     }
 }

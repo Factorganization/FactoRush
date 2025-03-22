@@ -10,7 +10,7 @@ namespace GameContent.Entities.UnmanagedEntities.Scriptables.Transport
         
         public override void UniqueBehavior(Unit unit, Unit target = null)
         {
-            if (target != null)
+            if (target is not null)
             {
                 if (unit.Range <= 1f)
                 {
