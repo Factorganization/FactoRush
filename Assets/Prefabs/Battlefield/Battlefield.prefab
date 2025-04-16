@@ -69,7 +69,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 10
-  damage: 1
   isDead: 0
   spawnPoint: {fileID: 7666442425497816412}
 --- !u!1 &2627416176454665788
@@ -242,8 +241,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allyUnits: []
   enemyUnits: []
-  unitPrefab: {fileID: 1535771559338506703, guid: a7c443844fc3bb245a00c4676c7ba49f,
-    type: 3}
+  unitPoolData:
+    entityPrefab: {fileID: 1535771559338506703, guid: a7c443844fc3bb245a00c4676c7ba49f,
+      type: 3}
+    poolCount: 40
+    pooledPosition: {x: 0, y: 50, z: 0}
   weaponComponentDefault: {fileID: 11400000, guid: 5ea97ef9467a08c4fa463492b689f2c5,
     type: 2}
   transportComponentDefault: {fileID: 11400000, guid: 41f7dd991066c8f4c822616af75f7b55,
@@ -642,7 +644,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 10
-  damage: 1
   isDead: 0
   spawnPoint: {fileID: 7143794549436894171}
 --- !u!1001 &2878243885801562980

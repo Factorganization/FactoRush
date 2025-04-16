@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using GameContent.Entities.EntityLists;
 using GameContent.Entities.UnmanagedEntities.Bases;
 using GameContent.Entities.UnmanagedEntities.Scriptables.Transport;
 using GameContent.Entities.UnmanagedEntities.Scriptables.Weapons;
@@ -14,7 +15,8 @@ namespace GameContent.Entities.UnmanagedEntities
     
         [SerializeField] public List<Unit> allyUnits;
         [SerializeField] public List<Unit> enemyUnits;
-        [SerializeField] private Unit unitPrefab;
+        [SerializeField] private EntityPoolData<Unit> unitPoolData;
+        private EntityPool<Unit> _unitPool;
         [SerializeField] private WeaponComponent weaponComponentDefault;
         [SerializeField] private TransportComponent transportComponentDefault;
     
@@ -33,12 +35,14 @@ namespace GameContent.Entities.UnmanagedEntities
 
         private void Start()
         {
+            _unitPool = new EntityPool<Unit>(unitPoolData);
+            
             InitialCheckup();
         }
     
         public void SpawnUnit(bool isAlly, TransportComponent transportComponent =  null, WeaponComponent weaponComponent = null, Unit cloneOf = null, float delay = 0)
         {
-            if (unitPrefab is null)
+            if (unitPoolData.entityPrefab is null)
             {
                 //Debug.LogError("Unit prefab is not assigned in the inspector");
                 return;
@@ -61,13 +65,13 @@ namespace GameContent.Entities.UnmanagedEntities
             yield return new WaitForSeconds(delay);
             
             // Instantiate the unit prefab and set its components
-            var unit = Instantiate(unitPrefab,
-                isAlly
-                    ? allyBase.spawnPoint.position
-                    : enemyBase.spawnPoint.position,
-                isAlly
-                    ? allyBase.spawnPoint.rotation
-                    : enemyBase.spawnPoint.rotation);
+            var unit  = _unitPool.Pool();
+            unit.Position = isAlly
+                ? allyBase.spawnPoint.position
+                : enemyBase.spawnPoint.position;
+            unit.ETransform.rotation = isAlly
+                ? allyBase.spawnPoint.rotation
+                : enemyBase.spawnPoint.rotation;
             
             //Unit unitComponent = unit.GetComponent<Unit>();
             unit.isAlly = isAlly;
@@ -97,6 +101,9 @@ namespace GameContent.Entities.UnmanagedEntities
             {
                 unit.alreadyCloned = true;
             }
+            
+            unit.InitializeUnit();
+            unit.InitializeVisionCone();
         }
 
         private void InitialCheckup()
@@ -111,7 +118,7 @@ namespace GameContent.Entities.UnmanagedEntities
                 enemyBase = EnemyBase.Instance;
                 Debug.LogWarning("Enemy base is not assigned in the inspector. Assigning it to the instance of EnemyBase");
             }
-            if (unitPrefab is null)
+            if (unitPoolData.entityPrefab is null)
             {
                 Debug.LogError("Charles lit l'erreur stp");
             }

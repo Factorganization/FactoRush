@@ -76,18 +76,7 @@ namespace GameContent.Entities.UnmanagedEntities
 
         #region Unity Lifecycle
 
-        protected override void OnAwake()
-        {
-            base.OnAwake();
-        }
-
-        private void Start()
-        {
-            InitializeUnit();
-            InitializeVisionCone();
-        }
-
-        private void Update()
+        protected override void OnUpdate()
         {
             if (!IsAlive) return;
             
@@ -120,7 +109,7 @@ namespace GameContent.Entities.UnmanagedEntities
 
         #region Initialization
 
-        private void InitializeUnit()
+        public void InitializeUnit()
         {
             float baseHealth = 100;
             damage = weaponComponent != null ? weaponComponent.Damage : 0;
@@ -195,7 +184,7 @@ namespace GameContent.Entities.UnmanagedEntities
             }
         }
 
-        private void InitializeVisionCone()
+        public void InitializeVisionCone()
         {
             gameObject.AddComponent<MeshRenderer>().material = VisionConeMaterial;
             meshFilter = gameObject.AddComponent<MeshFilter>();
@@ -512,7 +501,9 @@ namespace GameContent.Entities.UnmanagedEntities
             {
                 UnitsManager.Instance.enemyUnits.Remove(this);
             }
-            Destroy(gameObject);
+
+            Position = InitialPosition;
+            IsActive = false;
         }
 
         #endregion

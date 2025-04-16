@@ -2,7 +2,7 @@
 
 namespace GameContent.Entities
 {
-    public abstract class Entity :  MonoBehaviour
+    public abstract class Entity : MonoBehaviour
     {
         #region properties
 
@@ -17,6 +17,10 @@ namespace GameContent.Entities
         public Vector3 TargetPosition { get; set; }
         
         public Transform GraphTransform => graphTransform;
+        
+        public bool IsActive { get; set; }
+        
+        public Vector3 InitialPosition { get; set; }
         
         #endregion
         
@@ -40,6 +44,11 @@ namespace GameContent.Entities
         private void FixedUpdate()
         {
             OnFixedUpdate();
+        }
+
+        public virtual void Generated()
+        {
+            IsActive = false;
         }
         
         protected virtual void OnAwake()

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a75f1ba42706418f9f7935eebb61aa5b, type: 3}
   m_Name: TransportTwinBoots
   m_EditorClassIdentifier: 
-  Graph: {fileID: 919132149155446097, guid: f42cbdd58194ccf438af380648a2878b, type: 3}
-  SpeedMultiplier: 2.5
-  HealthMultiplier: 0.25
-  IsFlying: 0
+  graph: {fileID: 919132149155446097, guid: f42cbdd58194ccf438af380648a2878b, type: 3}
+  speedMultiplier: 1.5
+  healthMultiplier: 1.2
+  isFlying: 0
