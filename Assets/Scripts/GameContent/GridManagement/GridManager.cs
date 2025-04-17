@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using GameContent.CraftResources;
+using GameContent.Entities.EntityLists;
 using GameContent.Entities.GridEntities;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.Entities.OnFieldEntities.Buildings;
@@ -71,6 +72,10 @@ namespace GameContent.GridManagement
             _removing = new HashSet<Vector2Int>();
             _toAddStatic = new Dictionary<Vector2Int, StaticBuilding>();
             _toRemove = new Dictionary<Vector2Int, Building>();
+
+            _miningResources = new EntityPool<MiningResource>[4];
+            for (var i = 0; i < 4; i++)
+                _miningResources[i] = new EntityPool<MiningResource>(miningResources[i]);
             
             StartCoroutine(InitGrid());
         }
@@ -130,7 +135,7 @@ namespace GameContent.GridManagement
                             var mT = Instantiate(mineTile, transform);
                             Grid.Add(tId, mT);
                             mT.Added(this, tId, tPos, TileType.MineTile);
-                            mT.SetResource(miningResources[grid[i][j] % 20]); // B)
+                            mT.SetResource(_miningResources[grid[i][j] % 20]); // B)
                             break;
                         
                         case >= 10:
@@ -666,7 +671,9 @@ namespace GameContent.GridManagement
         
         [SerializeField] private MineTile mineTile;
 
-        [SerializeField] private MiningResource[] miningResources;
+        [SerializeField] private EntityPoolData<MiningResource>[] miningResources;
+        
+        private EntityPool<MiningResource>[] _miningResources;
         
         [SerializeField] private WeaponTargetTile weaponTargetTile;
         

@@ -15,4 +15,3 @@ C:\Users\cleme\Documents\Projects\FactoRush\Library\Bee\Android\Prj\IL2CPP\Gradl
 C:\Users\cleme\Documents\Projects\FactoRush\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UnityToGAConfigurationCallbacks.h
 C:\Users\cleme\Documents\Projects\FactoRush\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UnityToGAKeyEventCallbacks.h
 C:\Users\cleme\Documents\Projects\FactoRush\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UnityToGAMotionEventCallbacks.h
-C:\Users\cleme\Documents\Projects\FactoRush\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\FramePacing\UnitySwappyWrapper.h

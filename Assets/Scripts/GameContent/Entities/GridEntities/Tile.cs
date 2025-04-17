@@ -22,8 +22,6 @@ namespace GameContent.Entities.GridEntities
 
         public virtual List<ConveyorGroup> GroupRef { get; protected set; }
         
-        protected bool Active { get; private set; }
-        
         #region Path Find
         
         public abstract bool IsBlocked { get; }
@@ -51,7 +49,7 @@ namespace GameContent.Entities.GridEntities
             Grid = grid;
             Position = pos;
             Type = type;
-            Active = false;
+            IsActive = false;
             
 #if INDEX_DEBUG && UNITY_EDITOR
             debugIndex.text = $"<size=1>{Type}</size> \n <size=3>({Index.x},{Index.y})</size>";
@@ -65,13 +63,14 @@ namespace GameContent.Entities.GridEntities
 
         public virtual void RemoveConveyorGroup(ConveyorGroup conveyorGroup) => GroupRef.Remove(conveyorGroup);
         
-        public virtual void MarkActive(bool active) => Active = active;
+        public virtual void MarkActive(bool active) => IsActive = active;
 
         protected virtual void InstantiateResourceAt(int conveyorIndex, BaseResource resource, Vector3 pos)
         {
-            var r = Instantiate(resource, pos, Quaternion.identity);
-            r.Created(GroupRef[conveyorIndex]);
-            GroupRef[conveyorIndex]?.AddResource(r);
+            Debug.Log("tests");
+            resource.Position = pos;
+            resource.Created(GroupRef[conveyorIndex]);
+            GroupRef[conveyorIndex]?.AddResource(resource);
         }
 
         protected virtual void DestroyResource(int conveyorIndex, BaseResource resource)

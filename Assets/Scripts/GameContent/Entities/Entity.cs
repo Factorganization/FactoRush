@@ -38,11 +38,17 @@ namespace GameContent.Entities
 
         private void Update()
         {
+            if (!IsActive)
+                return;
+            
             OnUpdate();
         }
 
         private void FixedUpdate()
         {
+            if (!IsActive)
+                return;
+            
             OnFixedUpdate();
         }
 

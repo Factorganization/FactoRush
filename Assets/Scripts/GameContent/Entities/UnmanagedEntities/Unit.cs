@@ -16,6 +16,8 @@ namespace GameContent.Entities.UnmanagedEntities
         [SerializeField] public WeaponComponent weaponComponent;       // Reference to weapon stats
         [SerializeField] public TransportComponent transportComponent; // Reference to transport stats
         
+        [SerializeField] public GameObject[] transportComponents;
+        [SerializeField] public GameObject[] weaponComponents;
         
         [Header("Vision Cone")]
         [SerializeField] public Material VisionConeMaterial;          // Material for the vision cone
@@ -112,12 +114,12 @@ namespace GameContent.Entities.UnmanagedEntities
         public void InitializeUnit()
         {
             float baseHealth = 100;
-            damage = weaponComponent != null ? weaponComponent.Damage : 0;
-            attackSpeed = weaponComponent != null ? weaponComponent.AttackSpeed : 9999;
-            Range = weaponComponent != null ? weaponComponent.Range : 0;
-            moveSpeed = transportComponent != null ? transportComponent.speedMultiplier : 0;
+            damage = weaponComponent?.Damage ?? 0;
+            attackSpeed = weaponComponent?.AttackSpeed ?? 9999;
+            Range = weaponComponent?.Range ?? 0;
+            moveSpeed = transportComponent?.speedMultiplier ?? 0;
             
-            if (transportComponent != null && transportComponent is TransportTwinBoots)
+            if (transportComponent is TransportTwinBoots)
             {
                 baseHealth = 50;
                 damage /= 2;
@@ -130,7 +132,7 @@ namespace GameContent.Entities.UnmanagedEntities
             }
             
             
-            currentHealth = transportComponent != null ? baseHealth * transportComponent.healthMultiplier : baseHealth;
+            currentHealth = baseHealth * transportComponent?.healthMultiplier ?? baseHealth;
             maxHealth = currentHealth;
             
             if (isAirUnit)
@@ -139,19 +141,19 @@ namespace GameContent.Entities.UnmanagedEntities
             }
             
             // Get Stun Particles
-            if (ETransform.Find("FX") != null)
+            if (ETransform.Find("FX") is not null)
             {
                 stunParticles = ETransform.Find("FX").GetComponent<ParticleSystem>();
             }
             // Get Weapon particles in the children of the children of graphTransform
             
-            if (weaponComponent != null)
+            if (weaponComponent is not null)
             {
-                var weaponGraph = Instantiate(weaponComponent.Graph, transform);
-                weaponGraph.transform.parent = graphTransform;
+                var weaponGraph = weaponComponents[GetWeaponId(weaponComponent)];
+                weaponGraph.SetActive(true);
                 
                 // Initialize the weapon particles if they exist
-                if (weaponGraph.transform.Find("FX") != null)
+                if (weaponGraph.transform.Find("FX") is not null)
                 {
                     weaponParticles = weaponGraph.transform.Find("FX").GetComponent<ParticleSystem>();
                 }
@@ -165,10 +167,11 @@ namespace GameContent.Entities.UnmanagedEntities
                     targetType = weaponComponent.targetType;
                 }
             }
-            if (transportComponent != null)
+            if (transportComponent is not null)
             {
-                var transportGraph = Instantiate(transportComponent.graph, transform);
-                transportGraph.transform.parent = graphTransform;
+                var transportGraph = transportComponents[GetTransportId(transportComponent)];
+                transportGraph.SetActive(true);
+                
                 if (transportComponent is TransportDrill)
                 {
                     transportComponent.UniqueBehavior(this);
@@ -182,6 +185,8 @@ namespace GameContent.Entities.UnmanagedEntities
                     thornmailRange = thornmail.range;
                 }
             }
+
+            IsActive = true;
         }
 
         public void InitializeVisionCone()
@@ -191,6 +196,34 @@ namespace GameContent.Entities.UnmanagedEntities
             visionConeMesh = new Mesh();
         }
 
+        private static int GetTransportId(TransportComponent tc) => tc switch
+        {
+            TransportAccumulator => 0,
+            TransportBase => 1,
+            TransportDrill => 2,
+            TransportInsulatingWheels => 3,
+            TransportSlider => 4,
+            TransportThornmail => 5,
+            TransportTwinBoots => 6,
+            _ => 1
+        };
+
+        private static int GetWeaponId(WeaponComponent wc) => wc switch
+        {
+            WeaponArtillery => 0,
+            WeaponBase => 1,
+            WeaponC4 => 2,
+            WeaponCanon => 3,
+            WeaponMinigun => 4,
+            WeaponRailgun => 5,
+            WeaponShield => 6,
+            WeaponSpear => 7,
+            WeaponSpinningBlade => 8,
+            WeaponSymbioticRifle => 9,
+            WeaponWarhammer => 10,
+            _ => 1
+        };
+        
         #endregion
 
         #region Vision Cone
@@ -199,31 +232,31 @@ namespace GameContent.Entities.UnmanagedEntities
         {
             if (!weaponComponent) return;
 
-            float visionRange = Range;
-            float visionAngle = ConeAngle * Mathf.Deg2Rad;
-            int resolution = 120;
+            var visionRange = Range;
+            var visionAngle = ConeAngle * Mathf.Deg2Rad;
+            var resolution = 120;
 
-            Vector3[] vertices = new Vector3[resolution + 1];
-            int[] triangles = new int[(resolution - 1) * 3];
+            var vertices = new Vector3[resolution + 1];
+            var triangles = new int[(resolution - 1) * 3];
 
             // Adjust the origin of the cone based on the offsets
-            Vector3 coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ;
+            var coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ;
             vertices[0] = transform.InverseTransformPoint(coneOrigin);
 
-            float currentAngle = -visionAngle / 2;
-            float angleIncrement = visionAngle / (resolution - 1);
+            var currentAngle = -visionAngle / 2;
+            var angleIncrement = visionAngle / (resolution - 1);
 
-            for (int i = 0; i < resolution; i++)
+            for (var i = 0; i < resolution; i++)
             {
-                float sin = Mathf.Sin(currentAngle);
-                float cos = Mathf.Cos(currentAngle);
+                var sin = Mathf.Sin(currentAngle);
+                var cos = Mathf.Cos(currentAngle);
 
                 // Direction relative to the unit's orientation
-                Vector3 direction = transform.rotation * (Vector3.forward * cos + Vector3.right * sin);
+                var direction = transform.rotation * (Vector3.forward * cos + Vector3.right * sin);
                 Vector3 vertexPosition;
 
                 // Raycast for obstructions
-                if (Physics.Raycast(coneOrigin, direction, out RaycastHit hit, visionRange, ObstructionLayer))
+                if (Physics.Raycast(coneOrigin, direction, out var hit, visionRange, ObstructionLayer))
                 {
                     vertexPosition = direction.normalized * hit.distance;
                 }
@@ -259,7 +292,7 @@ namespace GameContent.Entities.UnmanagedEntities
             if (isStunned) return false;
             if (!CanAttack) return false;
             
-            List<Unit> unitsInRange = GetAllUnitsInRange(Range);
+            var unitsInRange = GetAllUnitsInRange(Range);
             
             //if there is at least one unit in range, attack it
             if (unitsInRange.Count > 0)
@@ -267,39 +300,36 @@ namespace GameContent.Entities.UnmanagedEntities
                 // Attack the first valid unit target, if any
                 AttackTarget(unitsInRange);
                 // if weaponparticles is not null, play the particles
-                if(weaponParticles != null)
-                    weaponParticles.Play(true);
+                weaponParticles?.Play(true);
                 return true;
             }
 
             // Adjust the origin of the cone based on the offsets
-            Vector3 coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ;
+            var coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ;
 
             // Find all potential targets within the attack range
-            Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, Range);
+            var hitColliders = Physics.OverlapSphere(coneOrigin, Range);
 
             // Handle base attacks (unchanged behavior)
             foreach (var hitCollider in hitColliders)
             {
                 if (isAlly)
                 {
-                    EnemyBase enemyBase = hitCollider.GetComponent<EnemyBase>();
-                    if (enemyBase != null)
+                    var enemyBase = hitCollider.GetComponent<EnemyBase>();
+                    if (enemyBase is not null)
                     {
                         AttackEnemyBase(enemyBase);
-                        if(weaponParticles != null)
-                            weaponParticles.Play(true);
+                        weaponParticles?.Play(true);
                         return true;
                     }
                 }
                 else
                 {
-                    AllyBase allyBase = hitCollider.GetComponent<AllyBase>();
-                    if (allyBase != null)
+                    var allyBase = hitCollider.GetComponent<AllyBase>();
+                    if (allyBase is not null)
                     {
                         AttackAllyBase(allyBase);
-                        if(weaponParticles != null)
-                            weaponParticles.Play(true);
+                        weaponParticles?.Play(true);
                         return true;
                     }
                 }
@@ -310,18 +340,18 @@ namespace GameContent.Entities.UnmanagedEntities
         private List<Unit> GetAllUnitsInRange(float range)
         {
             // Adjust the origin of the cone based on the offsets
-            Vector3 coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ;
+            var coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ;
 
             // Find all potential targets within the attack range
-            Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, range);
+            var hitColliders = Physics.OverlapSphere(coneOrigin, range);
             //draw that sphere 
 
             // Collect all valid unit targets in range
-            List<Unit> unitsInRange = new List<Unit>();
+            var unitsInRange = new List<Unit>();
             foreach (var hitCollider in hitColliders)
             {
-                Unit target = hitCollider.GetComponent<Unit>();
-                if (target != null && target.IsAlive && IsValidTarget(target))
+                var target = hitCollider.GetComponent<Unit>();
+                if (target is not null && target.IsAlive && IsValidTarget(target))
                 {
                     unitsInRange.Add(target);
                 }
@@ -380,8 +410,8 @@ namespace GameContent.Entities.UnmanagedEntities
             if (target.isAlly == isAlly) return false;
             
             // if the target is behind this unit, it is not a valid target\
-            Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
-            float angle = Vector3.Angle(transform.forward, directionToTarget);
+            var directionToTarget = (target.transform.position - transform.position).normalized;
+            var angle = Vector3.Angle(transform.forward, directionToTarget);
             if (angle > 90)
             {
                 return isExplosive; // If the target is behind, only allow explosive weapons to hit
@@ -426,7 +456,7 @@ namespace GameContent.Entities.UnmanagedEntities
         private void HandleMovement()
         {
             if (!CanMove) return;
-            if (weaponComponent != null && !CanAttack) return;
+            if (weaponComponent is not null && !CanAttack) return;
             if (isStunned) return;
             
             ResetAttackSpeed();
@@ -449,7 +479,7 @@ namespace GameContent.Entities.UnmanagedEntities
         
         private void UpdateHpBar()
         {
-            if (hpBar != null)
+            if (hpBar is not null)
             {
                 //Fill it with a ratio of the current health over the max health
                 hpBar.value = currentHealth / maxHealth;
@@ -504,6 +534,10 @@ namespace GameContent.Entities.UnmanagedEntities
 
             Position = InitialPosition;
             IsActive = false;
+            foreach (var t in transportComponents)
+                t.SetActive(false);
+            foreach (var w in weaponComponents)
+                w.SetActive(false);
         }
 
         #endregion
@@ -523,7 +557,7 @@ namespace GameContent.Entities.UnmanagedEntities
         {
             // Stop all HandleStun coroutines
             StopAllCoroutines();
-            if (transportComponent != null && transportComponent is TransportInsulatingWheels) return; //Boots Imune to stun
+            if (transportComponent is not null && transportComponent is TransportInsulatingWheels) return; //Boots Imune to stun
             
             Debug.Log($"{name} is stunned for {duration} seconds.");
             isStunned = true;
@@ -549,7 +583,7 @@ namespace GameContent.Entities.UnmanagedEntities
             if (!weaponComponent) return;
 
             // Calculate the cone origin using the offsets
-            Vector3 coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ;
+            var coneOrigin = transform.position + transform.right * offsetX + transform.up * offsetY + transform.forward * offsetZ;
 
             // Draw the overlap sphere
             Gizmos.color = new Color(0f, 0.5f, 1f, 0.5f); // Light blue with transparency
@@ -557,7 +591,7 @@ namespace GameContent.Entities.UnmanagedEntities
             
             if (Application.isPlaying) // Only run during Play mode
             {
-                Collider[] hitColliders = Physics.OverlapSphere(coneOrigin, Range);
+                var hitColliders = Physics.OverlapSphere(coneOrigin, Range);
                 foreach (var hitCollider in hitColliders)
                 {
                     Gizmos.color = Color.red;

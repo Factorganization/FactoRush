@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GameContent.CraftResources;
+using GameContent.Entities.EntityLists;
 using UnityEngine;
 
 namespace GameContent.Entities.OnFieldEntities.Buildings
@@ -19,6 +20,8 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
         {
             base.OnStart();
 
+            _unitComponent = new EntityPool<RefinedResource>(unitComponentData);
+            
             _miningResources = new Dictionary<MiningResourceType, int>();
             for (var i = 0; i < Enum.GetValues(typeof(MiningResourceType)).Length; i++)
             {
@@ -64,7 +67,8 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
 
         private void InstantiateResourceAt(int conveyorIndex, Vector3 pos)
         {
-            var r = Instantiate(unitComponent, pos, Quaternion.identity);
+            var r = _unitComponent.Pool();
+            r.Position = pos;
             r.Created(TileRef.GroupRef[conveyorIndex]);
             r.SetUnitComponent(data.component);
             TileRef.GroupRef[conveyorIndex].AddResource(r);
@@ -84,7 +88,9 @@ namespace GameContent.Entities.OnFieldEntities.Buildings
 
         [SerializeField] private FactoryData data;
 
-        [SerializeField] private RefinedResource unitComponent; // j'ai chié sur les noms là ...
+        [SerializeField] private EntityPoolData<RefinedResource> unitComponentData;
+        
+        private EntityPool<RefinedResource> _unitComponent; // j'ai chié sur les noms là…
         
         [SerializeField] private SpriteRenderer unitSprite;
         

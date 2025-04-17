@@ -1,4 +1,5 @@
 ﻿using GameContent.CraftResources;
+using GameContent.Entities.EntityLists;
 using GameContent.Entities.OnFieldEntities;
 using GameContent.GridManagement;
 using UnityEngine;
@@ -46,7 +47,7 @@ namespace GameContent.Entities.GridEntities
         {
             base.OnUpdate();
             
-            if (!Active || !GameManager.Instance.CanStart)
+            if (!IsActive || !GameManager.Instance.CanStart)
                 return;
 
             if (_spawnCounter <= Constants.SpawnInterval)
@@ -63,15 +64,15 @@ namespace GameContent.Entities.GridEntities
                 if (c is null)
                     return;
             }
-            InstantiateResourceAt(_targetIndex, _miningResource, Position + Vector3.up * 0.25f);
+            InstantiateResourceAt(_targetIndex, _miningResource.Pool(), Position + Vector3.up * 0.25f);
             _spawnCounter = 0;
             _targetIndex = (_targetIndex + 1) % GroupRef.Count;
         }
         
-        public void SetResource(MiningResource resource)
+        public void SetResource(EntityPool<MiningResource> resource)
         { 
             _miningResource = resource;
-            switch (_miningResource.resourceType)
+            switch (_miningResource.Peek().resourceType)
             {
                 case MiningResourceType.Iron:
                     graphs[0].SetActive(true);
@@ -108,7 +109,7 @@ namespace GameContent.Entities.GridEntities
 
         [SerializeField] private GameObject[] graphs;
         
-        private MiningResource _miningResource;
+        private EntityPool<MiningResource> _miningResource;
 
         private float _spawnCounter;
 

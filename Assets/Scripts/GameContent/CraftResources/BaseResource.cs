@@ -25,10 +25,12 @@ namespace GameContent.CraftResources
         {
             if (conveyorRef is null)
             {
-                Destroy(gameObject);
+                IsActive = false;
+                Position = InitialPosition;
                 return;
             }
             
+            IsActive = true;
             ConveyorRef = conveyorRef;
             _targetPos = conveyorRef[0].Position + Constants.UpperCorrectionPos;
             _currentTargetId = 0;
@@ -58,8 +60,9 @@ namespace GameContent.CraftResources
 
         protected virtual void RemoveSelf()
         {
-            ConveyorRef?.RemoveResource(this); 
-            Destroy(gameObject);
+            ConveyorRef?.RemoveResource(this);
+            IsActive = false;
+            Position = InitialPosition;
         }
 
         #endregion
@@ -69,7 +72,7 @@ namespace GameContent.CraftResources
         private Vector3 _targetPos;
 
         private int _currentTargetId;
-
+            
         #endregion
     }
 }

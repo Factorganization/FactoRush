@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameContent.Entities.EntityLists
 {
@@ -11,6 +13,8 @@ namespace GameContent.Entities.EntityLists
         public Queue<T> EntityQueue { get; private set; }
         
         public int Count => EntityQueue.Count;
+        
+        public Type Type => typeof(T);
         
         #endregion
         
@@ -43,6 +47,8 @@ namespace GameContent.Entities.EntityLists
             }
         }
 
+        public T Peek() => EntityQueue.Peek();
+        
         public void Enqueue(T o) => EntityQueue.Enqueue(o);
         
         public T Dequeue() => EntityQueue.Dequeue();

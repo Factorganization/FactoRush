@@ -51,6 +51,7 @@ namespace GameContent.Entities.GridEntities
         #endregion
         
         #region methodes
+        
         protected override void DestroyResource(int conveyorIndex, BaseResource resource) {}
 
         private void CheckSelfSendingType()
